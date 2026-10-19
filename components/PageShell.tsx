@@ -1,6 +1,6 @@
 'use client';
 
-import type { ReactNode } from 'react';
+import { useEffect, type ReactNode } from 'react';
 import { SiteProvider, useSite } from './SiteProvider';
 import { Sprite, Icon } from './Icon';
 import Footer from './sections/Footer';
@@ -28,6 +28,10 @@ function Bar() {
 }
 
 export default function PageShell({ content, children }: { content: Content; children: ReactNode }) {
+  // Ana sayfadaki açılış ekranı bu sayfalarda yok; kaydırma kilidini kaldır.
+  useEffect(() => {
+    document.documentElement.classList.remove('pre-lock');
+  }, []);
   return (
     <SiteProvider content={content}>
       <Sprite />

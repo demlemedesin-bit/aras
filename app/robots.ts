@@ -18,7 +18,7 @@ async function hidden() {
 export default async function robots(): Promise<MetadataRoute.Robots> {
   if (await hidden()) return { rules: [{ userAgent: '*', disallow: '/' }] }
   return {
-    rules: [{ userAgent: '*', allow: '/', disallow: ['/dashboard', '/login', '/admin', '/api'] }],
+    rules: [{ userAgent: '*', allow: '/', disallow: ['/dashboard', '/login', '/admin', '/api', '/bayi'] }],
     sitemap: `${SITE}/sitemap.xml`,
   }
 }

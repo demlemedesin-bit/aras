@@ -281,7 +281,14 @@
       "prod.ask": "Request catalogue",
       "nav.fair": "Fairs & awards",
       "ft.cookie": "Cookie policy",
-      "ft.terms": "Terms of use"
+      "ft.terms": "Terms of use",
+      "dp.h": "Dealer product catalogue",
+      "dp.p": "Browse our full range. Send a request to our sales team for pricing and quotes.",
+      "dp.gate": "Sign in as a dealer to see the product catalogue. If your application is approved, you can sign in now.",
+      "dp.login": "Dealer login",
+      "dp.search": "Search by product code or name",
+      "dp.empty": "No products match your search.",
+      "dp.quote": "Request a quote"
     },
     "de": {
       "skip": "Zum Inhalt springen",
@@ -412,7 +419,14 @@
       "prod.ask": "Katalog anfordern",
       "nav.fair": "Messen & Preise",
       "ft.cookie": "Cookie-Richtlinie",
-      "ft.terms": "Nutzungsbedingungen"
+      "ft.terms": "Nutzungsbedingungen",
+      "dp.h": "Händler-Produktkatalog",
+      "dp.p": "Stöbern Sie im gesamten Sortiment. Für Preise und Angebote senden Sie eine Anfrage an unser Vertriebsteam.",
+      "dp.gate": "Melden Sie sich als Händler an, um den Produktkatalog zu sehen. Wurde Ihr Antrag freigegeben, können Sie sich jetzt anmelden.",
+      "dp.login": "Händler-Login",
+      "dp.search": "Nach Artikelnummer oder Name suchen",
+      "dp.empty": "Keine Produkte zu Ihrer Suche gefunden.",
+      "dp.quote": "Angebot anfordern"
     },
     "fr": {
       "skip": "Aller au contenu",
@@ -543,7 +557,14 @@
       "prod.ask": "Demander le catalogue",
       "nav.fair": "Salons & prix",
       "ft.cookie": "Cookies",
-      "ft.terms": "Conditions d’utilisation"
+      "ft.terms": "Conditions d’utilisation",
+      "dp.h": "Catalogue produits revendeurs",
+      "dp.p": "Parcourez toute notre gamme. Envoyez une demande à notre équipe commerciale pour les prix et devis.",
+      "dp.gate": "Connectez-vous en tant que revendeur pour voir le catalogue. Si votre demande est approuvée, vous pouvez vous connecter.",
+      "dp.login": "Connexion revendeur",
+      "dp.search": "Rechercher par code ou nom du produit",
+      "dp.empty": "Aucun produit ne correspond à votre recherche.",
+      "dp.quote": "Demander un devis"
     },
     "es": {
       "skip": "Saltar al contenido",
@@ -674,7 +695,14 @@
       "prod.ask": "Pedir catálogo",
       "nav.fair": "Ferias y premios",
       "ft.cookie": "Cookies",
-      "ft.terms": "Condiciones de uso"
+      "ft.terms": "Condiciones de uso",
+      "dp.h": "Catálogo de productos para distribuidores",
+      "dp.p": "Explore toda nuestra gama. Envíe una solicitud a nuestro equipo comercial para precios y presupuestos.",
+      "dp.gate": "Inicie sesión como distribuidor para ver el catálogo. Si su solicitud está aprobada, ya puede acceder.",
+      "dp.login": "Acceso distribuidores",
+      "dp.search": "Buscar por código o nombre del producto",
+      "dp.empty": "Ningún producto coincide con su búsqueda.",
+      "dp.quote": "Pedir presupuesto"
     },
     "it": {
       "skip": "Vai al contenuto",
@@ -805,7 +833,14 @@
       "prod.ask": "Richiedi il catalogo",
       "nav.fair": "Fiere e premi",
       "ft.cookie": "Cookie policy",
-      "ft.terms": "Condizioni d’uso"
+      "ft.terms": "Condizioni d’uso",
+      "dp.h": "Catalogo prodotti per rivenditori",
+      "dp.p": "Sfoglia tutta la nostra gamma. Invia una richiesta al team vendite per prezzi e preventivi.",
+      "dp.gate": "Accedi come rivenditore per vedere il catalogo. Se la tua richiesta è approvata, puoi accedere ora.",
+      "dp.login": "Accesso rivenditori",
+      "dp.search": "Cerca per codice o nome del prodotto",
+      "dp.empty": "Nessun prodotto corrisponde alla ricerca.",
+      "dp.quote": "Richiedi un preventivo"
     },
     "tr": {
       "skip": "İçeriğe geç",
@@ -936,7 +971,14 @@
       "prod.ask": "Katalog iste",
       "nav.fair": "Fuarlar ve ödüller",
       "ft.cookie": "Çerez politikası",
-      "ft.terms": "Kullanım koşulları"
+      "ft.terms": "Kullanım koşulları",
+      "dp.h": "Bayi ürün kataloğu",
+      "dp.p": "Tüm ürünlerimizi inceleyebilirsiniz. Fiyat ve teklif için satış ekibimize talep gönderin.",
+      "dp.gate": "Ürün kataloğunu görmek için bayi girişi yapın. Başvurunuz onaylandıysa giriş yapabilirsiniz.",
+      "dp.login": "Bayi girişi",
+      "dp.search": "Ürün kodu veya adı ara",
+      "dp.empty": "Aramanıza uygun ürün bulunamadı.",
+      "dp.quote": "Teklif iste"
     }
   },
   "auth": {
@@ -971,7 +1013,8 @@
       "e7": "Başvurunuz onaylanmadı. Bilgi için bizimle iletişime geçin.",
       "e8": "İşlem şu an yapılamadı. Lütfen biraz sonra tekrar deneyin.",
       "pd": "Başvurunuz alındı",
-      "pp": "Firma bilgileriniz ekibimize iletildi. Onaylandığında e-posta ve şifrenizle giriş yapabilirsiniz."
+      "pp": "Firma bilgileriniz ekibimize iletildi. Onaylandığında e-posta ve şifrenizle giriş yapabilirsiniz.",
+      "go": "Ürün kataloğuna git"
     },
     "en": {
       "btn": "Dealer login",
@@ -1004,7 +1047,8 @@
       "e7": "Your application was not approved. Please contact us for details.",
       "e8": "Something went wrong. Please try again shortly.",
       "pd": "Application received",
-      "pp": "Your company details have been sent to our team. Once approved, you can sign in with your email and password."
+      "pp": "Your company details have been sent to our team. Once approved, you can sign in with your email and password.",
+      "go": "Go to product catalogue"
     },
     "de": {
       "btn": "Händler-Login",
@@ -1037,7 +1081,8 @@
       "e7": "Ihre Anmeldung wurde nicht freigegeben. Bitte kontaktieren Sie uns.",
       "e8": "Der Vorgang ist fehlgeschlagen. Bitte versuchen Sie es gleich noch einmal.",
       "pd": "Anmeldung eingegangen",
-      "pp": "Ihre Firmendaten wurden an unser Team gesendet. Nach der Freigabe können Sie sich mit E-Mail und Passwort anmelden."
+      "pp": "Ihre Firmendaten wurden an unser Team gesendet. Nach der Freigabe können Sie sich mit E-Mail und Passwort anmelden.",
+      "go": "Zum Produktkatalog"
     },
     "fr": {
       "btn": "Espace revendeur",
@@ -1070,7 +1115,8 @@
       "e7": "Votre demande n'a pas été validée. Contactez-nous pour en savoir plus.",
       "e8": "L'opération a échoué. Veuillez réessayer dans un instant.",
       "pd": "Demande reçue",
-      "pp": "Les informations de votre société ont été transmises à notre équipe. Une fois validée, vous pourrez vous connecter avec votre e-mail et votre mot de passe."
+      "pp": "Les informations de votre société ont été transmises à notre équipe. Une fois validée, vous pourrez vous connecter avec votre e-mail et votre mot de passe.",
+      "go": "Aller au catalogue produits"
     },
     "es": {
       "btn": "Acceso distribuidores",
@@ -1103,7 +1149,8 @@
       "e7": "Tu solicitud no fue aprobada. Contáctanos para más información.",
       "e8": "No se pudo completar la acción. Inténtalo de nuevo en un momento.",
       "pd": "Solicitud recibida",
-      "pp": "Los datos de tu empresa se han enviado a nuestro equipo. Cuando se apruebe, podrás iniciar sesión con tu correo y contraseña."
+      "pp": "Los datos de tu empresa se han enviado a nuestro equipo. Cuando se apruebe, podrás iniciar sesión con tu correo y contraseña.",
+      "go": "Ir al catálogo de productos"
     },
     "it": {
       "btn": "Accesso rivenditori",
@@ -1136,7 +1183,8 @@
       "e7": "La tua richiesta non è stata approvata. Contattaci per maggiori informazioni.",
       "e8": "Operazione non riuscita. Riprova tra poco.",
       "pd": "Richiesta ricevuta",
-      "pp": "I dati della tua azienda sono stati inviati al nostro team. Dopo l'approvazione potrai accedere con e-mail e password."
+      "pp": "I dati della tua azienda sono stati inviati al nostro team. Dopo l'approvazione potrai accedere con e-mail e password.",
+      "go": "Vai al catalogo prodotti"
     }
   }
 }

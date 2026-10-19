@@ -4,7 +4,8 @@ import { useSite } from '../SiteProvider';
 import { Icon } from '../Icon';
 
 export default function Products() {
-  const { t, world, openCatalog, content } = useSite();
+  const { t, world, openCatalog, session, content } = useSite();
+  const open = (code: string) => (session ? location.assign(`/bayi/urunler?q=${encodeURIComponent(code)}`) : openCatalog());
   const list = content.products.filter((p) => world === 'all' || p.world === world);
   // Kesintisiz akış için liste iki kez dizilir; ikinci kopya yalnızca görseldir.
   const loop = list.length ? [...list, ...list] : [];
@@ -26,7 +27,7 @@ export default function Products() {
             const dup = i >= list.length;
             return (
               <li key={`${p.id}-${i}`} aria-hidden={dup || undefined}>
-                <button className="pc" type="button" onClick={openCatalog} tabIndex={dup ? -1 : 0} draggable={false}>
+                <button className="pc" type="button" onClick={() => open(p.code)} tabIndex={dup ? -1 : 0} draggable={false}>
                   <span className="disc pc__d">
                     <img src={p.img} alt={dup ? '' : t(p.name)} loading="lazy" width={640} height={640} draggable={false} />
                     <i className="pc__i"><Icon n="ne" /></i>

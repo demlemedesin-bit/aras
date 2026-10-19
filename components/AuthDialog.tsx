@@ -77,7 +77,7 @@ export default function AuthDialog() {
     closeAuth();
     const target = next.current;
     next.current = null;
-    if (target) setTimeout(() => window.open(target, '_blank', 'noopener'), 350);
+    window.location.assign(target && target.startsWith('/') ? target : '/bayi/urunler');
   };
 
   const up = mode === 'up';
@@ -129,6 +129,7 @@ export default function AuthDialog() {
           <div className="auth__acct">
             <h3>{A.ah}</h3>
             <p>{A.ap}</p>
+            <a className="btn auth__go" href="/bayi/urunler">{A.go}</a>
             <button className="btn btn--line" ref={outRef} type="button" onClick={() => { signOut(); closeAuth(); }}>{A.out}</button>
           </div>
         </div>

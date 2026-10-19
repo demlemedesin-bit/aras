@@ -13,7 +13,7 @@ const WORLDS: { id: World; key: string }[] = [
 ];
 
 export default function Collections() {
-  const { t, world, pickWorld, openCatalog, content } = useSite();
+  const { t, world, pickWorld, openCatalog, session, content } = useSite();
   const [open, setOpen] = useState('kitchen');
   const visible = content.collections.filter((c) => world === 'all' || c.world === world);
 
@@ -30,7 +30,8 @@ export default function Collections() {
       return;
     }
     e.preventDefault();
-    openCatalog();
+    if (session) location.assign(`/bayi/urunler?k=${c.id}`);
+    else openCatalog();
   };
 
   return (

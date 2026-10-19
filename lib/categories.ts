@@ -176,7 +176,12 @@ export const DEFAULT_CATEGORIES: Cat[] = [
    "it": "Fioriere"
   },
   "subs": [],
-  "img": "/images/col-garden.webp"
+  "img": "/images/col-garden.webp",
+  "photos": [
+   "/images/col-garden.webp",
+   "/images/p-5076.webp",
+   "/images/p-36383.webp"
+  ]
  },
  {
   "id": "maintenance",
@@ -189,7 +194,11 @@ export const DEFAULT_CATEGORIES: Cat[] = [
    "es": "Mantenimiento",
    "it": "Manutenzione"
   },
-  "subs": []
+  "subs": [],
+  "photos": [
+   "/images/p-15151.webp"
+  ],
+  "img": "/images/p-15151.webp"
  },
  {
   "id": "fire-pit-group",
@@ -202,7 +211,11 @@ export const DEFAULT_CATEGORIES: Cat[] = [
    "es": "Grupo de fogoneros",
    "it": "Gruppo bracieri"
   },
-  "subs": []
+  "subs": [],
+  "photos": [
+   "/images/p-1400.webp"
+  ],
+  "img": "/images/p-1400.webp"
  },
  {
   "id": "beverage-tubs",
@@ -215,7 +228,12 @@ export const DEFAULT_CATEGORIES: Cat[] = [
    "es": "Cubetas para bebidas",
    "it": "Vasche per bevande"
   },
-  "subs": []
+  "subs": [],
+  "photos": [
+   "/images/p-36383.webp",
+   "/images/p-5076.webp"
+  ],
+  "img": "/images/p-36383.webp"
  },
  {
   "id": "trash-cans",
@@ -228,7 +246,11 @@ export const DEFAULT_CATEGORIES: Cat[] = [
    "es": "Cubos de basura",
    "it": "Pattumiere"
   },
-  "subs": []
+  "subs": [],
+  "photos": [
+   "/images/p-15151.webp"
+  ],
+  "img": "/images/p-15151.webp"
  },
  {
   "id": "watering-cans",
@@ -241,7 +263,12 @@ export const DEFAULT_CATEGORIES: Cat[] = [
    "es": "Regaderas",
    "it": "Annaffiatoi"
   },
-  "subs": []
+  "subs": [],
+  "photos": [
+   "/images/hero-garden.webp",
+   "/images/p-21158.webp"
+  ],
+  "img": "/images/hero-garden.webp"
  }
 ];
 

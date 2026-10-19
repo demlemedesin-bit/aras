@@ -1,13 +1,36 @@
 'use client';
 import { useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import { track } from '@/lib/track';
 
 const SECTIONS = ['top', 'tarihce', 'hakkimizda', 'koleksiyonlar', 'urunler', 'galeri', 'showroom', 'surdurulebilirlik', 'haberler', 'iletisim'];
 
 /** Sayfa görüntüleme, bölüm görüntüleme ve tıklama olayları. */
 export default function Track() {
+  const pathname = usePathname();
   useEffect(() => {
     const timers: ReturnType<typeof setTimeout>[] = [];
+    const here = location.pathname;
+    let visible = 0;
+    let since = document.visibilityState === 'visible' ? Date.now() : 0;
+    let left = false;
+    const flush = () => {
+      if (left) return;
+      left = true;
+      if (since) visible += Date.now() - since;
+      const sec = Math.round(visible / 1000);
+      if (sec >= 1) track('leave', undefined, { dur: sec, path: here });
+    };
+    const onVis = () => {
+      if (document.visibilityState === 'hidden') {
+        if (since) visible += Date.now() - since;
+        since = 0;
+      } else {
+        since = Date.now();
+      }
+    };
+    document.addEventListener('visibilitychange', onVis);
+    addEventListener('pagehide', flush);
 
     // Sayfa görüntüleme: aynı oturumda 30 dk içinde tekrar sayılmaz
     try {
@@ -53,9 +76,12 @@ export default function Track() {
 
     return () => {
       timers.forEach(clearTimeout);
+      flush();
+      document.removeEventListener('visibilitychange', onVis);
+      removeEventListener('pagehide', flush);
       io.disconnect();
       document.removeEventListener('click', onClick, { capture: true });
     };
-  }, []);
+  }, [pathname]);
   return null;
 }

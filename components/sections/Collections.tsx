@@ -4,6 +4,7 @@ import { useEffect, useState, type MouseEvent } from 'react';
 import type { World } from '@/lib/data';
 import { useSite } from '../SiteProvider';
 import { Icon } from '../Icon';
+import { track } from '@/lib/track';
 import { catName, resolveCat } from '@/lib/categories';
 
 const WORLDS: { id: World; key: string }[] = [
@@ -46,6 +47,7 @@ export default function Collections() {
       return;
     }
     e.preventDefault();
+    track('event', 'collection_click');
     if (session) location.assign(`/bayi/urunler?k=${c.id}`);
     else openCatalog();
   };

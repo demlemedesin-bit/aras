@@ -535,3 +535,12 @@ html.lb-open{overflow:hidden}
 .drw ul summary::after{font-size:20px}
 @media (max-width:1000px){.burger{display:flex}.dock{display:none}}
 @media (max-width:700px){.drw{top:64px}.burger{width:42px;height:42px}}
+
+.ck{position:fixed;z-index:1200;left:14px;bottom:14px;max-width:380px;padding:16px 18px;background:#000;color:#fff;border-radius:16px;box-shadow:0 12px 40px rgba(0,0,0,.4);font-size:14px;line-height:1.5}
+.ck p{margin:6px 0 12px;color:#ddd}
+.ck a{color:#fff;text-decoration:underline}
+.ck__b{display:flex;gap:8px}
+.ck__b button{flex:1;height:42px;border-radius:99px;font-weight:700;cursor:pointer;border:0}
+.ck__r{background:#2b2b2b;color:#fff}
+.ck__a{background:var(--gr);color:#000}
+@media (max-width:700px){.ck{left:10px;right:10px;bottom:10px;max-width:none}}

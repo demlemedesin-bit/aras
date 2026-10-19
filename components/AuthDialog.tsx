@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { submitAuth } from '@/lib/auth';
+import { track } from '@/lib/track';
 import { useSite } from './SiteProvider';
 import { Icon } from './Icon';
 
@@ -68,6 +69,7 @@ export default function AuthDialog() {
       return;
     }
     form.reset();
+    track('event', mode === 'up' ? 'dealer_register' : 'dealer_login');
     if (!res.session) {
       setPending(true);
       setMode('in');

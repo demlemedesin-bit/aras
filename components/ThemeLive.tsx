@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 
 /** Panel önizlemesi (aynı sitede iframe): tema stilini anında uygular ve "öğe seç" modunu çalıştırır. */
 const esc = (s: string) => (window.CSS && CSS.escape ? CSS.escape(s) : s.replace(/[^\w-]/g, '\\$&'));
-const okCls = (c: string) => /^[A-Za-z][\w-]*$/.test(c) && !/^(on|open|js|lang-open|auth-open|pre-lock)$/.test(c);
+const okCls = (c: string) => /^[A-Za-z][\w-]*$/.test(c) && !/^(on|open|js|lang-open|auth-open|pre-lock|aras-sel)$/.test(c);
 
 function selectors(el: Element): { similar: string; exact: string; label: string } {
   const tag = el.tagName.toLowerCase();

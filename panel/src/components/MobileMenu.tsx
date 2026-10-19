@@ -4,82 +4,20 @@ import { usePathname } from 'next/navigation'
 import { createClient } from '@panel/lib/supabase/client'
 import { useEffect, useState } from 'react'
 import ArasLogo from './ArasLogo'
-import {
-  LayoutDashboard, Users, CheckSquare, CalendarDays, LifeBuoy, CalendarClock,
-  FileText, Activity, AlertCircle, ShieldCheck,
-  Receipt, BarChart2, TrendingUp, UserCog, Workflow,
-  SlidersHorizontal, Globe, LogOut, Menu, X, BookOpen, LayoutTemplate, Wrench, Share2
-} from 'lucide-react'
-
-const NAV_ALL = [
-  { g: 'Genel', items: [
-    { href: '/dashboard',                label: 'Dashboard',    Icon: LayoutDashboard, roles: ['admin','manager','member'] },
-  ]},
-  { g: 'Web Sitesi', items: [
-    { href: '/dashboard/site',           label: 'Site Yönetimi', Icon: Globe,          roles: ['admin','manager'] },
-  ]},
-  { g: 'İş Yönetimi', items: [
-    { href: '/dashboard/musteriler',     label: 'Müşteriler',   Icon: Users,           roles: ['admin','manager'] },
-    { href: '/dashboard/gorevler',       label: 'Görevler',     Icon: CheckSquare,     roles: ['admin','manager','member'] },
-    { href: '/dashboard/takvim',         label: 'Takvim',       Icon: CalendarDays,    roles: ['admin','manager','member'] },
-  ]},
-  { g: 'Operasyon', items: [
-    { href: '/dashboard/icerik',         label: 'İçerik',       Icon: FileText,        roles: ['admin','manager','member'] },
-    { href: '/dashboard/operasyon',      label: 'Operasyon',    Icon: Activity,        roles: ['admin','manager'] },
-    { href: '/dashboard/gecikmeler',     label: 'Gecikmeler',   Icon: AlertCircle,     roles: ['admin','manager'] },
-    { href: '/dashboard/onay',           label: 'Onay',         Icon: ShieldCheck,     roles: ['admin','manager','member'] },
-  ]},
-  { g: 'Finans', items: [
-    { href: '/dashboard/muhasebe',       label: 'Muhasebe',     Icon: Receipt,         roles: ['admin'] },
-    { href: '/dashboard/finans',         label: 'Finans',       Icon: BarChart2,       roles: ['admin'] },
-    { href: '/dashboard/performans',     label: 'Performans',   Icon: TrendingUp,      roles: ['admin','manager'] },
-  ]},
-  { g: 'Sistem', items: [
-    { href: '/dashboard/kullanicilar',   label: 'Kullanıcılar', Icon: UserCog,         roles: ['admin'] },
-    { href: '/dashboard/sablonlar',      label: 'Şablonlar',    Icon: LayoutTemplate,  roles: ['admin','manager'] },
-    { href: '/dashboard/araclar',         label: 'Araçlar',      Icon: Wrench,           roles: ['admin'] },
-    { href: '/dashboard/otomasyonlar',   label: 'Otomasyonlar', Icon: Workflow,        roles: ['admin','manager'] },
-    { href: '/dashboard/ayarlar',        label: 'Ayarlar',      Icon: SlidersHorizontal, roles: ['admin','manager','member'] },
-    { href: '/dashboard/toplanti',       label: 'Toplantılar',  Icon: CalendarClock,   roles: ['admin','manager'] },
-    { href: '/dashboard/destek',         label: 'Destek',       Icon: LifeBuoy,        roles: ['admin','manager'] },
-    { href: '/dashboard/dokumantasyon',  label: 'Kılavuz',      Icon: BookOpen,        roles: ['admin','manager','member'] },
-  ]},
-  { g: 'Paylaşım', items: [
-    { href: '/dashboard/paylasim',       label: 'Paylaşım',     Icon: Share2,          roles: ['admin','manager','member'] },
-  ]},
-]
-
-const ROLE_L: Record<string, string> = {
-  admin: 'Yönetici', manager: 'Operasyon Müdürü', member: 'Ekip'
-}
+import { LogOut, Menu, X } from 'lucide-react'
+import { NAV, ROLE_L, isActive } from '@panel/lib/nav'
+import { useMe } from './Sidebar'
 
 export default function MobileMenu() {
   const pathname = usePathname()
   const [open, setOpen] = useState(false)
-  const [name, setName] = useState('')
-  const [init, setInit] = useState('?')
-  const [role, setRole] = useState('member')
-
-  useEffect(() => {
-    const sb = createClient()
-    sb.auth.getUser().then(({ data: { user } }) => {
-      if (!user) return
-      sb.from('profiles').select('full_name,role').eq('id', user.id).single().then(({ data }) => {
-        const n = data?.full_name || user.email?.split('@')[0] || ''
-        setName(n); setInit(n.split(' ').map((w: string) => w[0]).join('').toUpperCase().slice(0, 2))
-        setRole(data?.role || 'member')
-      })
-    })
-  }, [])
+  const { name, init, role, unread } = useMe()
 
   useEffect(() => { setOpen(false) }, [pathname])
 
-  const active = (href: string) => href === '/dashboard' ? pathname === href : pathname.startsWith(href)
   async function logout() { await createClient().auth.signOut(); window.location.href = '/login' }
 
-  const filteredNav = NAV_ALL.map(sec => ({
-    ...sec, items: sec.items.filter(item => item.roles.includes(role))
-  })).filter(sec => sec.items.length > 0)
+  const filteredNav = NAV.map((s) => ({ ...s, items: s.items.filter((i) => !i.admin || role === 'admin') })).filter((s) => s.items.length)
 
   return (
     <>
@@ -127,10 +65,11 @@ export default function MobileMenu() {
             {filteredNav.map(sec => (
               <div key={sec.g}>
                 <p className="mm-group">{sec.g}</p>
-                {sec.items.map(({ href, label, Icon }) => (
-                  <Link key={href} href={href} className={`mm-item${active(href) ? ' active' : ''}`}>
+                {sec.items.map(({ href, label, Icon, badge }) => (
+                  <Link key={href} href={href} className={`mm-item${isActive(pathname, href) ? ' active' : ''}`}>
                     <span className="mm-icon"><Icon size={14} strokeWidth={1.8} /></span>
                     <span style={{ flex: 1 }}>{label}</span>
+                    {badge === 'unread' && unread > 0 && <span style={{ background: 'var(--ac)', color: '#fff', fontSize: 10, fontWeight: 700, minWidth: 18, height: 18, borderRadius: 99, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: '0 5px' }}>{unread}</span>}
                   </Link>
                 ))}
               </div>

@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
-import PWAProvider from '@panel/components/PWAProvider'
 
 export const metadata: Metadata = {
   title: 'Aras Metal',
@@ -48,7 +47,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             document.documentElement.setAttribute('data-theme', t);
           })();
         ` }} />
-        <PWAProvider />
         {children}
       </body>
     </html>

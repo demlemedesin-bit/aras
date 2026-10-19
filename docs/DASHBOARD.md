@@ -2,17 +2,17 @@
 
 Sitenin içinde, aynı Vercel projesinde çalışır: giriş `/login` (kısayol: `/admin`), panel `/dashboard`. Kod: `app/(panel)`, `panel/src`, `middleware.ts`. Aynı Supabase projesini kullanır.
 
-**Modüller:** Dashboard · Müşteriler · Görevler · Takvim · Notlar · İçerik · Onay · Paylaşım · Operasyon · Gecikmeler · Finans · Muhasebe · Performans · Kullanıcılar (roller) · Şablonlar · Araçlar · Otomasyonlar (SMS/e-posta) · Toplantılar · Destek · Kılavuz · **Site Yönetimi**.
+**Menü:** Dashboard · Talepler & Mesajlar · Ürünler · Koleksiyonlar · Galeri · Haberler · İş Ortakları · Metinler (6 dil) · Medya Kütüphanesi · Site Ayarları · Kullanıcılar.
 
-**Site Yönetimi:** web sitesinin her parçası (6 dilli metinler, koleksiyonlar, ürünler, galeri, haberler, ortaklar, hero görselleri, iletişim bilgileri, medya kütüphanesi) ve formdan gelen **Mesajlar / Katalog talepleri** buradan yönetilir. Kayıt anında siteyi yeniler.
+**Dashboard:** yeni/bekleyen talepler, katalog ve iletişim talepleri, son 14 gün talep grafiği, ülkelere göre talepler, site içeriği özeti ve hızlı işlemler.
+
+Kayıt anında site yenilenir. Formdan gelen mesajlar ve katalog talepleri `submissions` tablosuna düşer.
+
+## Roller
+- **admin (Yönetici):** tüm panel + Kullanıcılar sayfası (rol verme, şifre değiştirme).
+- **manager (Editör):** site içeriği ve talepler.
+- Diğer roller panele giremez.
 
 ## Kurulum
-1. `supabase/panel-schema.sql` dosyasını Supabase SQL Editor'de bir kez çalıştırın (tablolar, roller, güvenlik kuralları). Site tabloları zaten kurulu.
-2. Supabase → Authentication → Users → "Add user" ile ilk hesabı açın. Hiç yönetici yoksa ilk açılan hesap otomatik **admin** olur; sonrakiler `Kullanıcılar` sayfasından davet edilir/roller verilir.
-3. Vercel'de `.env.example` değişkenlerini girin (özellikle `SUPABASE_SERVICE_ROLE_KEY`). Tek proje olduğu için ayrı bir revalidate anahtarı gerekmez.
-
-## Veri ve güvenlik
-Roller: admin, manager, member, muhasebe. Finans yalnızca admin ve muhasebe; sistem ayarları (SMS/SMTP şifreleri) yalnızca admin/manager; kişisel notlar, bildirimler yalnızca sahibi görür; rol yükseltmeyi yalnızca admin yapabilir. Site içeriği tabloları herkese okunur, yazma yalnızca panelin sunucu tarafından (service role).
-
-## Web sitesi formları
-"Katalog iste" ve iletişim formu e-posta uygulaması açmaz; kayıt `submissions` tablosuna düşer ve panelde Site Yönetimi → Mesajlar'da görünür.
+1. Supabase → Authentication → Users → "Add user" ile hesap açın; `profiles` tablosunda rolü `admin` yapın (ilk hesap otomatik admin olur).
+2. Vercel'de `.env.example` değişkenlerini girin (özellikle `SUPABASE_SERVICE_ROLE_KEY`).

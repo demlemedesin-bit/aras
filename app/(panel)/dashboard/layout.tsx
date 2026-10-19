@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react'
 import { createClient } from '@panel/lib/supabase/client'
 import Sidebar from '@panel/components/Sidebar'
 import MobileMenu from '@panel/components/MobileMenu'
-import SupportButton from '@panel/components/SupportButton'
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [ready, setReady] = useState(false)
@@ -44,8 +43,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <div className="mm-mobile"><MobileMenu /></div>
         <main className="dm">{children}</main>
       </div>
-      {/* Her sayfada görünen bileşenler */}
-      <SupportButton />
     </>
   )
 }

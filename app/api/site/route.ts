@@ -19,13 +19,29 @@ export async function GET(req: Request) {
   const sp = new URL(req.url).searchParams
   try {
     if (sp.get('media')) return NextResponse.json({ files: await siteListMedia() })
+    if (sp.get('unread')) return NextResponse.json({ unread: await siteCount('submissions', 'status=eq.new') })
     if (sp.get('stats')) {
-      const [texts, collections, products, gallery, news, partners, inbox, unread] = await Promise.all([
+      const [texts, collections, products, gallery, news, partners, inbox, unread, subs] = await Promise.all([
         siteCount('site_texts'), siteCount('site_collections'), siteCount('site_products'), siteCount('site_gallery_images'),
         siteCount('site_news'), siteCount('site_partners'), siteCount('submissions'), siteCount('submissions', 'status=eq.new'),
+        siteSelect('submissions') as Promise<{ created_at: string; topic?: string; status?: string; country?: string }[]>,
       ])
-      const latest = (await siteSelect('submissions')).slice(0, 5)
-      return NextResponse.json({ texts, collections, products, gallery, news, partners, inbox, unread, latest })
+      const day = (d: Date) => d.toISOString().slice(0, 10)
+      const today = new Date()
+      const trend = Array.from({ length: 14 }, (_, i) => { const d = new Date(today); d.setDate(d.getDate() - (13 - i)); return { day: day(d), n: 0 } })
+      const idx = Object.fromEntries(trend.map((t, i) => [t.day, i]))
+      const countries: Record<string, number> = {}
+      let catalog = 0, contact = 0, pending = 0
+      for (const m of subs) {
+        const i = idx[day(new Date(m.created_at))]
+        if (i !== undefined) trend[i].n++
+        if (m.topic === 'catalog') catalog++; else contact++
+        if (m.status !== 'done') pending++
+        const c = (m.country || '').trim()
+        if (c) countries[c] = (countries[c] || 0) + 1
+      }
+      const topCountries = Object.entries(countries).sort((a, b) => b[1] - a[1]).slice(0, 5).map(([country, n]) => ({ country, n }))
+      return NextResponse.json({ texts, collections, products, gallery, news, partners, inbox, unread, catalog, contact, pending, trend, topCountries, latest: subs.slice(0, 6) })
     }
     const table = sp.get('table')
     if (!isTable(table)) return fail('Geçersiz tablo', 400)

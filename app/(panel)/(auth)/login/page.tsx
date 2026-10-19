@@ -45,8 +45,13 @@ export default function LoginPage() {
     window.addEventListener('beforeinstallprompt', handler)
 
     const sb = createClient()
+    if (new URLSearchParams(window.location.search).get('e') === 'yetki') {
+      redirected.current = true
+      sb.auth.signOut().finally(() => { setError('Bu hesabın panele erişim yetkisi yok.'); setChecking(false) })
+    }
     sb.auth.getSession().then(({ data: { session } }) => {
-      if (session && !redirected.current) {
+      if (redirected.current) return
+      if (session) {
         redirected.current = true
         window.location.href = '/dashboard'
       } else {

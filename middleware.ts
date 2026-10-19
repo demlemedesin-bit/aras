@@ -2,76 +2,22 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 
-const ADMIN_ONLY = [
-  '/dashboard/araclar',
-  '/dashboard/rapor',
-]
-
-const ADMIN_MANAGER = [
-  '/dashboard/kullanicilar',
-]
-
-const MUHASEBE_ALLOWED = [
-  '/dashboard/finans',
-  '/dashboard/muhasebe',
-  '/dashboard/gorevler',
-  '/dashboard/ayarlar',
-  '/dashboard/notlar',
-]
-
-const MANAGER_PLUS = [
-  '/dashboard/site',
-  '/dashboard/musteriler',
-  '/dashboard/operasyon',
-  '/dashboard/gecikmeler',
-  '/dashboard/performans',
-  '/dashboard/otomasyonlar',
-  '/dashboard/destek',
-  '/dashboard/toplanti',
-  '/dashboard/sablonlar',
-]
-
-const MEMBER_ALLOWED = [
-  '/dashboard/gorevler',
-  '/dashboard/takvim',
-  '/dashboard/icerik',
-  '/dashboard/paylasim',
-  '/dashboard/onay',
-  '/dashboard/ayarlar',
-  '/dashboard/dokumantasyon',
-  '/dashboard/notlar',
-  '/dashboard',
-]
+// Panel yalnızca admin ve manager (editör) rolleri içindir.
+// Kullanıcı yönetimi yalnızca admin.
+const ADMIN_ONLY = ['/dashboard/kullanicilar']
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  if (pathname === '/login') {
-    try {
-      const supabase = createServerClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-        { cookies: { getAll() { return request.cookies.getAll() }, setAll() {} } }
-      )
-      const { data: { user } } = await supabase.auth.getUser()
-      if (user) return NextResponse.redirect(new URL('/dashboard', request.url))
-    } catch {}
-    return NextResponse.next()
-  }
-
-  if (pathname.startsWith('/portal')) return NextResponse.next()
-  if (!pathname.startsWith('/dashboard')) return NextResponse.next()
-
-  const response = NextResponse.next({ request: { headers: request.headers } })
-
-  try {
-    const supabase = createServerClient(
+  const mk = (response?: NextResponse) =>
+    createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
       {
         cookies: {
           getAll() { return request.cookies.getAll() },
           setAll(cookiesToSet: any[]) {
+            if (!response) return
             cookiesToSet.forEach(({ name, value, options }: any) => {
               request.cookies.set(name, value)
               response.cookies.set(name, value, options)
@@ -81,48 +27,34 @@ export async function middleware(request: NextRequest) {
       }
     )
 
+  if (pathname === '/login') {
+    try {
+      const supabase = mk()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
+        if (profile?.role === 'admin' || profile?.role === 'manager') return NextResponse.redirect(new URL('/dashboard', request.url))
+      }
+    } catch {}
+    return NextResponse.next()
+  }
+
+  const response = NextResponse.next({ request: { headers: request.headers } })
+
+  try {
+    const supabase = mk(response)
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return NextResponse.redirect(new URL('/login', request.url))
 
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', user.id)
-      .single()
+    const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
+    const role = profile?.role
 
-    const role = profile?.role || 'member'
-
-    if (role === 'admin') return response
-
-    if (role === 'muhasebe') {
-      const allowed = MUHASEBE_ALLOWED.some(p => pathname.startsWith(p))
-      if (!allowed) return NextResponse.redirect(new URL('/dashboard/finans', request.url))
-      return response
+    if (role !== 'admin' && role !== 'manager') {
+      return NextResponse.redirect(new URL('/login?e=yetki', request.url))
     }
-
-    if (ADMIN_ONLY.some(p => pathname.startsWith(p))) {
+    if (role !== 'admin' && ADMIN_ONLY.some((p) => pathname.startsWith(p))) {
       return NextResponse.redirect(new URL('/dashboard', request.url))
     }
-
-    if (role === 'manager') return response
-
-    if (ADMIN_MANAGER.some(p => pathname.startsWith(p))) {
-      return NextResponse.redirect(new URL('/dashboard', request.url))
-    }
-
-    // Member kontrolü — MANAGER_PLUS sayfaları da engellenir
-    if (MANAGER_PLUS.some(p => pathname.startsWith(p))) {
-      return NextResponse.redirect(new URL('/dashboard', request.url))
-    }
-
-    const allowed = MEMBER_ALLOWED.some(p =>
-      p === '/dashboard'
-        ? pathname === '/dashboard'
-        : pathname.startsWith(p)
-    )
-
-    if (!allowed) return NextResponse.redirect(new URL('/dashboard', request.url))
-
   } catch {}
 
   return response
@@ -131,8 +63,3 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: ['/login', '/dashboard/:path*'],
 }
-
-
-
-
-

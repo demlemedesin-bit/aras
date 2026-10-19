@@ -5,7 +5,9 @@ import { CONTACT } from '@/lib/data';
 
 const SITE = process.env.NEXT_PUBLIC_SITE_URL || 'https://arasmetal.com';
 
-type Meta = { google?: string; title?: string; desc?: string };
+type Meta = { google?: string; title?: string; desc?: string; og?: string; noindex?: boolean };
+
+const mediaUrl = (v?: string) => (!v ? undefined : v.startsWith('storage:') ? `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/site-media/${v.slice(8)}` : v);
 
 /** Panelden girilen SEO başlığı/açıklaması (Türkçe) ve Google Search Console doğrulama kodu. */
 async function panelMeta(): Promise<Meta> {
@@ -20,7 +22,8 @@ async function panelMeta(): Promise<Meta> {
   try {
     const [seo, texts] = await Promise.all([get('site_settings?key=eq.seo&select=value'), get('site_texts?ns=eq.meta&key=in.(title,desc)&select=key,value')]);
     const tr = (k: string) => (texts as { key: string; value?: Record<string, string> }[]).find((t) => t.key === k)?.value?.tr?.trim() || undefined;
-    return { google: (seo as { value?: { google_verification?: string } }[])[0]?.value?.google_verification?.trim() || undefined, title: tr('title'), desc: tr('desc') };
+    const v = (seo as { value?: { google_verification?: string; og_image?: string; noindex?: boolean } }[])[0]?.value;
+    return { google: v?.google_verification?.trim() || undefined, og: mediaUrl(v?.og_image?.trim()), noindex: v?.noindex === true, title: tr('title'), desc: tr('desc') };
   } catch {
     return {};
   }
@@ -42,8 +45,10 @@ export async function generateMetadata(): Promise<Metadata> {
       siteName: 'Aras Metal',
       locale: 'tr_TR',
       url: '/',
-      images: [{ url: '/images/hero-home.webp', alt: 'Aras Metal galvaniz ürünleri' }],
+      images: [{ url: m.og || '/images/hero-home.webp', alt: 'Aras Metal galvaniz ürünleri' }],
     },
+    twitter: { card: 'summary_large_image', title, description, images: [m.og || '/images/hero-home.webp'] },
+    ...(m.noindex ? { robots: { index: false, follow: false } } : {}),
     other: { google: 'notranslate' },
     ...(m.google ? { verification: { google: m.google } } : {}),
   };

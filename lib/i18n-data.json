@@ -906,7 +906,12 @@
       "ap": "Giriş yaptınız. Koleksiyon ve ürün sayfalarını açabilirsiniz.",
       "out": "Çıkış yap",
       "cl": "Kapat",
-      "lk": "Üyelere özel"
+      "lk": "Üyelere özel",
+      "e6": "Başvurunuz henüz onaylanmadı. Onaylandığında giriş yapabilirsiniz.",
+      "e7": "Başvurunuz onaylanmadı. Bilgi için bizimle iletişime geçin.",
+      "e8": "İşlem şu an yapılamadı. Lütfen biraz sonra tekrar deneyin.",
+      "pd": "Başvurunuz alındı",
+      "pp": "Firma bilgileriniz ekibimize iletildi. Onaylandığında e-posta ve şifrenizle giriş yapabilirsiniz."
     },
     "en": {
       "btn": "Dealer login",
@@ -934,7 +939,12 @@
       "ap": "You are signed in and can open collection and product pages.",
       "out": "Sign out",
       "cl": "Close",
-      "lk": "Members only"
+      "lk": "Members only",
+      "e6": "Your application has not been approved yet. You can sign in once it is.",
+      "e7": "Your application was not approved. Please contact us for details.",
+      "e8": "Something went wrong. Please try again shortly.",
+      "pd": "Application received",
+      "pp": "Your company details have been sent to our team. Once approved, you can sign in with your email and password."
     },
     "de": {
       "btn": "Händler-Login",
@@ -962,7 +972,12 @@
       "ap": "Sie sind angemeldet und können Kollektions- und Produktseiten öffnen.",
       "out": "Abmelden",
       "cl": "Schließen",
-      "lk": "Nur für Mitglieder"
+      "lk": "Nur für Mitglieder",
+      "e6": "Ihre Anmeldung wurde noch nicht freigegeben. Nach der Freigabe können Sie sich einloggen.",
+      "e7": "Ihre Anmeldung wurde nicht freigegeben. Bitte kontaktieren Sie uns.",
+      "e8": "Der Vorgang ist fehlgeschlagen. Bitte versuchen Sie es gleich noch einmal.",
+      "pd": "Anmeldung eingegangen",
+      "pp": "Ihre Firmendaten wurden an unser Team gesendet. Nach der Freigabe können Sie sich mit E-Mail und Passwort anmelden."
     },
     "fr": {
       "btn": "Espace revendeur",
@@ -990,7 +1005,12 @@
       "ap": "Vous êtes connecté et pouvez ouvrir les collections et les fiches produits.",
       "out": "Se déconnecter",
       "cl": "Fermer",
-      "lk": "Réservé aux membres"
+      "lk": "Réservé aux membres",
+      "e6": "Votre demande n'a pas encore été validée. Vous pourrez vous connecter dès qu'elle le sera.",
+      "e7": "Votre demande n'a pas été validée. Contactez-nous pour en savoir plus.",
+      "e8": "L'opération a échoué. Veuillez réessayer dans un instant.",
+      "pd": "Demande reçue",
+      "pp": "Les informations de votre société ont été transmises à notre équipe. Une fois validée, vous pourrez vous connecter avec votre e-mail et votre mot de passe."
     },
     "es": {
       "btn": "Acceso distribuidores",
@@ -1018,7 +1038,12 @@
       "ap": "Ha iniciado sesión y puede abrir colecciones y fichas de producto.",
       "out": "Cerrar sesión",
       "cl": "Cerrar",
-      "lk": "Solo para miembros"
+      "lk": "Solo para miembros",
+      "e6": "Tu solicitud aún no ha sido aprobada. Podrás iniciar sesión cuando lo sea.",
+      "e7": "Tu solicitud no fue aprobada. Contáctanos para más información.",
+      "e8": "No se pudo completar la acción. Inténtalo de nuevo en un momento.",
+      "pd": "Solicitud recibida",
+      "pp": "Los datos de tu empresa se han enviado a nuestro equipo. Cuando se apruebe, podrás iniciar sesión con tu correo y contraseña."
     },
     "it": {
       "btn": "Accesso rivenditori",
@@ -1046,7 +1071,12 @@
       "ap": "Avete effettuato l'accesso e potete aprire collezioni e schede prodotto.",
       "out": "Esci",
       "cl": "Chiudi",
-      "lk": "Riservato ai membri"
+      "lk": "Riservato ai membri",
+      "e6": "La tua richiesta non è ancora stata approvata. Potrai accedere non appena lo sarà.",
+      "e7": "La tua richiesta non è stata approvata. Contattaci per maggiori informazioni.",
+      "e8": "Operazione non riuscita. Riprova tra poco.",
+      "pd": "Richiesta ricevuta",
+      "pp": "I dati della tua azienda sono stati inviati al nostro team. Dopo l'approvazione potrai accedere con e-mail e password."
     }
   }
 }

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@panel/lib/supabase/server'
-import { SITE_TABLES, seoAudit, siteRpc, siteCount, siteDelete, siteDeleteMedia, siteListMedia, siteRevalidate, siteSelect, siteUpload, siteUpsert, pkOf, type SiteTable } from '@panel/lib/aras-site'
+import { SITE_TABLES, seoAudit, siteRpc, siteCount, siteDelete, siteDeleteMedia, siteListMedia, siteRevalidate, siteSelect, siteUpload, siteUpsert, siteUpdate, pkOf, type SiteTable } from '@panel/lib/aras-site'
 
 // Yalnızca giriş yapmış admin/manager rolü site içeriğini düzenleyebilir.
 async function guard() {
@@ -33,6 +33,7 @@ export async function GET(req: Request) {
     if (sp.get('seo')) return NextResponse.json(await seoAudit(process.env.NEXT_PUBLIC_SITE_URL || 'https://arasmetal.com'))
     if (sp.get('unread')) return NextResponse.json({ unread: await siteCount('submissions', 'status=eq.new') })
     if (sp.get('stats')) {
+      const dealersPending = await siteCount('site_dealers', 'status=eq.pending').catch(() => 0)
       const [textRows, collRows, prodRows, gallery, newsRows, partners, subs] = await Promise.all([
         siteSelect('site_texts', 'ns,key') as Promise<{ value?: Record<string, string> }[]>,
         siteSelect('site_collections') as Promise<{ active?: boolean; img?: string }[]>,
@@ -70,7 +71,7 @@ export async function GET(req: Request) {
         if (c) countries[c] = (countries[c] || 0) + 1
       }
       const topCountries = Object.entries(countries).sort((a, b) => b[1] - a[1]).slice(0, 5).map(([country, n]) => ({ country, n }))
-      return NextResponse.json({ texts, collections, products, gallery, news, partners, inbox, unread, catalog, contact, pending, trend, topCountries, latest: subs.slice(0, 6), read, done, today: today_n, week: week_n, alerts: { stale, missingTr, noImg, passive } })
+      return NextResponse.json({ texts, collections, products, gallery, news, partners, inbox, unread, catalog, contact, pending, trend, topCountries, latest: subs.slice(0, 6), read, done, today: today_n, week: week_n, dealersPending, alerts: { stale, missingTr, noImg, passive } })
     }
     const table = sp.get('table')
     if (!isTable(table)) return fail('Geçersiz tablo', 400)
@@ -91,11 +92,18 @@ export async function POST(req: Request) {
   try {
     if (action === 'revalidate') return NextResponse.json({ ok: true, revalidated: (await siteRevalidate()) })
     if (action === 'delete-media') { await siteDeleteMedia(String(name)); return NextResponse.json({ ok: true }) }
+    if (action === 'dealer') {
+      const st = ['pending', 'approved', 'rejected'].includes(row?.status) ? row.status : null
+      if (!row?.id || !st) return fail('Geçersiz istek', 400)
+      await siteUpdate('site_dealers', { id: row.id }, { status: st, note: typeof row.note === 'string' ? row.note.slice(0, 500) : null, approved_at: st === 'approved' ? new Date().toISOString() : null })
+      return NextResponse.json({ ok: true })
+    }
     if (!isTable(table)) return fail('Geçersiz istek', 400)
+    if (table === 'site_dealers' && action === 'upsert') return fail('Geçersiz işlem', 400)
     if (action === 'upsert') await siteUpsert(table, row)
     else if (action === 'delete') await siteDelete(table, Object.fromEntries(pkOf(table).map((k) => [k, row[k]])))
     else return fail('Geçersiz işlem', 400)
-    const revalidated = table === 'submissions' ? null : (await siteRevalidate())
+    const revalidated = table === 'submissions' || table === 'site_dealers' ? null : (await siteRevalidate())
     return NextResponse.json({ ok: true, revalidated })
   } catch (e) { return fail(e) }
 }

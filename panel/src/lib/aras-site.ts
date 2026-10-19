@@ -3,21 +3,25 @@ import { revalidatePath, revalidateTag } from 'next/cache'
 const URL_ = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!
 
-export const SITE_TABLES = ['site_texts', 'site_settings', 'site_collections', 'site_products', 'site_gallery_groups', 'site_gallery_images', 'site_news', 'site_partners', 'submissions'] as const
+export const SITE_TABLES = ['site_texts', 'site_settings', 'site_collections', 'site_products', 'site_gallery_groups', 'site_gallery_images', 'site_news', 'site_partners', 'submissions', 'site_dealers'] as const
 export type SiteTable = (typeof SITE_TABLES)[number]
-const PK: Record<SiteTable, string[]> = { site_texts: ['ns', 'key'], site_settings: ['key'], site_collections: ['id'], site_products: ['id'], site_gallery_groups: ['id'], site_gallery_images: ['id'], site_news: ['id'], site_partners: ['id'], submissions: ['id'] }
+const PK: Record<SiteTable, string[]> = { site_texts: ['ns', 'key'], site_settings: ['key'], site_collections: ['id'], site_products: ['id'], site_gallery_groups: ['id'], site_gallery_images: ['id'], site_news: ['id'], site_partners: ['id'], submissions: ['id'], site_dealers: ['id'] }
 export const pkOf = (t: SiteTable) => PK[t]
 
 const h = (extra: Record<string, string> = {}) => ({ apikey: KEY, Authorization: `Bearer ${KEY}`, 'Content-Type': 'application/json', ...extra })
 const check = async (r: Response) => { if (!r.ok) throw new Error(await r.text()); return r }
 
 export async function siteSelect(table: SiteTable, order = 'sort') {
-  const q = table === 'submissions' ? 'select=*&order=created_at.desc&limit=200' : `select=*&order=${order}`
+  const q = table === 'site_dealers' ? 'select=id,email,name,company,phone,status,lang,note,created_at,approved_at,last_login&order=created_at.desc&limit=500' : table === 'submissions' ? 'select=*&order=created_at.desc&limit=200' : `select=*&order=${order}`
   return (await check(await fetch(`${URL_}/rest/v1/${table}?${q}`, { headers: h(), cache: 'no-store' }))).json()
 }
 export async function siteUpsert(table: SiteTable, row: Record<string, unknown>) {
   const r = await check(await fetch(`${URL_}/rest/v1/${table}?on_conflict=${PK[table].join(',')}`, { method: 'POST', headers: h({ Prefer: 'resolution=merge-duplicates,return=representation' }), body: JSON.stringify(row) }))
   return r.json()
+}
+export async function siteUpdate(table: SiteTable, key: Record<string, string | number>, patch: Record<string, unknown>) {
+  const q = PK[table].map((k) => `${k}=eq.${encodeURIComponent(String(key[k]))}`).join('&')
+  await check(await fetch(`${URL_}/rest/v1/${table}?${q}`, { method: 'PATCH', headers: h(), body: JSON.stringify(patch) }))
 }
 export async function siteDelete(table: SiteTable, key: Record<string, string | number>) {
   const q = PK[table].map((k) => `${k}=eq.${encodeURIComponent(String(key[k]))}`).join('&')
@@ -69,6 +73,7 @@ export async function seoAudit(base: string) {
   const desc = attr('description')
   add('desc', 'Meta açıklama', !desc ? 'bad' : desc.length < 110 || desc.length > 160 ? 'warn' : 'ok', desc ? `${desc.length} karakter (ideal 110–160)` : 'Açıklama yok')
   add('og', 'Sosyal paylaşım kartı (Open Graph)', attr('og:title') && attr('og:image') ? 'ok' : attr('og:title') ? 'warn' : 'bad', attr('og:image') ? 'Başlık ve görsel tanımlı' : 'Paylaşım görseli yok')
+  add('robots', 'Arama motorlarına açık', /<meta[^>]+name=["']robots["'][^>]*noindex/i.test(html) ? 'bad' : 'ok', /<meta[^>]+name=["']robots["'][^>]*noindex/i.test(html) ? 'Site noindex ile gizli. SEO ayarlarından kapatın' : 'Dizine eklenebilir')
   add('canonical', 'Canonical adres', /<link[^>]+rel=["']canonical["']/i.test(html) ? 'ok' : 'warn', /<link[^>]+rel=["']canonical["']/i.test(html) ? 'Tanımlı' : 'Tanımlı değil')
   add('viewport', 'Mobil uyumluluk etiketi', attr('viewport') ? 'ok' : 'bad', attr('viewport') ? 'viewport tanımlı' : 'viewport yok')
   add('lang', 'Sayfa dili', meta(/<html[^>]+lang=["']([^"']+)["']/i) ? 'ok' : 'warn', meta(/<html[^>]+lang=["']([^"']+)["']/i) || 'lang etiketi yok')

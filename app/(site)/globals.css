@@ -253,6 +253,7 @@ html.auth-open .dock,html.lang-open .dock{opacity:0;pointer-events:none}
 .auth input{height:52px;padding:0 22px;border:2px solid transparent;border-radius:99px;background:var(--z);font-size:1rem;color:#000;outline:0;transition:border-color .25s,background .25s}
 .auth input:focus{border-color:#000;background:#fff}
 .auth__err{min-height:1.3em;color:#a3261b;font-size:.9rem;font-weight:600}
+.auth__pending{background:#eaf5e8;border:1px solid #b9dcb3;border-radius:12px;padding:14px 16px;margin-bottom:14px}.auth__pending h3{font-size:1rem;margin-bottom:4px;color:#1e7a1c}.auth__pending p{font-size:.92rem;line-height:1.45}.auth__go[disabled]{opacity:.6;cursor:wait}
 .auth__go{width:100%}
 .auth__go:hover{background:var(--gr);color:#000}
 .auth[data-view=in] .auth__upl,.auth[data-view=up] .auth__in{display:none}

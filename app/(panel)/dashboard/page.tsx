@@ -54,6 +54,7 @@ export default function Dashboard() {
     if (!s) return []
     const a = s.alerts
     const list: { text: string; href: string }[] = []
+    if (s.dealersPending) list.push({ text: `${s.dealersPending} firma başvurusu onay bekliyor`, href: '/dashboard/site/bayiler' })
     if (a.stale) list.push({ text: `${a.stale} talep 2 günden uzun süredir yanıt bekliyor`, href: '/dashboard/site/mesajlar' })
     if (a.missingTr) list.push({ text: `${a.missingTr} metinde en az bir dilde çeviri eksik`, href: '/dashboard/site/metinler' })
     if (a.noImg) list.push({ text: `${a.noImg} ürün/koleksiyonda görsel yok`, href: '/dashboard/site/urunler' })

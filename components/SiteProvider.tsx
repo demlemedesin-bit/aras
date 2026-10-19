@@ -82,7 +82,7 @@ export function SiteProvider({ children, content }: { children: ReactNode; conte
     const nav = ((navigator.languages && navigator.languages[0]) || navigator.language || 'tr').slice(0, 2).toLowerCase();
     const pick = (saved && CODES.includes(saved as Lang) ? saved : CODES.includes(nav as Lang) ? nav : 'en') as Lang;
     setLangState(pick);
-    setSession(readSession());
+    readSession().then(setSession);
   }, []);
 
   // Dil değişince <html lang>, başlık ve açıklama güncellenir.
@@ -147,7 +147,7 @@ export function SiteProvider({ children, content }: { children: ReactNode; conte
 
   const signedIn = useCallback((s: Session) => setSession(s), []);
   const signOut = useCallback(() => {
-    clearSession();
+    void clearSession();
     setSession(null);
   }, []);
 

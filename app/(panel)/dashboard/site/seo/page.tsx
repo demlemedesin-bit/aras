@@ -1,7 +1,7 @@
 'use client'
 import { useCallback, useEffect, useState } from 'react'
 import { CheckCircle2, AlertTriangle, XCircle, RefreshCw } from 'lucide-react'
-import { LANGS, LANG_NAMES, Label, PageHead, api, getRows, useToast, type Row } from '@panel/components/site/ui'
+import { ImageField, LANGS, LANG_NAMES, Label, PageHead, api, getRows, useToast, type Row } from '@panel/components/site/ui'
 
 const ICON = { ok: [CheckCircle2, 'var(--green)'], warn: [AlertTriangle, 'var(--amber)'], bad: [XCircle, 'var(--red)'] } as const
 const lenTone = (n: number, lo: number, hi: number) => (!n ? 'var(--red)' : n < lo || n > hi ? 'var(--amber)' : 'var(--green)')
@@ -14,10 +14,12 @@ export default function Page() {
   const [lang, setLang] = useState<string>('tr')
   const [saving, setSaving] = useState(false)
   const [gsc, setGsc] = useState('')
+  const [og, setOg] = useState('')
+  const [noindex, setNoindex] = useState(false)
 
   const runAudit = useCallback(() => { setBusy(true); setAudit(null); api('GET', '/api/site?seo=1').then(setAudit).catch((e) => say(e.message)).finally(() => setBusy(false)) }, [say])
   useEffect(() => { runAudit() }, [runAudit])
-  useEffect(() => { getRows('site_settings').then((r) => setGsc(r.find((x) => x.key === 'seo')?.value?.google_verification ?? '')).catch(() => {}) }, [])
+  useEffect(() => { getRows('site_settings').then((r) => { const v = r.find((x) => x.key === 'seo')?.value ?? {}; setGsc(v.google_verification ?? ''); setOg(v.og_image ?? ''); setNoindex(v.noindex === true) }).catch(() => {}) }, [])
   useEffect(() => {
     getRows('site_texts').then((r) => { const m: Record<string, Row> = { title: {}, desc: {} }; for (const x of r) if (x.ns === 'meta' && (x.key === 'title' || x.key === 'desc')) m[x.key] = x.value ?? {}; setMeta(m) }).catch((e) => say(e.message))
   }, [say])
@@ -30,7 +32,7 @@ export default function Page() {
     setSaving(true)
     try {
       for (const k of ['title', 'desc']) await api('POST', '/api/site', { action: 'upsert', table: 'site_texts', row: { ns: 'meta', key: k, value: meta[k] } })
-      await api('POST', '/api/site', { action: 'upsert', table: 'site_settings', row: { key: 'seo', value: { google_verification: gsc.trim() } } })
+      await api('POST', '/api/site', { action: 'upsert', table: 'site_settings', row: { key: 'seo', value: { google_verification: gsc.trim(), og_image: og.trim(), noindex } } })
       say('Kaydedildi. Arama sonuçlarına yansıması birkaç gün sürebilir.')
     } catch (e: any) { say(e.message) } finally { setSaving(false) }
   }
@@ -82,7 +84,21 @@ export default function Page() {
               <input className="inp" value={title} onChange={(e) => set('title', e.target.value)} />
               <Label>Açıklama <span style={{ color: lenTone(desc.length, 110, 160) }}>({desc.length}/160)</span></Label>
               <textarea className="inp" rows={4} value={desc} onChange={(e) => set('desc', e.target.value)} />
-              <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 14 }}><button className="btn" disabled={saving} onClick={save}>{saving ? '…' : 'Kaydet'}</button></div>
+              </div>
+          </div>
+          <div className="card">
+            <div className="card-h"><span className="card-title">Paylaşım görseli</span></div>
+            <div style={{ padding: '4px 20px 18px' }}>
+              <Label>WhatsApp, LinkedIn ve sosyal medyada link paylaşılınca görünen görsel (önerilen 1200×630)</Label>
+              <ImageField value={og} onChange={setOg} />
+              <div style={{ color: 'var(--tx3)', fontSize: 12.5, marginTop: 8 }}>Boş bırakırsanız ana sayfa görseli kullanılır. Değişiklik için en alttaki Kaydet düğmesini kullanın.</div>
+            </div>
+          </div>
+          <div className="card">
+            <div className="card-h"><span className="card-title">Arama motoru görünürlüğü</span></div>
+            <div style={{ padding: '14px 20px 18px' }}>
+              <label style={{ display: 'flex', gap: 10, alignItems: 'center', cursor: 'pointer', fontWeight: 600 }}><input type="checkbox" checked={noindex} onChange={(e) => setNoindex(e.target.checked)} /> Siteyi arama motorlarından gizle</label>
+              <div style={{ color: 'var(--tx3)', fontSize: 12.5, marginTop: 8, lineHeight: 1.6 }}>Yalnızca site yayına hazır değilken açın. Açıkken Google siteyi listelemez. Normalde kapalı kalmalı.</div>
             </div>
           </div>
           <div className="card">
@@ -93,6 +109,7 @@ export default function Page() {
               <div style={{ color: 'var(--tx3)', fontSize: 12.5, marginTop: 8, lineHeight: 1.6 }}>Search Console'da siteyi ekleyin, "HTML etiketi" yöntemini seçin ve verilen content değerini buraya yapıştırıp Kaydet'e basın. Sonra Search Console'da Doğrula'ya basın. Sitemap adresi: <b>/sitemap.xml</b></div>
             </div>
           </div>
+          <div style={{ display: 'flex', justifyContent: 'flex-end' }}><button className="btn" disabled={saving} onClick={save}>{saving ? '…' : 'Tüm SEO ayarlarını kaydet'}</button></div>
           <div className="card" style={{ padding: '14px 20px', lineHeight: 1.6, color: 'var(--tx2)' }}>
             <b style={{ color: 'var(--tx)' }}>Bilmeniz gereken:</b> Site dili sayfa içinde değiştiği için tüm diller tek adreste duruyor. Google yalnızca varsayılan Türkçe sürümü görür. Diğer dillerin aramada ayrı çıkması için dil başına ayrı adres (ör. /en) gerekir.
           </div>

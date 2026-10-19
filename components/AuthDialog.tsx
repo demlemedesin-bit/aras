@@ -6,7 +6,9 @@ import { useSite } from './SiteProvider';
 import { Icon } from './Icon';
 
 export default function AuthDialog() {
-  const { auth, closeAuth, session, signedIn, signOut, A } = useSite();
+  const { auth, closeAuth, session, signedIn, signOut, A, lang } = useSite();
+  const [pending, setPending] = useState(false);
+  const [busy, setBusy] = useState(false);
   const [mode, setMode] = useState<'in' | 'up'>('in');
   const [err, setErr] = useState('');
   const dlg = useRef<HTMLDivElement>(null);
@@ -20,6 +22,7 @@ export default function AuthDialog() {
     if (!auth.open) return;
     next.current = auth.next;
     setErr('');
+    setPending(false);
     setMode('in');
     const id = setTimeout(() => (session ? outRef.current : emailRef.current)?.focus(), 80);
     return () => clearTimeout(id);
@@ -48,7 +51,10 @@ export default function AuthDialog() {
     e.preventDefault();
     const form = e.currentTarget;
     const d = new FormData(form);
+    if (busy) return;
+    setBusy(true);
     const res = await submitAuth({
+      lang,
       mode,
       email: String(d.get('em') ?? ''),
       password: String(d.get('pw') ?? ''),
@@ -56,11 +62,17 @@ export default function AuthDialog() {
       company: String(d.get('co') ?? ''),
       phone: String(d.get('ph') ?? ''),
     });
+    setBusy(false);
     if (!res.ok) {
-      setErr(A[res.err]);
+      setErr(A[res.err] ?? A.e8 ?? '');
       return;
     }
     form.reset();
+    if (!res.session) {
+      setPending(true);
+      setMode('in');
+      return;
+    }
     signedIn(res.session);
     closeAuth();
     const target = next.current;
@@ -88,6 +100,12 @@ export default function AuthDialog() {
             <Icon n="x" />
           </button>
           <div className="auth__guest">
+            {pending && (
+              <div role="status" className="auth__pending">
+                <h3>{A.pd}</h3>
+                <p>{A.pp}</p>
+              </div>
+            )}
             <div className="auth__tabs" role="tablist">
               <button className="auth__tab" type="button" role="tab" aria-selected={mode === 'in'} onClick={() => { setMode('in'); setErr(''); }}>{A.tin}</button>
               <button className="auth__tab" type="button" role="tab" aria-selected={mode === 'up'} onClick={() => { setMode('up'); setErr(''); }}>{A.tup}</button>
@@ -105,7 +123,7 @@ export default function AuthDialog() {
               )}
               <label><span>{A.pw}</span><input name="pw" type="password" autoComplete={up ? 'new-password' : 'current-password'} /></label>
               <p className="auth__err" role="alert">{err}</p>
-              <button className="btn auth__go" type="submit">{up ? A.sup : A.sin}</button>
+              <button className="btn auth__go" type="submit" disabled={busy}>{up ? A.sup : A.sin}</button>
             </form>
           </div>
           <div className="auth__acct">

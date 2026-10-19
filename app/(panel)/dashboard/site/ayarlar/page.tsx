@@ -4,7 +4,7 @@ import { ImageField, Label, PageHead, api, getRows, useToast, type Row } from '@
 
 export default function Page() {
   const say = useToast()
-  const [hero, setHero] = useState<Row>({ showroom: '', home: '', garden: '' })
+  const [hero, setHero] = useState<Row>({ showroom: '', home: '', garden: '', about: '' })
   const [c, setC] = useState<Row>({ social: {} })
   const [busy, setBusy] = useState(false)
   useEffect(() => { getRows('site_settings').then((r) => { for (const x of r) { if (x.key === 'hero') setHero(x.value); if (x.key === 'contact') setC({ social: {}, ...x.value }) } }).catch((e) => say(e.message)) }, [say])
@@ -28,6 +28,7 @@ export default function Page() {
           <Label>Showroom paneli (büyük arka plan)</Label><ImageField value={hero.showroom} onChange={(v) => setHero({ ...hero, showroom: v })} />
           <Label>Ev kartı</Label><ImageField value={hero.home} onChange={(v) => setHero({ ...hero, home: v })} />
           <Label>Bahçe kartı</Label><ImageField value={hero.garden} onChange={(v) => setHero({ ...hero, garden: v })} />
+          <Label>Hakkımızda görseli</Label><ImageField value={hero.about ?? ''} onChange={(v) => setHero({ ...hero, about: v })} />
         </div>
       </div>
       <div className="card">

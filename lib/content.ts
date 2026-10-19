@@ -1,6 +1,7 @@
 import data from './i18n-data.json';
 import { COLLECTIONS, PRODUCTS, GALLERY_GROUPS, GALLERY, NEWS, PARTNERS, CONTACT, HERO } from './data';
 import type { Lang, Dict } from './i18n';
+import type { PagesOverride } from './page-docs';
 
 /** Sitenin tüm yönetilebilir içeriği. Kaynak: Supabase (panelden düzenlenir); ulaşılamazsa gömülü varsayılanlar. */
 export type Content = {
@@ -12,8 +13,9 @@ export type Content = {
   news: { id: number; d: string; year?: string; h: string; badge?: string; award?: boolean }[];
   partners: { name: string; href: string; img: string }[];
   history: { id: string; year: string; title: Partial<Record<Lang, string>>; body: Partial<Record<Lang, string>>; img: string }[];
-  hero: { showroom: string; home: string; garden: string };
+  hero: { showroom: string; home: string; garden: string; about?: string };
   contact: typeof CONTACT;
+  pages: PagesOverride;
 };
 
 const pivot = (byLang: Record<string, Record<string, string>>) => {
@@ -38,6 +40,7 @@ export const FALLBACK: Content = {
   history: [],
   hero: { ...HERO },
   contact: CONTACT,
+  pages: {},
 };
 
 const URL_ = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -62,7 +65,7 @@ const resolveMedia = (c: Content): Content => ({
   gallery: c.gallery.map((x) => ({ ...x, src: media(x.src) })),
   partners: c.partners.map((x) => ({ ...x, img: media(x.img) })),
   history: c.history.map((x) => ({ ...x, img: media(x.img) })),
-  hero: { showroom: media(c.hero.showroom), home: media(c.hero.home), garden: media(c.hero.garden) },
+  hero: { showroom: media(c.hero.showroom), home: media(c.hero.home), garden: media(c.hero.garden), about: media(c.hero.about || '/images/about.webp') },
 });
 
 export async function getContent(): Promise<Content> {
@@ -85,6 +88,7 @@ export async function getContent(): Promise<Content> {
     for (const r of texts) if (r.ns in out.texts) out.texts[r.ns as keyof Content['texts']][r.key] = r.value;
     const s = Object.fromEntries(settings.map((x) => [x.key, x.value]));
     if (s.hero) out.hero = { ...FALLBACK.hero, ...s.hero };
+    if (s.pages) out.pages = s.pages;
     if (s.contact) out.contact = { ...FALLBACK.contact, ...s.contact };
     if (cols.length) out.collections = cols.map((c: any) => ({ id: c.id, world: c.world, title: c.title_key, desc: c.desc_key, count: c.count, img: c.img, pos: c.pos ?? undefined, subs: c.subs?.length ? c.subs : undefined }));
     if (prods.length) out.products = prods.map((p: any) => ({ id: p.id, code: p.code, name: p.name_key, cat: p.cat_key, world: p.world, img: p.img }));

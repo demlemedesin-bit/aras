@@ -1,6 +1,6 @@
 import {
   LayoutDashboard, Package, Layers, Images, Newspaper, Handshake, Inbox,
-  Type, FolderOpen, Building2, History, SlidersHorizontal, UserCog, BarChart3, Search,
+  Type, FolderOpen, Building2, History, FileText, SlidersHorizontal, UserCog, BarChart3, Search,
   type LucideIcon,
 } from 'lucide-react'
 
@@ -27,6 +27,7 @@ export const NAV: { g: string; items: NavItem[] }[] = [
   ]},
   { g: 'Site', items: [
     { href: '/dashboard/site/metinler', label: 'Metinler (6 dil)', Icon: Type },
+    { href: '/dashboard/site/sayfalar', label: 'Sayfalar (SSS, Gizlilik…)', Icon: FileText },
     { href: '/dashboard/site/medya', label: 'Medya Kütüphanesi', Icon: FolderOpen },
     { href: '/dashboard/site/ayarlar', label: 'Site Ayarları', Icon: SlidersHorizontal },
   ]},

@@ -3,8 +3,8 @@
 import { useState, type FormEvent } from 'react';
 import { useSite } from './SiteProvider';
 import { sendSubmission } from '@/lib/submit';
-import { CAREERS, FAQ, FAQ_LEAD, PRIVACY, pick } from '@/lib/pages';
-import { COOKIES, TERMS } from '@/lib/legal';
+import { CAREERS, pick } from '@/lib/pages';
+import { resolveDoc, type PageSlug } from '@/lib/page-docs';
 
 function Head({ title, lead }: { title: string; lead: string }) {
   return (
@@ -15,9 +15,9 @@ function Head({ title, lead }: { title: string; lead: string }) {
   );
 }
 
-export function Doc({ doc }: { doc: typeof PRIVACY }) {
-  const { lang } = useSite();
-  const d = doc[lang] ?? doc.en;
+export function Doc({ slug }: { slug: 'gizlilik' | 'cerez-politikasi' | 'kullanim-kosullari' }) {
+  const { lang, content } = useSite();
+  const d = resolveDoc(content.pages, slug, lang);
   return (
     <article className="sub__in">
       <Head title={d.title} lead={d.lead} />
@@ -31,21 +31,21 @@ export function Doc({ doc }: { doc: typeof PRIVACY }) {
     </article>
   );
 }
-export const Privacy = () => <Doc doc={PRIVACY} />;
-export const Cookies = () => <Doc doc={COOKIES} />;
-export const Terms = () => <Doc doc={TERMS} />;
+export const Privacy = () => <Doc slug="gizlilik" />;
+export const Cookies = () => <Doc slug="cerez-politikasi" />;
+export const Terms = () => <Doc slug="kullanim-kosullari" />;
 
 export function Faq() {
-  const { lang, t } = useSite();
-  const items = pick(FAQ, lang);
+  const { lang, content } = useSite();
+  const d = resolveDoc(content.pages, 'sss' as PageSlug, lang);
   return (
     <article className="sub__in">
-      <Head title={t('ft.faq')} lead={FAQ_LEAD[lang]} />
+      <Head title={d.title} lead={d.lead} />
       <div className="faq">
-        {items.map((f) => (
-          <details key={f.q}>
-            <summary>{f.q}</summary>
-            <p>{f.a}</p>
+        {d.blocks.map((f, i) => (
+          <details key={i}>
+            <summary>{f.h}</summary>
+            {f.p?.map((x, j) => <p key={j}>{x}</p>)}
           </details>
         ))}
       </div>
@@ -54,8 +54,10 @@ export function Faq() {
 }
 
 export function Careers() {
-  const { lang } = useSite();
-  const c = pick(CAREERS, lang);
+  const { lang, content } = useSite();
+  const base: Record<string, string> = pick(CAREERS, lang);
+  const od = resolveDoc(content.pages, 'kariyer', lang);
+  const c: Record<string, string> = { ...base, title: od.title, lead: od.lead };
   const [st, setSt] = useState<'idle' | 'busy' | 'ok' | 'err' | 'fill'>('idle');
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();

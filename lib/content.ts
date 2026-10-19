@@ -99,7 +99,7 @@ export async function getContent(): Promise<Content> {
     if (s.hero) out.hero = { ...FALLBACK.hero, ...s.hero };
     if (s.pages) out.pages = s.pages;
     if (Array.isArray(s.categories) && s.categories.length) out.categories = s.categories;
-    if (s.nav) out.nav = { header: Array.isArray(s.nav.header) ? s.nav.header : DEFAULT_NAV.header, dock: Array.isArray(s.nav.dock) ? s.nav.dock : DEFAULT_NAV.dock, footer: Array.isArray(s.nav.footer) ? s.nav.footer : DEFAULT_NAV.footer };
+    if (s.nav) out.nav = { v: 2, header: Array.isArray(s.nav.header) ? (s.nav.v === 2 ? s.nav.header : [...DEFAULT_NAV.header.filter((x) => x.kind === 'cats'), ...s.nav.header]) : DEFAULT_NAV.header, dock: Array.isArray(s.nav.dock) ? s.nav.dock : DEFAULT_NAV.dock, footer: Array.isArray(s.nav.footer) ? s.nav.footer : DEFAULT_NAV.footer };
     if (s.careers) out.careers = { ...DEFAULT_CAREERS, ...s.careers, phone: { ...DEFAULT_CAREERS.phone, ...s.careers.phone }, message: { ...DEFAULT_CAREERS.message, ...s.careers.message }, labels: s.careers.labels ?? {}, positions: s.careers.positions ?? [], extra: s.careers.extra ?? [] };
     if (s.contact) out.contact = { ...FALLBACK.contact, ...s.contact };
     if (cols.length) out.collections = cols.map((c: any) => ({ id: c.id, world: c.world, title: c.title_key, desc: c.desc_key, count: c.count, img: c.img, pos: c.pos ?? undefined, subs: c.subs?.length ? c.subs : undefined }));

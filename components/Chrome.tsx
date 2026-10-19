@@ -5,7 +5,7 @@ import { LANGS } from '@/lib/i18n';
 import { prefersReducedMotion, useSite } from './SiteProvider';
 import { Icon } from './Icon';
 import { catName } from '@/lib/categories';
-import { linkText } from '@/lib/site-config';
+import { kindOf, linkText, type Link } from '@/lib/site-config';
 
 const SECTIONS = [
   { id: 'tarihce', key: 'nav.hist' },
@@ -74,6 +74,16 @@ export default function Chrome() {
   }, [active]);
 
   const login = useCallback(() => openAuth(), [openAuth]);
+  const { openTour } = useSite();
+  const hrefOf = (l: Link) => (['catalog', 'login', 'lang', 'tour'].includes(kindOf(l)) ? '#' : l.href);
+  const ext = (l: Link) => (kindOf(l) === 'url' ? { target: '_blank', rel: 'noopener noreferrer' } : {});
+  const act = (l: Link, e: React.MouseEvent<HTMLElement>) => {
+    const k = kindOf(l);
+    if (k === 'catalog') { e.preventDefault(); openCatalog(); }
+    else if (k === 'login') { e.preventDefault(); openAuth(); }
+    else if (k === 'lang') { e.preventDefault(); openLang(true, e.currentTarget); }
+    else if (k === 'tour') { e.preventDefault(); openTour(e.currentTarget); }
+  };
 
   return (
     <>
@@ -83,49 +93,43 @@ export default function Chrome() {
           <img src="/images/logo.png" alt="" width={340} height={130} />
         </a>
         <nav className="top__nav" aria-label={u('menu')}>
-          {(['home', 'garden'] as const).map((w) => (
-            <div className="mm" key={w}>
-              <a
-                href="#koleksiyonlar"
-                className="mm__b"
-                onClick={(e) => { e.preventDefault(); pickWorld(w, 'koleksiyonlar'); }}
-              >
-                {t(w === 'home' ? 'tab.home' : 'tab.garden')}
-                <Icon n="arr" rotate={90} />
+          {content.nav.header.filter((l) => l.show).map((l) => {
+            const k = kindOf(l);
+            if (k === 'cats' || k === 'menu') {
+              const w = l.world ?? 'home';
+              return (
+                <div className="mm" key={l.id}>
+                  <a href="#koleksiyonlar" className="mm__b" onClick={(e) => { e.preventDefault(); if (k === 'cats') pickWorld(w, 'koleksiyonlar'); }}>
+                    {linkText(l, lang, t)}
+                    <Icon n="arr" rotate={90} />
+                  </a>
+                  <ul className="mm__p">
+                    {k === 'menu' ? (l.children ?? []).filter((c) => c.show).map((c) => (
+                      <li key={c.id}><a href={hrefOf(c)} onClick={(e) => act(c, e)} {...ext(c)}>{linkText(c, lang, t)}</a></li>
+                    )) : content.categories.filter((m) => m.world === w).map((m) => (
+                      <li key={m.id}>
+                        <a href={session ? `/bayi/urunler?k=${m.id}` : '#koleksiyonlar'} onClick={session ? undefined : (e) => { e.preventDefault(); pickWorld(w, 'koleksiyonlar'); }}>{catName(m.name, lang)}</a>
+                        {m.subs.length > 0 && (
+                          <ul>
+                            {m.subs.map((x) => (
+                              <li key={x.id}>
+                                <a href={session ? `/bayi/urunler?k=${m.id}` : '#koleksiyonlar'} onClick={session ? undefined : (e) => { e.preventDefault(); pickWorld(w, 'koleksiyonlar'); }}>{catName(x.name, lang)}</a>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              );
+            }
+            return (
+              <a key={l.id} href={hrefOf(l)} onClick={(e) => act(l, e)} aria-current={active === l.id ? 'true' : undefined} {...ext(l)}>
+                {linkText(l, lang, t)}
               </a>
-              <ul className="mm__p">
-                {content.categories.filter((m) => m.world === w).map((m) => (
-                  <li key={m.id}>
-                    <a
-                      href={session ? `/bayi/urunler?k=${m.id}` : '#koleksiyonlar'}
-                      onClick={session ? undefined : (e) => { e.preventDefault(); pickWorld(w, 'koleksiyonlar'); }}
-                    >
-                      {catName(m.name, lang)}
-                    </a>
-                    {m.subs.length > 0 && (
-                      <ul>
-                        {m.subs.map((x) => (
-                          <li key={x.id}>
-                            <a
-                              href={session ? `/bayi/urunler?k=${m.id}` : '#koleksiyonlar'}
-                              onClick={session ? undefined : (e) => { e.preventDefault(); pickWorld(w, 'koleksiyonlar'); }}
-                            >
-                              {catName(x.name, lang)}
-                            </a>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-          {content.nav.header.filter((l) => l.show).map((l) => (
-            <a key={l.id} href={l.href} aria-current={active === l.id ? 'true' : undefined} {...(/^https?:/.test(l.href) ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>
-              {linkText(l, lang, t)}
-            </a>
-          ))}
+            );
+          })}
         </nav>
         <div className="top__r">
           <button className="burger" type="button" aria-expanded={menu} aria-label={u('menu')} onClick={() => setMenu((m) => !m)}>
@@ -155,7 +159,7 @@ export default function Chrome() {
 
       <nav className="dock" ref={dock} aria-label={u('menu')}>
         {content.nav.dock.filter((l) => l.show).map((l) => (
-          <a key={l.id} href={l.href} aria-current={active === l.id ? 'true' : undefined}>
+          <a key={l.id} href={hrefOf(l)} onClick={(e) => act(l, e)} aria-current={active === l.id ? 'true' : undefined} {...ext(l)}>
             {linkText(l, lang, t)}
           </a>
         ))}
@@ -163,39 +167,55 @@ export default function Chrome() {
 
       {menu && (
         <div className="drw" role="dialog" aria-label={u('menu')}>
-          {(['home', 'garden'] as const).map((w) => (
-            <details key={w} className="drw__g">
-              <summary>{t(w === 'home' ? 'tab.home' : 'tab.garden')}</summary>
-              <ul>
-                {content.categories.filter((m) => m.world === w).map((m) => {
-                  const href = session ? `/bayi/urunler?k=${m.id}` : '#koleksiyonlar';
-                  const go = (e: React.MouseEvent) => {
-                    if (session) return;
-                    e.preventDefault();
-                    setMenu(false);
-                    pickWorld(w, 'koleksiyonlar');
-                  };
-                  return m.subs.length ? (
-                    <li key={m.id}>
-                      <details>
-                        <summary>{catName(m.name, lang)}</summary>
-                        <ul>
-                          {m.subs.map((x) => (
-                            <li key={x.id}><a href={href} onClick={go}>{catName(x.name, lang)}</a></li>
-                          ))}
-                        </ul>
-                      </details>
-                    </li>
-                  ) : (
-                    <li key={m.id}><a href={href} onClick={go}>{catName(m.name, lang)}</a></li>
-                  );
-                })}
-              </ul>
-            </details>
-          ))}
-          {content.nav.header.filter((l) => l.show && l.id !== 'koleksiyonlar').map((l) => (
-            <a key={l.id} className="drw__l" href={l.href} onClick={() => setMenu(false)}>{linkText(l, lang, t)}</a>
-          ))}
+          {content.nav.header.filter((l) => l.show).map((l) => {
+            const k = kindOf(l);
+            if (k === 'cats') {
+              const w = l.world ?? 'home';
+              return (
+                <details key={l.id} className="drw__g">
+                  <summary>{linkText(l, lang, t)}</summary>
+                  <ul>
+                    {content.categories.filter((m) => m.world === w).map((m) => {
+                      const href = session ? `/bayi/urunler?k=${m.id}` : '#koleksiyonlar';
+                      const go = (e: React.MouseEvent) => {
+                        if (session) return;
+                        e.preventDefault();
+                        setMenu(false);
+                        pickWorld(w, 'koleksiyonlar');
+                      };
+                      return m.subs.length ? (
+                        <li key={m.id}>
+                          <details>
+                            <summary>{catName(m.name, lang)}</summary>
+                            <ul>
+                              {m.subs.map((x) => (
+                                <li key={x.id}><a href={href} onClick={go}>{catName(x.name, lang)}</a></li>
+                              ))}
+                            </ul>
+                          </details>
+                        </li>
+                      ) : (
+                        <li key={m.id}><a href={href} onClick={go}>{catName(m.name, lang)}</a></li>
+                      );
+                    })}
+                  </ul>
+                </details>
+              );
+            }
+            if (k === 'menu') {
+              return (
+                <details key={l.id} className="drw__g">
+                  <summary>{linkText(l, lang, t)}</summary>
+                  <ul>
+                    {(l.children ?? []).filter((c) => c.show).map((c) => (
+                      <li key={c.id}><a href={hrefOf(c)} onClick={(e) => { act(c, e); setMenu(false); }} {...ext(c)}>{linkText(c, lang, t)}</a></li>
+                    ))}
+                  </ul>
+                </details>
+              );
+            }
+            return <a key={l.id} className="drw__l" href={hrefOf(l)} onClick={(e) => { act(l, e); setMenu(false); }} {...ext(l)}>{linkText(l, lang, t)}</a>;
+          })}
         </div>
       )}
     </>

@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
+import ThemeLive from '@/components/ThemeLive';
 import Track from '@/components/Track';
 import Consent from '@/components/Consent';
 import Tags, { type AdsCfg } from '@/components/Tags';
@@ -103,6 +104,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       </head>
       <body>
         {children}
+        <ThemeLive />
         <Track />
         <Consent />
         <Tags cfg={ads} />

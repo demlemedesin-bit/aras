@@ -3,24 +3,29 @@
 import { LANGS } from '@/lib/i18n';
 import { prefersReducedMotion, useSite } from '../SiteProvider';
 import { Icon } from '../Icon';
-import { linkText } from '@/lib/site-config';
+import { kindOf, linkText } from '@/lib/site-config';
 
 export default function Footer() {
-  const { t, u, lang, openLang, content, openCatalog } = useSite();
+  const { t, u, lang, openLang, content, openCatalog, openAuth, openTour } = useSite();
   const langName = LANGS.find((l) => l.c === lang)?.n ?? 'Türkçe';
   return (
     <footer className="ft">
       <p className="ft__tag">{t('ft.tag')}</p>
       <ul className="ft__l">
-        {content.nav.footer.filter((l) => l.show).map((l) => (
-          <li key={l.id}>
-            {l.href === '#katalog' ? (
-              <a href="#katalog" onClick={(e) => { e.preventDefault(); openCatalog(); }}>{linkText(l, lang, t)}</a>
-            ) : (
-              <a href={l.href} {...(/^https?:/.test(l.href) ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>{linkText(l, lang, t)}</a>
-            )}
-          </li>
-        ))}
+        {content.nav.footer.filter((l) => l.show).map((l) => {
+          const k = kindOf(l);
+          const act = (e: React.MouseEvent<HTMLElement>) => {
+            if (k === 'catalog') { e.preventDefault(); openCatalog(); }
+            else if (k === 'login') { e.preventDefault(); openAuth(); }
+            else if (k === 'lang') { e.preventDefault(); openLang(true, e.currentTarget); }
+            else if (k === 'tour') { e.preventDefault(); openTour(e.currentTarget); }
+          };
+          return (
+            <li key={l.id}>
+              <a href={['catalog', 'login', 'lang', 'tour'].includes(k) ? '#' : l.href} onClick={act} {...(k === 'url' ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>{linkText(l, lang, t)}</a>
+            </li>
+          );
+        })}
       </ul>
       <div className="ft__bar">
         <button className="pill pill--w" type="button" aria-haspopup="dialog" onClick={(e) => openLang(true, e.currentTarget)}>

@@ -52,7 +52,10 @@ export default function Lightbox({ lb, set, cta }: { lb: LB; set: (v: LB) => voi
         <div className="lbx__foot">
           <span>{lb.title ? `${lb.title} · ` : ''}{grp.name}{n > 1 ? `  ${lb.i + 1} / ${n}` : ''}</span>
           {cta && (
-            <button className="lbx__cta" onClick={() => { set(null); cta.on(); }}>{cta.label}</button>
+            <span className="lbx__c">
+              {cta.note && <small>{cta.note}</small>}
+              <button className="lbx__cta" onClick={() => { set(null); cta.on(); }}>{cta.label}</button>
+            </span>
           )}
         </div>
       </div>

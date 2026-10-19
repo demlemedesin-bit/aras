@@ -576,3 +576,7 @@ html.lb-open{overflow:hidden}
 .lbx__a{top:50%;transform:translateY(-50%)}
 .lbx__a--l{left:8px}.lbx__a--r{right:8px}
 @media(max-width:700px){.lbx{padding:10px}.lbx__stage img{max-height:54vh}.lbx__th button{width:46px;height:46px}}
+
+.lbx__c{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.lbx__c small{font-size:.82rem;opacity:.8}
+@media(max-width:700px){.lbx__c{align-items:stretch;width:100%}.lbx__cta{width:100%}}

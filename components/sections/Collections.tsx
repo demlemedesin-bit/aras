@@ -14,6 +14,15 @@ const WORLDS: { id: World; key: string }[] = [
   { id: 'garden', key: 'tab.garden' },
 ];
 
+const ALL: Record<string, string> = {
+  tr: 'Ürünlerimizin tümü için',
+  en: 'For all of our products',
+  de: 'Für unser gesamtes Sortiment',
+  fr: 'Pour tous nos produits',
+  es: 'Para todos nuestros productos',
+  it: 'Per tutti i nostri prodotti',
+};
+
 export default function Collections() {
   const { t, lang, world, pickWorld, openCatalog, session, content } = useSite();
   const [open, setOpen] = useState('kitchen');
@@ -134,7 +143,7 @@ export default function Collections() {
           </li>
         ))}
       </ul>
-      <Lightbox lb={lb} set={setLb} cta={session ? { label: t('dp.h'), on: () => location.assign('/bayi/urunler') } : { label: t('dp.login'), on: openCatalog }} />
+      <Lightbox lb={lb} set={setLb} cta={session ? { label: t('dp.h'), on: () => location.assign('/bayi/urunler') } : { label: t('dp.login'), note: ALL[lang] ?? ALL.en, on: openCatalog }} />
     </section>
   );
 }

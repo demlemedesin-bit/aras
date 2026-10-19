@@ -1,10 +1,10 @@
 'use client';
 
 import { useEffect, useState, type MouseEvent } from 'react';
-import type { Content } from '@/lib/content';
 import type { World } from '@/lib/data';
 import { useSite } from '../SiteProvider';
 import { Icon } from '../Icon';
+import { catName, resolveCat } from '@/lib/categories';
 
 const WORLDS: { id: World; key: string }[] = [
   { id: 'all', key: 'f.all' },
@@ -13,17 +13,33 @@ const WORLDS: { id: World; key: string }[] = [
 ];
 
 export default function Collections() {
-  const { t, world, pickWorld, openCatalog, session, content } = useSite();
+  const { t, lang, world, pickWorld, openCatalog, session, content } = useSite();
   const [open, setOpen] = useState('kitchen');
-  const visible = content.collections.filter((c) => world === 'all' || c.world === world);
+  const tree = content.categories;
+  const all = tree.map((m) => {
+    const old = content.collections.find((c) => c.id === m.id);
+    const mine = content.products.filter((p) => resolveCat(tree, p.cat).main?.id === m.id);
+    const img = old?.img ?? mine.find((p) => p.img)?.img ?? (m.world === 'garden' ? '/images/col-garden.webp' : '/images/lifestyle-1.webp');
+    return {
+      id: m.id,
+      world: m.world,
+      title: catName(m.name, lang),
+      desc: old ? t(old.desc) : '',
+      count: mine.length || old?.count || 0,
+      img,
+      pos: old?.pos,
+      subs: m.subs.map((x) => catName(x.name, lang)),
+    };
+  });
+  const visible = all.filter((c) => world === 'all' || c.world === world);
 
   // Filtre değişince açık satır gizlendiyse ilk görünür satırı aç.
   useEffect(() => {
-    if (!visible.some((c) => c.id === open)) setOpen(visible[0].id);
+    if (visible.length && !visible.some((c) => c.id === open)) setOpen(visible[0].id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [world]);
 
-  const onClick = (e: MouseEvent, c: Content['collections'][number]) => {
+  const onClick = (e: MouseEvent, c: (typeof all)[number]) => {
     if (open !== c.id) {
       e.preventDefault();
       setOpen(c.id);
@@ -63,21 +79,23 @@ export default function Collections() {
               <span className="row__bg" style={{ backgroundImage: `url(${c.img})`, backgroundPosition: c.pos }} />
               <span className="row__bar">
                 <span className="row__th" style={{ backgroundImage: `url(${c.img})`, backgroundPosition: c.pos }} />
-                <b className="row__n">{t(c.title)}</b>
+                <b className="row__n">{c.title}</b>
                 <span className="row__m">
                   <span className="chip">{t(c.world === 'garden' ? 'tab.garden' : 'tab.home')}</span>
-                  <span className="chip chip--n">
-                    {c.count} <span>{t('unit')}</span>
-                  </span>
+                  {c.count > 0 && (
+                    <span className="chip chip--n">
+                      {c.count} <span>{t('unit')}</span>
+                    </span>
+                  )}
                 </span>
                 <i className="go"><Icon n="ne" /></i>
               </span>
               <span className="row__d">
-                <span>{t(c.desc)}</span>
-                {c.subs && (
+                {c.desc && <span>{c.desc}</span>}
+                {c.subs.length > 0 && (
                   <span className="row__s">
                     {c.subs.map((k) => (
-                      <span key={k}>{t(k)}</span>
+                      <span key={k}>{k}</span>
                     ))}
                   </span>
                 )}

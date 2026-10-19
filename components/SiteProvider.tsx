@@ -82,6 +82,18 @@ export function SiteProvider({ children, content }: { children: ReactNode; conte
     const nav = ((navigator.languages && navigator.languages[0]) || navigator.language || 'tr').slice(0, 2).toLowerCase();
     const pick = (saved && CODES.includes(saved as Lang) ? saved : CODES.includes(nav as Lang) ? nav : 'en') as Lang;
     setLangState(pick);
+    // Kayıtlı dil yoksa ülkeye göre otomatik seç (ör. İngiltere → İngilizce).
+    if (!saved) {
+      fetch('/api/geo', { cache: 'no-store' })
+        .then((r) => (r.ok ? r.json() : null))
+        .then((g) => {
+          if (g?.lang && CODES.includes(g.lang)) {
+            setLangState(g.lang as Lang);
+            try { localStorage.setItem('aras-lang', g.lang); } catch { /* depolama kapalı */ }
+          }
+        })
+        .catch(() => {});
+    }
     readSession().then(setSession);
   }, []);
 

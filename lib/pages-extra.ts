@@ -12,7 +12,7 @@ export const PRIVACY_X: Record<'de' | 'fr' | 'es' | 'it', PageDoc> = {
       { h: 'Welche Daten wir erfassen', ul: [
         'Katalog- und Kontaktformulare: Name, E-Mail, Firma, Telefon, Land und Ihre Nachricht.',
         'Händlerregistrierung: Name, Firma, E-Mail, Telefon und Passwort. Passwörter werden nie im Klartext gespeichert, sondern unumkehrbar gehasht.',
-        'Besuchsstatistik: aufgerufene Seite, Sprache, Land, Gerätetyp und verweisende Website. Ihre IP-Adresse wird nicht gespeichert und es werden keine Cookies verwendet; Besucher werden über einen anonymen, täglich wechselnden Code gezählt.',
+        'Besuchsstatistik: aufgerufene Seite, Sprache, Land, Stadt, Gerät, Browser, verweisende Website, Kampagne und Verweildauer. Ihre IP-Adresse wird nicht gespeichert. Lehnen Sie Cookies ab, werden Besucher über einen täglich wechselnden anonymen Code gezählt; bei Zustimmung wird ein zufälliger anonymer Code gespeichert, um wiederkehrende Besucher zu erkennen.',
         'Sitzungs-Cookie: Nur wenn Sie sich als Händler anmelden, hält ein einzelnes Cookie Ihre Sitzung aufrecht.' ] },
       { h: 'Wofür wir sie verarbeiten', ul: [
         'Um Katalog-, Angebots- und Informationsanfragen zu beantworten.',
@@ -32,7 +32,7 @@ export const PRIVACY_X: Record<'de' | 'fr' | 'es' | 'it', PageDoc> = {
       { h: 'Données collectées', ul: [
         'Formulaires de catalogue et de contact : nom, e-mail, société, téléphone, pays et votre message.',
         'Inscription revendeur : nom, société, e-mail, téléphone et mot de passe. Les mots de passe ne sont jamais conservés en clair, mais hachés de manière irréversible.',
-        'Statistiques de visite : page consultée, langue, pays, type d’appareil et site référent. Votre adresse IP n’est pas conservée et aucun cookie n’est utilisé ; les visiteurs sont comptés avec un code anonyme qui change chaque jour.',
+        'Statistiques de visite : page consultée, langue, pays, ville, appareil, navigateur, site référent, campagne et temps passé. Votre adresse IP n’est pas conservée. Si vous refusez les cookies, les visiteurs sont comptés avec un code anonyme qui change chaque jour ; si vous acceptez, un code anonyme aléatoire est conservé pour reconnaître les visiteurs récurrents.',
         'Cookie de session : uniquement si vous vous connectez en tant que revendeur, un seul cookie maintient votre session.' ] },
       { h: 'Finalités', ul: [
         'Répondre aux demandes de catalogue, de devis et d’informations.',
@@ -52,7 +52,7 @@ export const PRIVACY_X: Record<'de' | 'fr' | 'es' | 'it', PageDoc> = {
       { h: 'Qué datos recopilamos', ul: [
         'Formularios de catálogo y contacto: nombre, correo electrónico, empresa, teléfono, país y su mensaje.',
         'Registro de distribuidores: nombre, empresa, correo electrónico, teléfono y contraseña. Las contraseñas nunca se guardan en texto plano; se almacenan con un hash irreversible.',
-        'Estadísticas de visitas: página vista, idioma, país, tipo de dispositivo y sitio de origen. No se guarda su dirección IP ni se usan cookies; los visitantes se cuentan con un código anónimo que cambia cada día.',
+        'Estadísticas de visitas: página vista, idioma, país, ciudad, dispositivo, navegador, sitio de origen, campaña y tiempo en la página. No se guarda su dirección IP. Si rechaza las cookies, los visitantes se cuentan con un código anónimo que cambia cada día; si acepta, se guarda un código anónimo aleatorio para reconocer a los visitantes que vuelven.',
         'Cookie de sesión: solo si inicia sesión como distribuidor, una única cookie mantiene su sesión.' ] },
       { h: 'Para qué los tratamos', ul: [
         'Para responder a solicitudes de catálogo, presupuesto e información.',
@@ -72,7 +72,7 @@ export const PRIVACY_X: Record<'de' | 'fr' | 'es' | 'it', PageDoc> = {
       { h: 'Quali dati raccogliamo', ul: [
         'Moduli di catalogo e contatto: nome, e-mail, azienda, telefono, paese e il tuo messaggio.',
         'Registrazione rivenditori: nome, azienda, e-mail, telefono e password. Le password non vengono mai salvate in chiaro, ma con un hash irreversibile.',
-        'Statistiche di visita: pagina visualizzata, lingua, paese, tipo di dispositivo e sito di provenienza. Il tuo indirizzo IP non viene salvato e non si usano cookie; i visitatori sono contati con un codice anonimo che cambia ogni giorno.',
+        'Statistiche di visita: pagina visualizzata, lingua, paese, città, dispositivo, browser, sito di provenienza, campagna e tempo sulla pagina. Il tuo indirizzo IP non viene salvato. Se rifiuti i cookie, i visitatori sono contati con un codice anonimo che cambia ogni giorno; se accetti, viene conservato un codice anonimo casuale per riconoscere i visitatori che tornano.',
         'Cookie di sessione: solo se accedi come rivenditore, un singolo cookie mantiene attiva la sessione.' ] },
       { h: 'Perché li trattiamo', ul: [
         'Per rispondere a richieste di catalogo, preventivo e informazioni.',

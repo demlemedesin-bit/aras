@@ -2,11 +2,12 @@ import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import Track from '@/components/Track';
 import Consent from '@/components/Consent';
+import Tags, { type AdsCfg } from '@/components/Tags';
 import { CONTACT } from '@/lib/data';
 
 const SITE = process.env.NEXT_PUBLIC_SITE_URL || 'https://arasmetal.com';
 
-type Meta = { google?: string; title?: string; desc?: string; og?: string; noindex?: boolean };
+type Meta = { google?: string; title?: string; desc?: string; og?: string; noindex?: boolean; ads?: AdsCfg };
 
 const mediaUrl = (v?: string) => (!v ? undefined : v.startsWith('storage:') ? `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/site-media/${v.slice(8)}` : v);
 
@@ -21,10 +22,12 @@ async function panelMeta(): Promise<Meta> {
     return r.json();
   };
   try {
-    const [seo, texts] = await Promise.all([get('site_settings?key=eq.seo&select=value'), get('site_texts?ns=eq.meta&key=in.(title,desc)&select=key,value')]);
+    const [seo, texts] = await Promise.all([get('site_settings?key=in.(seo,ads)&select=key,value'), get('site_texts?ns=eq.meta&key=in.(title,desc)&select=key,value')]);
     const tr = (k: string) => (texts as { key: string; value?: Record<string, string> }[]).find((t) => t.key === k)?.value?.tr?.trim() || undefined;
-    const v = (seo as { value?: { google_verification?: string; og_image?: string; noindex?: boolean } }[])[0]?.value;
-    return { google: v?.google_verification?.trim() || undefined, og: mediaUrl(v?.og_image?.trim()), noindex: v?.noindex === true, title: tr('title'), desc: tr('desc') };
+    const rows = seo as { key: string; value?: any }[];
+    const v = rows.find((x) => x.key === 'seo')?.value as { google_verification?: string; og_image?: string; noindex?: boolean } | undefined;
+    const ads = rows.find((x) => x.key === 'ads')?.value as AdsCfg | undefined;
+    return { google: v?.google_verification?.trim() || undefined, og: mediaUrl(v?.og_image?.trim()), noindex: v?.noindex === true, title: tr('title'), desc: tr('desc'), ads };
   } catch {
     return {};
   }
@@ -81,7 +84,8 @@ const JSON_LD = {
   ],
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const ads = (await panelMeta()).ads ?? {};
   return (
     <html lang="tr" translate="no" className="notranslate" suppressHydrationWarning>
       <head>
@@ -95,6 +99,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {children}
         <Track />
         <Consent />
+        <Tags cfg={ads} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }} />
       </body>
     </html>

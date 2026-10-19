@@ -13,7 +13,7 @@ async function guard() {
 }
 const isTable = (t: unknown): t is SiteTable => typeof t === 'string' && (SITE_TABLES as readonly string[]).includes(t)
 const fail = (e: unknown, s = 500) => NextResponse.json({ error: e instanceof Error ? e.message : String(e) }, { status: s })
-const ORDER: Record<string, string> = { site_texts: 'ns,key', site_settings: 'key' }
+const ORDER: Record<string, string> = { site_texts: 'ns,key', site_settings: 'key', site_ad_spend: 'campaign' }
 
 export async function GET(req: Request) {
   if (!(await guard())) return fail('Yetkisiz', 401)

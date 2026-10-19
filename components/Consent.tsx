@@ -33,7 +33,7 @@ export default function Consent() {
   const choose = (v: 'all' | 'min') => {
     try { localStorage.setItem(CONSENT_KEY, v); } catch {}
     setShow(false);
-    if (v === 'all') location.reload();
+    window.dispatchEvent(new Event('aras-consent'));
   };
   return (
     <div className="ck" role="dialog" aria-label={x.t}>

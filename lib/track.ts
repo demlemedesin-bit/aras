@@ -83,7 +83,7 @@ function send(body: Record<string, unknown>, beacon = false) {
   }
 }
 
-type G = { dataLayer?: unknown[]; gtag?: (...a: unknown[]) => void; fbq?: (...a: unknown[]) => void; clarity?: (...a: unknown[]) => void };
+type G = { __arasAds?: { gads: string; label: string }; dataLayer?: unknown[]; gtag?: (...a: unknown[]) => void; fbq?: (...a: unknown[]) => void; clarity?: (...a: unknown[]) => void };
 const LEAD: Record<string, string> = { catalog_submit: 'Lead', contact_submit: 'Contact', dealer_register: 'CompleteRegistration' };
 const GA: Record<string, string> = { catalog_submit: 'generate_lead', contact_submit: 'generate_lead', dealer_register: 'sign_up', dealer_login: 'login' };
 
@@ -95,6 +95,7 @@ function pushConversion(name: string) {
     w.dataLayer?.push({ event: GA[name] ?? name, aras_event: name });
     if (w.gtag && GA[name]) w.gtag('event', GA[name], { event_category: 'aras' });
     if (w.fbq && LEAD[name]) w.fbq('track', LEAD[name]);
+    if (w.gtag && w.__arasAds?.label && (name === 'catalog_submit' || name === 'contact_submit')) w.gtag('event', 'conversion', { send_to: `${w.__arasAds.gads}/${w.__arasAds.label}` });
   } catch {}
 }
 

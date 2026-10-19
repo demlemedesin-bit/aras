@@ -16,7 +16,7 @@ const PRIVACY_BASE: { tr: PageDoc; en: PageDoc } = {
       { h: 'Hangi verileri topluyoruz', ul: [
         'Katalog ve iletişim formları: ad soyad, e-posta, firma, telefon, ülke ve mesajınız.',
         'Bayi girişi başvurusu: ad soyad, firma, e-posta, telefon ve şifreniz. Şifre düz metin olarak saklanmaz, geri döndürülemez biçimde şifrelenir.',
-        'Ziyaret istatistikleri: ziyaret edilen sayfa, dil, ülke, cihaz türü ve yönlendiren site. IP adresiniz saklanmaz, çerez kullanılmaz; ziyaretçi günlük değişen anonim bir kodla sayılır.',
+        'Ziyaret istatistikleri: ziyaret edilen sayfa, dil, ülke, şehir, cihaz, tarayıcı, yönlendiren site, kampanya ve sayfada geçirilen süre. IP adresiniz saklanmaz. Çerezleri reddederseniz ziyaretçi günlük değişen anonim bir kodla sayılır; kabul ederseniz tekrar gelen ziyaretçiyi tanımak için rastgele anonim bir kod saklanır.',
         'Oturum çerezi: yalnızca bayi girişi yaptığınızda, oturumunuzu sürdürmek için tek bir çerez bırakılır.' ] },
       { h: 'Verileri neden işliyoruz', ul: [
         'Katalog, teklif ve bilgi taleplerinize yanıt vermek.',
@@ -36,7 +36,7 @@ const PRIVACY_BASE: { tr: PageDoc; en: PageDoc } = {
       { h: 'What we collect', ul: [
         'Catalogue and contact forms: name, email, company, phone, country and your message.',
         'Dealer sign-up: name, company, email, phone and password. Passwords are never stored in plain text; they are irreversibly hashed.',
-        'Visit statistics: page viewed, language, country, device type and referring site. Your IP address is not stored and no cookies are used; visitors are counted with an anonymous code that changes daily.',
+        'Visit statistics: page viewed, language, country, city, device, browser, referring site, campaign and time spent. Your IP address is not stored. If you decline cookies, visitors are counted with an anonymous code that changes daily; if you accept, a random anonymous code is kept to recognise returning visitors.',
         'Session cookie: only if you sign in as a dealer, a single cookie keeps you signed in.' ] },
       { h: 'Why we process it', ul: [
         'To answer catalogue, quote and information requests.',

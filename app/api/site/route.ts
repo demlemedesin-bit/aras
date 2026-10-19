@@ -21,11 +21,26 @@ export async function GET(req: Request) {
     if (sp.get('media')) return NextResponse.json({ files: await siteListMedia() })
     if (sp.get('unread')) return NextResponse.json({ unread: await siteCount('submissions', 'status=eq.new') })
     if (sp.get('stats')) {
-      const [texts, collections, products, gallery, news, partners, subs] = await Promise.all([
-        siteCount('site_texts'), siteCount('site_collections'), siteCount('site_products'), siteCount('site_gallery_images'),
-        siteCount('site_news'), siteCount('site_partners'),
+      const [textRows, collRows, prodRows, gallery, newsRows, partners, subs] = await Promise.all([
+        siteSelect('site_texts', 'ns,key') as Promise<{ value?: Record<string, string> }[]>,
+        siteSelect('site_collections') as Promise<{ active?: boolean; img?: string }[]>,
+        siteSelect('site_products') as Promise<{ active?: boolean; img?: string }[]>,
+        siteCount('site_gallery_images'),
+        siteSelect('site_news') as Promise<{ active?: boolean }[]>,
+        siteCount('site_partners'),
         siteSelect('submissions') as Promise<{ created_at: string; topic?: string; status?: string; country?: string }[]>,
       ])
+      const texts = textRows.length, collections = collRows.length, products = prodRows.length, news = newsRows.length
+      const LANGS = ['tr', 'en', 'de', 'fr', 'es', 'it']
+      const missingTr = textRows.filter((t) => LANGS.some((l) => !String(t.value?.[l] ?? '').trim())).length
+      const noImg = prodRows.filter((p) => !p.img).length + collRows.filter((c) => !c.img).length
+      const passive = prodRows.filter((p) => p.active === false).length
+      const stale = subs.filter((m) => m.status === 'new' && Date.now() - new Date(m.created_at).getTime() > 48 * 3600 * 1000).length
+      const read = subs.filter((m) => m.status === 'read').length
+      const done = subs.filter((m) => m.status === 'done').length
+      const todayKey = new Date().toISOString().slice(0, 10)
+      const today_n = subs.filter((m) => m.created_at.slice(0, 10) === todayKey).length
+      const week_n = subs.filter((m) => Date.now() - new Date(m.created_at).getTime() < 7 * 86400000).length
       const inbox = subs.length
       const unread = subs.filter((m) => m.status === 'new').length
       const day = (d: Date) => d.toISOString().slice(0, 10)
@@ -43,7 +58,7 @@ export async function GET(req: Request) {
         if (c) countries[c] = (countries[c] || 0) + 1
       }
       const topCountries = Object.entries(countries).sort((a, b) => b[1] - a[1]).slice(0, 5).map(([country, n]) => ({ country, n }))
-      return NextResponse.json({ texts, collections, products, gallery, news, partners, inbox, unread, catalog, contact, pending, trend, topCountries, latest: subs.slice(0, 6) })
+      return NextResponse.json({ texts, collections, products, gallery, news, partners, inbox, unread, catalog, contact, pending, trend, topCountries, latest: subs.slice(0, 6), read, done, today: today_n, week: week_n, alerts: { stale, missingTr, noImg, passive } })
     }
     const table = sp.get('table')
     if (!isTable(table)) return fail('Geçersiz tablo', 400)

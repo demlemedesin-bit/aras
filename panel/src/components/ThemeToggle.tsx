@@ -4,12 +4,12 @@ import { Sun, Moon } from 'lucide-react'
 import { createClient } from '@panel/lib/supabase/client'
 
 export default function ThemeToggle() {
-  const [theme, setTheme] = useState<'dark'|'light'>('dark')
+  const [theme, setTheme] = useState<'dark'|'light'>('light')
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
     // localStorage'dan oku
-    const saved = localStorage.getItem('aras-theme') as 'dark'|'light' || 'dark'
+    const saved = localStorage.getItem('aras-theme2') as 'dark'|'light' || 'light'
     setTheme(saved)
     document.documentElement.setAttribute('data-theme', saved)
     setMounted(true)
@@ -19,7 +19,7 @@ export default function ThemeToggle() {
     const next = theme === 'dark' ? 'light' : 'dark'
     setTheme(next)
     document.documentElement.setAttribute('data-theme', next)
-    localStorage.setItem('aras-theme', next)
+    localStorage.setItem('aras-theme2', next)
   }
 
   if (!mounted) return null

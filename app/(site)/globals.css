@@ -495,3 +495,15 @@ html.lb-open{overflow:hidden}
 .dp__g .pill{margin-top:12px;height:46px;align-self:flex-start}
 .about__p{margin-top:22px;max-width:52ch;color:var(--ash)}
 .about__cta{margin-top:32px}
+.dp__wrap{display:grid;grid-template-columns:240px minmax(0,1fr);gap:clamp(24px,4vw,56px);align-items:start}
+.dp__nav{display:grid;gap:2px;position:sticky;top:110px}
+.dp__nav button{display:flex;justify-content:space-between;gap:10px;width:100%;padding:9px 14px;border-radius:12px;text-align:left;font-weight:600;font-size:.98rem}
+.dp__nav button:hover{background:var(--z)}
+.dp__nav button.on{background:#000;color:#fff}
+.dp__nav em{font-style:normal;opacity:.55;font-weight:500}
+.dp__nav ul{display:grid;gap:1px;margin:2px 0 8px 14px;padding-left:10px;border-left:2px solid var(--z2)}
+.dp__nav ul button{font-weight:500;font-size:.92rem;padding:7px 12px}
+.dp__tg{display:none}
+.dp .dp__g{grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}
+@media (max-width:820px){.dp__wrap{grid-template-columns:1fr}.dp__tg{display:inline-flex}.dp__nav{display:none;position:static}.dp__nav.open{display:grid}}
+.dp__noimg{font-weight:700;color:var(--ash);font-size:1.2rem}

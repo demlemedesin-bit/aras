@@ -2,6 +2,7 @@ import data from './i18n-data.json';
 import { COLLECTIONS, PRODUCTS, GALLERY_GROUPS, GALLERY, NEWS, PARTNERS, CONTACT, HERO } from './data';
 import type { Lang, Dict } from './i18n';
 import type { PagesOverride } from './page-docs';
+import { DEFAULT_CATEGORIES, type Cat } from './categories';
 
 /** Sitenin tüm yönetilebilir içeriği. Kaynak: Supabase (panelden düzenlenir); ulaşılamazsa gömülü varsayılanlar. */
 export type Content = {
@@ -16,6 +17,7 @@ export type Content = {
   hero: { showroom: string; home: string; garden: string; about?: string };
   contact: typeof CONTACT;
   pages: PagesOverride;
+  categories: Cat[];
 };
 
 const pivot = (byLang: Record<string, Record<string, string>>) => {
@@ -41,6 +43,7 @@ export const FALLBACK: Content = {
   hero: { ...HERO },
   contact: CONTACT,
   pages: {},
+  categories: DEFAULT_CATEGORIES,
 };
 
 const URL_ = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -89,6 +92,7 @@ export async function getContent(): Promise<Content> {
     const s = Object.fromEntries(settings.map((x) => [x.key, x.value]));
     if (s.hero) out.hero = { ...FALLBACK.hero, ...s.hero };
     if (s.pages) out.pages = s.pages;
+    if (Array.isArray(s.categories) && s.categories.length) out.categories = s.categories;
     if (s.contact) out.contact = { ...FALLBACK.contact, ...s.contact };
     if (cols.length) out.collections = cols.map((c: any) => ({ id: c.id, world: c.world, title: c.title_key, desc: c.desc_key, count: c.count, img: c.img, pos: c.pos ?? undefined, subs: c.subs?.length ? c.subs : undefined }));
     if (prods.length) out.products = prods.map((p: any) => ({ id: p.id, code: p.code, name: p.name_key, cat: p.cat_key, world: p.world, img: p.img }));

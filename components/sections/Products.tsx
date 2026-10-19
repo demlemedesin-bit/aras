@@ -6,7 +6,7 @@ import { Icon } from '../Icon';
 export default function Products() {
   const { t, world, openCatalog, session, content } = useSite();
   const open = (code: string) => (session ? location.assign(`/bayi/urunler?q=${encodeURIComponent(code)}`) : openCatalog());
-  const list = content.products.filter((p) => world === 'all' || p.world === world);
+  const list = content.products.filter((p) => world === 'all' || p.world === world).slice(0, 12);
   // Kesintisiz akış için liste iki kez dizilir; ikinci kopya yalnızca görseldir.
   const loop = list.length ? [...list, ...list] : [];
 

@@ -1,20 +1,24 @@
 'use client'
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
+import { DEFAULT_CATEGORIES, catName, type Cat } from '@/lib/categories'
 import { ImageField, KeyField, Label, Modal, PageHead, Pill, api, getRows, grid, preview, useToast, type Row } from './ui'
 
-export type Field = { k: string; l: string; t?: 'text' | 'num' | 'bool' | 'img' | 'list' | 'world' | 'key'; ns?: string; help?: string }
+export type Field = { k: string; l: string; t?: 'text' | 'num' | 'bool' | 'img' | 'list' | 'world' | 'key' | 'cat'; ns?: string; help?: string }
 export type Config = {
   table: string; title: string; sub: string; pk: string; singular: string
   fields: Field[]; defaults: Row; imgKey?: string
   head: (r: Row, tr: (k: string) => string) => string
   meta?: (r: Row, tr: (k: string) => string) => ReactNode
   filterKey?: string // örn. galeri: group_id
+  autoId?: (r: Row) => string // yeni kayıtta kimliği otomatik üret
+  extra?: ReactNode // sayfa üstüne ek araçlar (ör. toplu yükleme)
 }
 
 export default function ListManager({ cfg }: { cfg: Config }) {
   const say = useToast()
   const [rows, setRows] = useState<Row[]>([])
   const [texts, setTexts] = useState<Row[]>([])
+  const [cats, setCats] = useState<Cat[]>(DEFAULT_CATEGORIES)
   const [edit, setEdit] = useState<Row | null>(null)
   const [isNew, setIsNew] = useState(false)
   const [busy, setBusy] = useState(false)
@@ -22,7 +26,7 @@ export default function ListManager({ cfg }: { cfg: Config }) {
   const [f, setF] = useState('')
 
   const load = useCallback(async () => {
-    try { const [r, t] = await Promise.all([getRows(cfg.table), getRows('site_texts')]); setRows(r); setTexts(t) } catch (e: any) { say(e.message) }
+    try { const [r, t, st] = await Promise.all([getRows(cfg.table), getRows('site_texts'), getRows('site_settings')]); setRows(r); setTexts(t); const c = st.find((x) => x.key === 'categories')?.value; if (Array.isArray(c) && c.length) setCats(c) } catch (e: any) { say(e.message) }
   }, [cfg.table, say])
   useEffect(() => { load() }, [load])
 
@@ -36,6 +40,8 @@ export default function ListManager({ cfg }: { cfg: Config }) {
       const out = { ...row }
       for (const fl of cfg.fields) if (fl.t === 'num') out[fl.k] = Number(out[fl.k] ?? 0)
       if (isNew && cfg.pk !== 'id') delete out.id
+      if (isNew && cfg.autoId && !out.id) out.id = cfg.autoId(out)
+      if (cfg.pk === 'id' && !out.id) throw new Error('Kimlik boş olamaz')
       const j = await api('POST', '/api/site', { action: 'upsert', table: cfg.table, row: out })
       say(j.revalidated === false ? 'Kaydedildi (site 5 dk içinde güncellenir)' : 'Kaydedildi, site güncellendi')
       setEdit(null); await load()
@@ -71,6 +77,10 @@ export default function ListManager({ cfg }: { cfg: Config }) {
         {fl.t === 'world' ? <select className="inp" value={v} onChange={(e) => set(fl.k, e.target.value)}><option value="home">Ev</option><option value="garden">Bahçe</option></select>
           : fl.t === 'num' ? <input className="inp" type="number" value={v ?? 0} onChange={(e) => set(fl.k, e.target.value)} />
           : fl.t === 'list' ? <input className="inp" value={(v ?? []).join(', ')} onChange={(e) => set(fl.k, e.target.value.split(',').map((s) => s.trim()).filter(Boolean))} />
+          : fl.t === 'cat' ? <select className="inp" value={v ?? ''} onChange={(e) => { const id = e.target.value; const m = cats.find((c) => c.id === id || c.subs.some((x) => x.id === id)); setEdit((ed) => ({ ...ed!, [fl.k]: id, ...(m ? { world: m.world } : {}) })) }}>
+              <option value="">Seçin</option>
+              {cats.map((m) => <optgroup key={m.id} label={catName(m.name, 'tr')}><option value={m.id}>{catName(m.name, 'tr')} (genel)</option>{m.subs.map((x) => <option key={x.id} value={x.id}>{catName(m.name, 'tr')} › {catName(x.name, 'tr')}</option>)}</optgroup>)}
+            </select>
           : fl.t === 'img' ? <ImageField value={v ?? ''} onChange={(x) => set(fl.k, x)} />
           : fl.t === 'key' ? <KeyField value={v ?? ''} onChange={(x) => set(fl.k, x)} texts={texts} ns={fl.ns} />
           : <input className="inp" value={v ?? ''} disabled={lock} onChange={(e) => set(fl.k, e.target.value)} />}
@@ -82,6 +92,7 @@ export default function ListManager({ cfg }: { cfg: Config }) {
   return (
     <>
       <PageHead title={cfg.title} sub={cfg.sub} action={<button className="btn" onClick={() => { setIsNew(true); setEdit({ ...cfg.defaults, sort: rows.length }) }}>+ Yeni {cfg.singular}</button>} />
+      {cfg.extra}
       <div style={{ display: 'flex', gap: 8, marginBottom: 14, flexWrap: 'wrap' }}>
         <input className="inp" style={{ maxWidth: 320 }} placeholder="Ara…" value={q} onChange={(e) => setQ(e.target.value)} />
         {filters.length > 1 && <select className="inp" style={{ maxWidth: 200 }} value={f} onChange={(e) => setF(e.target.value)}><option value="">Tümü ({rows.length})</option>{filters.map((x) => <option key={x}>{x}</option>)}</select>}

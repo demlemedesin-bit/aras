@@ -1,0 +1,121 @@
+'use client';
+
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { LANGS, authText } from '@/lib/i18n';
+import { prefersReducedMotion, useSite } from './SiteProvider';
+import { Icon } from './Icon';
+
+const SECTIONS = [
+  { id: 'hakkimizda', key: 'nav.about' },
+  { id: 'koleksiyonlar', key: 'nav.col' },
+  { id: 'galeri', key: 'nav.gal' },
+  { id: 'urunler', key: 'nav.prod' },
+  { id: 'showroom', key: 'nav.sr' },
+  { id: 'haberler', key: 'nav.news' },
+  { id: 'iletisim', key: 'nav.contact' },
+] as const;
+
+const HEADER_NAV = ['hakkimizda', 'koleksiyonlar', 'urunler', 'iletisim'];
+
+/** Ekranın ortasındaki bölümün id'sini döndürür. */
+function useScrollSpy(ids: readonly string[]) {
+  const [active, setActive] = useState<string | null>(null);
+  useEffect(() => {
+    let ticking = false;
+    const spy = () => {
+      ticking = false;
+      const mid = innerHeight * 0.5;
+      let hit: string | null = null;
+      for (const id of ids) {
+        const el = document.getElementById(id);
+        if (!el) continue;
+        const r = el.getBoundingClientRect();
+        if (r.top <= mid && r.bottom > mid) hit = id;
+      }
+      setActive(hit);
+    };
+    const onScroll = () => {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(spy);
+      }
+    };
+    spy();
+    addEventListener('scroll', onScroll, { passive: true });
+    addEventListener('resize', onScroll);
+    return () => {
+      removeEventListener('scroll', onScroll);
+      removeEventListener('resize', onScroll);
+    };
+  }, [ids]);
+  return active;
+}
+
+export default function Chrome() {
+  const { t, u, lang, langOpen, openLang, session, openAuth } = useSite();
+  const ids = SECTIONS.map((s) => s.id);
+  const active = useScrollSpy(ids);
+  const dock = useRef<HTMLElement>(null);
+  const curTag = LANGS.find((l) => l.c === lang)?.tag ?? 'TR';
+  const A = authText(lang);
+  const authLabel = session ? `${A.hi}${session.name.split(' ')[0]}` : A.btn;
+
+  // Dock taşıyorsa aktif bağlantıyı ortala (mobil).
+  useEffect(() => {
+    const d = dock.current;
+    if (!d || !active || d.scrollWidth <= d.clientWidth) return;
+    const a = d.querySelector<HTMLElement>('a[aria-current]');
+    if (a) d.scrollTo({ left: a.offsetLeft - (d.clientWidth - a.offsetWidth) / 2, behavior: prefersReducedMotion() ? 'auto' : 'smooth' });
+  }, [active]);
+
+  const mail = `mailto:info@arasmetal.com?subject=${encodeURIComponent(u('cat'))}`;
+  const login = useCallback(() => openAuth(), [openAuth]);
+
+  return (
+    <>
+      <a className="skip" href="#icerik">{t('skip')}</a>
+      <header className="top">
+        <a className="top__logo" href="#top" aria-label="Aras Metal">
+          <img src="/images/logo.png" alt="" width={340} height={130} />
+        </a>
+        <nav className="top__nav" aria-label={u('menu')}>
+          {SECTIONS.filter((s) => HEADER_NAV.includes(s.id)).map((s) => (
+            <a key={s.id} href={`#${s.id}`} aria-current={active === s.id ? 'true' : undefined}>
+              {t(s.key)}
+            </a>
+          ))}
+        </nav>
+        <div className="top__r">
+          <button className={`pill authbtn${session ? ' on' : ''}`} type="button" aria-haspopup="dialog" onClick={login}>
+            <Icon n="lock" />
+            <span>{authLabel}</span>
+          </button>
+          <button
+            className="pill langbtn"
+            type="button"
+            aria-haspopup="dialog"
+            aria-expanded={langOpen}
+            aria-label={u('lang')}
+            onClick={(e) => openLang(!langOpen, e.currentTarget)}
+          >
+            <Icon n="globe" />
+            <span>{curTag}</span>
+          </button>
+          <a className="pill pill--k top__cta" href={mail}>
+            <span>{t('cta.cat')}</span>
+            <Icon n="arr" />
+          </a>
+        </div>
+      </header>
+
+      <nav className="dock" ref={dock} aria-label={u('menu')}>
+        {SECTIONS.map((s) => (
+          <a key={s.id} href={`#${s.id}`} aria-current={active === s.id ? 'true' : undefined}>
+            {t(s.key)}
+          </a>
+        ))}
+      </nav>
+    </>
+  );
+}
+

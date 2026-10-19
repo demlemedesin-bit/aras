@@ -1,14 +1,13 @@
 'use client';
 
 import { useEffect, useRef, type MouseEvent } from 'react';
-import { PRODUCTS } from '@/lib/data';
 import { prefersReducedMotion, useSite } from '../SiteProvider';
 import { Icon } from '../Icon';
 
 export default function Products() {
-  const { t, u, world, session, openAuth } = useSite();
+  const { t, u, world, session, openAuth, content } = useSite();
   const rail = useRef<HTMLUListElement>(null);
-  const list = PRODUCTS.filter((p) => world === 'all' || p.world === world);
+  const list = content.products.filter((p) => world === 'all' || p.world === world);
 
   useEffect(() => {
     if (rail.current) rail.current.scrollLeft = 0;

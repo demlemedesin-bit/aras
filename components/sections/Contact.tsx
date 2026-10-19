@@ -1,25 +1,46 @@
 'use client';
 
-import type { FormEvent } from 'react';
-import { CONTACT } from '@/lib/data';
+import { useState, type FormEvent } from 'react';
 import { useSite } from '../SiteProvider';
 import { Icon } from '../Icon';
 
 export default function Contact() {
-  const { t, u } = useSite();
+  const { t, u, lang, content } = useSite();
 
-  // Form, e-posta uygulamasını bilgilerle önceden doldurulmuş açar.
-  const onSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const [state, setState] = useState<'idle' | 'sending' | 'ok'>('idle');
+
+  // Mesaj Supabase'e kaydedilir (panelde görünür); olmazsa e-posta uygulaması önceden doldurulmuş açılır.
+  const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const f = e.currentTarget;
     if (!f.reportValidity()) return;
     const d = new FormData(f);
-    const subject = u('s') + d.get('name');
-    const body = `${u('nm')}${d.get('name')}\n${u('co')}${d.get('company') || '-'}\n${u('em')}${d.get('email')}\n\n${d.get('msg')}`;
-    location.href = `mailto:${CONTACT.mail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    const mailto = () => {
+      const subject = u('s') + d.get('name');
+      const body = `${u('nm')}${d.get('name')}\n${u('co')}${d.get('company') || '-'}\n${u('em')}${d.get('email')}\n\n${d.get('msg')}`;
+      location.href = `mailto:${content.contact.mail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    };
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    if (!url || !key) return mailto();
+    setState('sending');
+    try {
+      const r = await fetch(`${url}/rest/v1/submissions`, {
+        method: 'POST',
+        headers: { apikey: key, Authorization: `Bearer ${key}`, 'Content-Type': 'application/json', Prefer: 'return=minimal' },
+        body: JSON.stringify({ name: d.get('name'), company: d.get('company') || null, email: d.get('email'), message: d.get('msg'), lang, topic: 'contact' }),
+      });
+      if (!r.ok) throw new Error(String(r.status));
+      f.reset();
+      setState('ok');
+    } catch {
+      setState('idle');
+      mailto();
+    }
   };
 
   const lines = t('ct.adrv').split('<br>');
+  const CONTACT = content.contact;
   const s = CONTACT.social;
 
   return (
@@ -67,8 +88,8 @@ export default function Contact() {
           <div className="fld"><input id="fe" name="email" type="email" placeholder=" " required autoComplete="email" /><label htmlFor="fe">{t('f.mail')}</label></div>
           <div className="fld"><textarea id="fm" name="msg" placeholder=" " required /><label htmlFor="fm">{t('f.msg')}</label></div>
           <div className="f__act">
-            <button className="btn" type="submit">{t('f.send')}</button>
-            <p className="f__note">{t('f.note')}</p>
+            <button className="btn" type="submit" disabled={state === 'sending'}>{t('f.send')}</button>
+            <p className="f__note" role="status">{state === 'ok' ? t('f.ok') : t('f.note')}</p>
           </div>
         </form>
       </div>

@@ -1,14 +1,12 @@
 'use client';
 
 import { useEffect, useRef, useState, type FormEvent } from 'react';
-import { authText } from '@/lib/i18n';
 import { submitAuth } from '@/lib/auth';
 import { useSite } from './SiteProvider';
 import { Icon } from './Icon';
 
 export default function AuthDialog() {
-  const { lang, auth, closeAuth, session, signedIn, signOut } = useSite();
-  const A = authText(lang);
+  const { auth, closeAuth, session, signedIn, signOut, A } = useSite();
   const [mode, setMode] = useState<'in' | 'up'>('in');
   const [err, setErr] = useState('');
   const dlg = useRef<HTMLDivElement>(null);

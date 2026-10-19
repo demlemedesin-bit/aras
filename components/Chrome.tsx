@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { LANGS, authText } from '@/lib/i18n';
+import { LANGS } from '@/lib/i18n';
 import { prefersReducedMotion, useSite } from './SiteProvider';
 import { Icon } from './Icon';
 
@@ -52,12 +52,11 @@ function useScrollSpy(ids: readonly string[]) {
 }
 
 export default function Chrome() {
-  const { t, u, lang, langOpen, openLang, session, openAuth } = useSite();
+  const { t, u, lang, langOpen, openLang, session, openAuth, A } = useSite();
   const ids = SECTIONS.map((s) => s.id);
   const active = useScrollSpy(ids);
   const dock = useRef<HTMLElement>(null);
   const curTag = LANGS.find((l) => l.c === lang)?.tag ?? 'TR';
-  const A = authText(lang);
   const authLabel = session ? `${A.hi}${session.name.split(' ')[0]}` : A.btn;
 
   // Dock taşıyorsa aktif bağlantıyı ortala (mobil).

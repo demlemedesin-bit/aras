@@ -1,6 +1,5 @@
 'use client';
 
-import { HERO } from '@/lib/data';
 import { useSite } from '../SiteProvider';
 import { Icon } from '../Icon';
 
@@ -19,7 +18,8 @@ function Ring() {
 }
 
 export default function Hero() {
-  const { t, pickWorld, openTour } = useSite();
+  const { t, pickWorld, openTour, content } = useSite();
+  const HERO = content.hero;
   return (
     <section className="hero" id="top">
       <div className="hero__g">

@@ -1,12 +1,11 @@
 'use client';
 
-import { CONTACT } from '@/lib/data';
 import { LANGS } from '@/lib/i18n';
 import { prefersReducedMotion, useSite } from '../SiteProvider';
 import { Icon } from '../Icon';
 
 export default function Footer() {
-  const { t, u, lang, openLang } = useSite();
+  const { t, u, lang, openLang, content } = useSite();
   const langName = LANGS.find((l) => l.c === lang)?.n ?? 'Türkçe';
   return (
     <footer className="ft">
@@ -19,7 +18,7 @@ export default function Footer() {
         <li><a href="https://arasmetal.com/careers/" target="_blank" rel="noopener">{t('ft.car')}</a></li>
         <li><a href="https://arasmetal.com/faq/" target="_blank" rel="noopener">{t('ft.faq')}</a></li>
         <li><a href="https://arasmetal.com/privacy-policy/" target="_blank" rel="noopener">{t('ft.priv')}</a></li>
-        <li><a href={`mailto:${CONTACT.mail}?subject=${encodeURIComponent(u('cat'))}`}>{t('cta.cat')}</a></li>
+        <li><a href={`mailto:${content.contact.mail}?subject=${encodeURIComponent(u('cat'))}`}>{t('cta.cat')}</a></li>
       </ul>
       <div className="ft__bar">
         <button className="pill pill--w" type="button" aria-haspopup="dialog" onClick={(e) => openLang(true, e.currentTarget)}>

@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useState, type MouseEvent } from 'react';
-import { COLLECTIONS, type Collection, type World } from '@/lib/data';
+import type { Content } from '@/lib/content';
+import type { World } from '@/lib/data';
 import { useSite } from '../SiteProvider';
 import { Icon } from '../Icon';
 
@@ -12,9 +13,9 @@ const WORLDS: { id: World; key: string }[] = [
 ];
 
 export default function Collections() {
-  const { t, world, pickWorld, session, openAuth } = useSite();
+  const { t, world, pickWorld, session, openAuth, content } = useSite();
   const [open, setOpen] = useState('kitchen');
-  const visible = COLLECTIONS.filter((c) => world === 'all' || c.world === world);
+  const visible = content.collections.filter((c) => world === 'all' || c.world === world);
 
   // Filtre değişince açık satır gizlendiyse ilk görünür satırı aç.
   useEffect(() => {
@@ -22,7 +23,7 @@ export default function Collections() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [world]);
 
-  const onClick = (e: MouseEvent, c: Collection) => {
+  const onClick = (e: MouseEvent, c: Content['collections'][number]) => {
     if (open !== c.id) {
       e.preventDefault();
       setOpen(c.id);

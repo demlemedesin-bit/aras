@@ -1,7 +1,8 @@
 'use client';
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { CODES, metaFor, tr, ui, type Lang } from '@/lib/i18n';
+import { CODES, META_TR, type Dict, type Lang } from '@/lib/i18n';
+import { dictFor, type Content } from '@/lib/content';
 import { clearSession, readSession, type Session } from '@/lib/auth';
 import type { World } from '@/lib/data';
 
@@ -12,6 +13,10 @@ type Ctx = {
   t: (key: string) => string;
   /** Arayüz etiketi */
   u: (key: string) => string;
+  /** Bayi girişi metinleri */
+  A: Dict;
+  /** Yönetilebilir site içeriği */
+  content: Content;
   world: World;
   /** Ev / Bahçe filtresini seçer; scrollTo verilirse o bölüme kaydırır. */
   pickWorld: (w: World, scrollTo?: string) => void;
@@ -38,7 +43,7 @@ export function useSite(): Ctx {
 
 export const prefersReducedMotion = () => typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-export function SiteProvider({ children }: { children: ReactNode }) {
+export function SiteProvider({ children, content }: { children: ReactNode; content: Content }) {
   const [lang, setLangState] = useState<Lang>('tr');
   const [world, setWorld] = useState<World>('all');
   const [langOpen, setLangOpen] = useState(false);
@@ -76,10 +81,11 @@ export function SiteProvider({ children }: { children: ReactNode }) {
   // Dil değişince <html lang>, başlık ve açıklama güncellenir.
   useEffect(() => {
     document.documentElement.lang = lang;
-    const m = metaFor(lang);
+    const mt = content.texts.meta;
+    const m = { title: mt.title?.[lang] ?? mt.title?.tr ?? META_TR.title, desc: mt.desc?.[lang] ?? mt.desc?.tr ?? META_TR.desc };
     document.title = m.title;
     document.querySelector('meta[name=description]')?.setAttribute('content', m.desc);
-  }, [lang]);
+  }, [lang, content]);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -127,12 +133,16 @@ export function SiteProvider({ children }: { children: ReactNode }) {
     setSession(null);
   }, []);
 
+  const dicts = useMemo(() => ({ t: dictFor(content, 't', lang), ui: dictFor(content, 'ui', lang), auth: dictFor(content, 'auth', lang) }), [content, lang]);
+
   const value = useMemo<Ctx>(
     () => ({
       lang,
       setLang,
-      t: (k) => tr(lang, k),
-      u: (k) => ui(lang, k),
+      t: (k) => dicts.t[k] ?? k,
+      u: (k) => dicts.ui[k] ?? k,
+      A: dicts.auth,
+      content,
       world,
       pickWorld,
       langOpen,
@@ -147,7 +157,7 @@ export function SiteProvider({ children }: { children: ReactNode }) {
       openTour,
       closeTour,
     }),
-    [lang, setLang, world, pickWorld, langOpen, openLang, session, signedIn, signOut, auth, openAuth, closeAuth, tourOpen, openTour, closeTour],
+    [lang, setLang, dicts, content, world, pickWorld, langOpen, openLang, session, signedIn, signOut, auth, openAuth, closeAuth, tourOpen, openTour, closeTour],
   );
 
   return <SiteCtx.Provider value={value}>{children}</SiteCtx.Provider>;

@@ -1,18 +1,18 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { GALLERY, GALLERY_GROUPS } from '@/lib/data';
+import type { Content } from '@/lib/content';
 import { useSite } from '../SiteProvider';
 import { Icon } from '../Icon';
 
 export default function Gallery() {
-  const { t, u } = useSite();
+  const { t, u, content } = useSite();
   const [group, setGroup] = useState<string>('all');
   const [lb, setLb] = useState<number | null>(null);
   const trigger = useRef<HTMLElement | null>(null);
   const closeBtn = useRef<HTMLButtonElement>(null);
-  const list = group === 'all' ? GALLERY : GALLERY.filter((i) => i.group === group);
-  const alt = (i: (typeof GALLERY)[number]) => `${t(i.label)} ${i.n}`;
+  const list = group === 'all' ? content.gallery : content.gallery.filter((i) => i.group === group);
+  const alt = (i: Content['gallery'][number]) => `${t(i.label)} ${i.n}`;
 
   const close = () => {
     setLb(null);
@@ -43,11 +43,11 @@ export default function Gallery() {
       </div>
       <div className="gal__tabs" role="group">
         <button className="gal__tab" type="button" aria-pressed={group === 'all'} onClick={() => setGroup('all')}>
-          {t('f.all')} <small>{GALLERY.length}</small>
+          {t('f.all')} <small>{content.gallery.length}</small>
         </button>
-        {GALLERY_GROUPS.map((g) => (
+        {content.galleryGroups.map((g) => (
           <button key={g.id} className="gal__tab" type="button" aria-pressed={group === g.id} onClick={() => setGroup(g.id)}>
-            {t(g.label)} <small>{g.count}</small>
+            {t(g.label)} <small>{content.gallery.filter((i) => i.group === g.id).length}</small>
           </button>
         ))}
       </div>

@@ -16,9 +16,15 @@ import News from '@/components/sections/News';
 import Contact from '@/components/sections/Contact';
 import Footer from '@/components/sections/Footer';
 
-export default function Home() {
+import { getContent } from '@/lib/content';
+
+/** İçerik panelden değişince /api/revalidate ile anında, aksi halde 5 dakikada bir yenilenir. */
+export const revalidate = 300;
+
+export default async function Home() {
+  const content = await getContent();
   return (
-    <SiteProvider>
+    <SiteProvider content={content}>
       <Sprite />
       <Preloader />
       <Chrome />

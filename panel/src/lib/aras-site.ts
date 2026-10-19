@@ -73,6 +73,8 @@ export async function seoAudit(base: string) {
   add('viewport', 'Mobil uyumluluk etiketi', attr('viewport') ? 'ok' : 'bad', attr('viewport') ? 'viewport tanımlı' : 'viewport yok')
   add('lang', 'Sayfa dili', meta(/<html[^>]+lang=["']([^"']+)["']/i) ? 'ok' : 'warn', meta(/<html[^>]+lang=["']([^"']+)["']/i) || 'lang etiketi yok')
   const h1 = (html.match(/<h1[\s>]/gi) || []).length
+  add('jsonld', 'Yapılandırılmış veri (JSON-LD)', /application\/ld\+json/i.test(html) ? 'ok' : 'warn', /application\/ld\+json/i.test(html) ? 'Kurum bilgisi tanımlı' : 'Tanımlı değil')
+  add('gsc', 'Google Search Console doğrulaması', attr('google-site-verification') ? 'ok' : 'warn', attr('google-site-verification') ? 'Doğrulama etiketi var' : 'Etiket yok. Aşağıdan doğrulama kodunu ekleyin')
   add('h1', 'Ana başlık (H1)', h1 === 1 ? 'ok' : h1 === 0 ? 'warn' : 'warn', h1 === 1 ? 'Tek H1 var' : h1 === 0 ? 'H1 bulunamadı' : `${h1} adet H1 var (1 olmalı)`)
   const imgs = html.match(/<img\b[^>]*>/gi) || []
   const noAlt = imgs.filter((i) => !/\balt=["'][^"']+["']/i.test(i)).length

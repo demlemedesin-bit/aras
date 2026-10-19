@@ -13,9 +13,11 @@ export default function Page() {
   const [meta, setMeta] = useState<Record<string, Row>>({ title: {}, desc: {} })
   const [lang, setLang] = useState<string>('tr')
   const [saving, setSaving] = useState(false)
+  const [gsc, setGsc] = useState('')
 
   const runAudit = useCallback(() => { setBusy(true); setAudit(null); api('GET', '/api/site?seo=1').then(setAudit).catch((e) => say(e.message)).finally(() => setBusy(false)) }, [say])
   useEffect(() => { runAudit() }, [runAudit])
+  useEffect(() => { getRows('site_settings').then((r) => setGsc(r.find((x) => x.key === 'seo')?.value?.google_verification ?? '')).catch(() => {}) }, [])
   useEffect(() => {
     getRows('site_texts').then((r) => { const m: Record<string, Row> = { title: {}, desc: {} }; for (const x of r) if (x.ns === 'meta' && (x.key === 'title' || x.key === 'desc')) m[x.key] = x.value ?? {}; setMeta(m) }).catch((e) => say(e.message))
   }, [say])
@@ -28,6 +30,7 @@ export default function Page() {
     setSaving(true)
     try {
       for (const k of ['title', 'desc']) await api('POST', '/api/site', { action: 'upsert', table: 'site_texts', row: { ns: 'meta', key: k, value: meta[k] } })
+      await api('POST', '/api/site', { action: 'upsert', table: 'site_settings', row: { key: 'seo', value: { google_verification: gsc.trim() } } })
       say('Kaydedildi. Arama sonuçlarına yansıması birkaç gün sürebilir.')
     } catch (e: any) { say(e.message) } finally { setSaving(false) }
   }
@@ -80,6 +83,14 @@ export default function Page() {
               <Label>Açıklama <span style={{ color: lenTone(desc.length, 110, 160) }}>({desc.length}/160)</span></Label>
               <textarea className="inp" rows={4} value={desc} onChange={(e) => set('desc', e.target.value)} />
               <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 14 }}><button className="btn" disabled={saving} onClick={save}>{saving ? '…' : 'Kaydet'}</button></div>
+            </div>
+          </div>
+          <div className="card">
+            <div className="card-h"><span className="card-title">Google Search Console</span></div>
+            <div style={{ padding: '4px 20px 18px' }}>
+              <Label>Doğrulama kodu (HTML etiketi yöntemi, yalnızca content değeri)</Label>
+              <input className="inp" value={gsc} onChange={(e) => setGsc(e.target.value)} placeholder="ör. aBc123…" />
+              <div style={{ color: 'var(--tx3)', fontSize: 12.5, marginTop: 8, lineHeight: 1.6 }}>Search Console'da siteyi ekleyin, "HTML etiketi" yöntemini seçin ve verilen content değerini buraya yapıştırıp Kaydet'e basın. Sonra Search Console'da Doğrula'ya basın. Sitemap adresi: <b>/sitemap.xml</b></div>
             </div>
           </div>
           <div className="card" style={{ padding: '14px 20px', lineHeight: 1.6, color: 'var(--tx2)' }}>

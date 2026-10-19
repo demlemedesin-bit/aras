@@ -5,6 +5,8 @@ export const runtime = 'nodejs'
 // Çerezsiz, ham IP saklamayan ziyaret sayacı. Ziyaretçi kimliği günlük döner (IP+UA+gün → HMAC).
 const BOT = /bot|crawl|spider|slurp|facebookexternalhit|preview|headless|lighthouse|pingdom|uptime|monitor|vercel|curl|wget|python|axios|node-fetch|go-http|java\//i
 const LANGS = ['tr', 'en', 'de', 'fr', 'es', 'it']
+const EVENTS = ['catalog_open', 'catalog_submit', 'contact_submit', 'tour_open', 'lang_change', 'phone_click', 'mail_click', 'whatsapp_click', 'map_click', 'social_click']
+const SECTIONS = ['top', 'hakkimizda', 'koleksiyonlar', 'urunler', 'galeri', 'showroom', 'surdurulebilirlik', 'haberler', 'iletisim']
 const hits = new Map<string, number>()
 
 export async function POST(req: Request) {
@@ -25,6 +27,10 @@ export async function POST(req: Request) {
   if (hits.size > 5000) hits.clear()
   if (n > 60) return new Response(null, { status: 204 })
 
+  const kind = body.kind === 'event' || body.kind === 'section' ? body.kind : 'view'
+  const name = kind === 'event' ? (EVENTS.includes(body.name) ? body.name : null) : kind === 'section' ? (SECTIONS.includes(body.name) ? body.name : null) : null
+  if (kind !== 'view' && !name) return new Response(null, { status: 204 })
+
   const path = String(body.path || '/').split('?')[0].split('#')[0].slice(0, 200) || '/'
   const lang = LANGS.includes(body.lang) ? body.lang : null
   const country = (req.headers.get('x-vercel-ip-country') || '').slice(0, 2).toUpperCase() || null
@@ -40,8 +46,12 @@ export async function POST(req: Request) {
     await fetch(`${URL_}/rest/v1/site_views`, {
       method: 'POST',
       headers: { apikey: KEY, Authorization: `Bearer ${KEY}`, 'Content-Type': 'application/json', Prefer: 'return=minimal' },
-      body: JSON.stringify({ path, lang, country, referrer, device, vid }),
+      body: JSON.stringify({ kind, name, path, lang, country, referrer, device, vid }),
     })
+    // Eski kayıtları ara sıra temizle (yaklaşık her 500 istekte bir)
+    if (Math.random() < 0.002) {
+      await fetch(`${URL_}/rest/v1/rpc/site_views_cleanup`, { method: 'POST', headers: { apikey: KEY, Authorization: `Bearer ${KEY}`, 'Content-Type': 'application/json' }, body: '{}' })
+    }
   } catch {}
   return new Response(null, { status: 204 })
 }

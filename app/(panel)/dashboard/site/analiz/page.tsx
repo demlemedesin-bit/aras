@@ -8,6 +8,8 @@ const DEVICE: Record<string, string> = { mobile: 'Telefon', desktop: 'Bilgisayar
 const LANG: Record<string, string> = { tr: 'Türkçe', en: 'İngilizce', de: 'Almanca', fr: 'Fransızca', es: 'İspanyolca', it: 'İtalyanca' }
 const country = (c: string) => { try { return c.length === 2 ? new Intl.DisplayNames(['tr'], { type: 'region' }).of(c) ?? c : c } catch { return c } }
 const PERIODS = [7, 14, 30, 90]
+const EVENT: Record<string, string> = { catalog_open: 'Katalog formu açıldı', catalog_submit: 'Katalog talebi gönderildi', contact_submit: 'İletişim formu gönderildi', tour_open: '360° tur açıldı', phone_click: 'Telefona tıklandı', mail_click: 'E-postaya tıklandı', whatsapp_click: 'WhatsApp\'a tıklandı', map_click: 'Haritaya tıklandı', social_click: 'Sosyal medyaya tıklandı', lang_change: 'Dil değiştirildi' }
+const SECTION: [string, string][] = [['top', 'Açılış'], ['hakkimizda', 'Hakkımızda'], ['koleksiyonlar', 'Koleksiyonlar'], ['urunler', 'Ürünler'], ['galeri', 'Galeri'], ['showroom', 'Showroom'], ['surdurulebilirlik', 'Sürdürülebilirlik'], ['haberler', 'Haberler'], ['iletisim', 'İletişim']]
 
 function Kpi({ label, value, Icon, delta, spark }: { label: string; value: string | number; Icon: typeof Users; delta?: React.ReactNode; spark?: number[] }) {
   return (
@@ -57,6 +59,26 @@ export default function Page() {
       <div className="card" style={{ marginTop: 18 }}>
         <div className="card-h"><span className="card-title">Ziyaretçi ve görüntüleme</span><span className="card-meta">son {days} gün</span></div>
         {a ? <AreaChart labels={daily.map((d: Row) => dayLabel(d.day))} series={[{ name: 'Ziyaretçi', data: vis, color: 'var(--ac)', fill: true }, { name: 'Görüntüleme', data: daily.map((d: Row) => d.views), color: 'var(--blue)' }]} /> : <div style={{ padding: 22, color: 'var(--tx3)' }}>Yükleniyor…</div>}
+      </div>
+
+      <div style={{ ...grid(440), marginTop: 18 }}>
+        <div className="card">
+          <div className="card-h"><span className="card-title">Hangi bölümlere ulaşılıyor</span><span className="card-meta">ziyaretçi oranı</span></div>
+          <BarList items={SECTION.map(([id, label]) => ({ label, value: a?.sections?.find((x: Row) => x.name === id)?.visitors ?? 0 }))} format={(v) => (a && a.totals.visitors ? `%${Math.min(100, Math.round((v / a.totals.visitors) * 100))}` : '0')} empty="Henüz veri yok" />
+        </div>
+        <div className="card">
+          <div className="card-h"><span className="card-title">Etkileşimler</span><span className="card-meta">toplam sayı</span></div>
+          <BarList items={(a?.events ?? []).map((e: Row) => ({ label: EVENT[e.name] ?? e.name, value: e.total }))} empty="Henüz etkileşim yok" />
+        </div>
+      </div>
+
+      <div className="card" style={{ marginTop: 18 }}>
+        <div className="card-h"><span className="card-title">Talep hunisi</span><span className="card-meta">ziyaretçiden talebe</span></div>
+        <BarList items={a ? [
+          { label: 'Siteyi ziyaret eden', value: a.totals.visitors },
+          { label: 'Katalog formunu açan', value: a.events?.find((e: Row) => e.name === 'catalog_open')?.visitors ?? 0 },
+          { label: 'Talep gönderen', value: a.requests },
+        ] : []} empty="Yükleniyor…" />
       </div>
 
       <div style={{ ...grid(360), marginTop: 18 }}>

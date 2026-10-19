@@ -1,4 +1,5 @@
 'use client';
+import { track } from '@/lib/track';
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { CODES, META_TR, type Dict, type Lang } from '@/lib/i18n';
@@ -62,6 +63,7 @@ export function SiteProvider({ children, content }: { children: ReactNode; conte
   const setLang = useCallback((l: Lang) => {
     const next = CODES.includes(l) ? l : 'tr';
     setLangState(next);
+    track('event', 'lang_change');
     try {
       localStorage.setItem('aras-lang', next);
     } catch {
@@ -125,6 +127,7 @@ export function SiteProvider({ children, content }: { children: ReactNode; conte
   const openTour = useCallback((from?: HTMLElement | null) => {
     lastTour.current = from ?? (document.activeElement as HTMLElement | null);
     setTourOpen(true);
+    track('event', 'tour_open');
   }, []);
   const closeTour = useCallback(() => {
     setTourOpen(false);
@@ -135,6 +138,7 @@ export function SiteProvider({ children, content }: { children: ReactNode; conte
   const openCatalog = useCallback(() => {
     lastCatalog.current = document.activeElement as HTMLElement | null;
     setCatalogOpen(true);
+    track('event', 'catalog_open');
   }, []);
   const closeCatalog = useCallback(() => {
     setCatalogOpen(false);

@@ -1,3 +1,5 @@
+import { track } from './track';
+
 /** Form gönderimi: Supabase `submissions` tablosuna kaydedilir. E-posta uygulaması açılmaz. */
 export type Submission = { name: string; email: string; company?: string; phone?: string; country?: string; message?: string; topic: 'catalog' | 'contact'; lang: string };
 
@@ -20,6 +22,7 @@ export async function sendSubmission(s: Submission): Promise<boolean> {
         lang: s.lang,
       }),
     });
+    if (r.ok) track('event', s.topic === 'catalog' ? 'catalog_submit' : 'contact_submit');
     return r.ok;
   } catch {
     return false;

@@ -1,19 +1,18 @@
-# Site yönetimi
+# Aras Metal yönetim paneli (`panel/`)
 
-Site içeriği Supabase `aras` projesinde durur (`site_*` tabloları). Site her 5 dakikada bir okur; panel kaydedince `/api/revalidate` ile anında yenilenir. Supabase'e ulaşılamazsa gömülü varsayılan içerik gösterilir (site hiçbir zaman boş kalmaz).
+Ayrı bir Next.js uygulaması (Vercel'de **Root Directory = `panel`** olarak ayrı proje). Web sitesiyle aynı Supabase projesini (`aras`) kullanır.
 
-| Tablo | İçerik |
-|---|---|
-| `site_texts` | Tüm metinler, 6 dil (`t` site, `ui` arayüz, `auth` bayi girişi, `meta` başlık/açıklama) |
-| `site_collections`, `site_products` | Koleksiyonlar, öne çıkan ürünler (başlık/ad `site_texts` anahtarına bağlı) |
-| `site_gallery_groups`, `site_gallery_images` | Galeri sekmeleri ve görselleri |
-| `site_news`, `site_partners` | Haberler, iş ortakları |
-| `site_settings` | `hero` (3 görsel), `contact` (telefon, e-posta, harita, sosyal), `langs` |
-| `submissions` | İletişim formundan gelen mesajlar |
-| `dealers` | Bayi hesapları için hazır tablo (Supabase Auth bağlanınca kullanılacak) |
+**Modüller:** Dashboard · Müşteriler · Görevler · Takvim · Notlar · İçerik · Onay · Paylaşım · Operasyon · Gecikmeler · Finans · Muhasebe · Performans · Kullanıcılar (roller) · Şablonlar · Araçlar · Otomasyonlar (SMS/e-posta) · Toplantılar · Destek · Kılavuz · **Site Yönetimi**.
 
-Görseller: `/images/..` (repodaki dosyalar) ya da `storage:dosya.webp` (Supabase `site-media` kovası; panelden yüklenir).
+**Site Yönetimi:** web sitesinin her parçası (6 dilli metinler, koleksiyonlar, ürünler, galeri, haberler, ortaklar, hero görselleri, iletişim bilgileri, medya kütüphanesi) ve formdan gelen **Mesajlar / Katalog talepleri** buradan yönetilir. Kayıt anında siteyi yeniler.
 
-Güvenlik: tüm içerik tabloları herkese **okunur**, **yazma yalnızca service role** ile (panel sunucusu). `submissions` için anonim yalnızca ekleme yapılabilir.
+## Kurulum
+1. `panel/supabase/schema.sql` dosyasını Supabase SQL Editor'de bir kez çalıştırın (tablolar, roller, güvenlik kuralları). Site tabloları zaten kurulu.
+2. Supabase → Authentication → Users → "Add user" ile ilk hesabı açın. Hiç yönetici yoksa ilk açılan hesap otomatik **admin** olur; sonrakiler `Kullanıcılar` sayfasından davet edilir/roller verilir.
+3. Vercel'de panel projesi için `panel/.env.example` değişkenlerini girin. Sitede de `REVALIDATE_SECRET` (aynı değer) tanımlı olsun.
 
-Panel kurulumu: `panel-module/README.md`. Siteyi çalıştırmak için `.env.example` değerlerini Vercel'e girin.
+## Veri ve güvenlik
+Roller: admin, manager, member, muhasebe. Finans yalnızca admin ve muhasebe; sistem ayarları (SMS/SMTP şifreleri) yalnızca admin/manager; kişisel notlar, bildirimler yalnızca sahibi görür; rol yükseltmeyi yalnızca admin yapabilir. Site içeriği tabloları herkese okunur, yazma yalnızca panelin sunucu tarafından (service role).
+
+## Web sitesi formları
+"Katalog iste" ve iletişim formu e-posta uygulaması açmaz; kayıt `submissions` tablosuna düşer ve panelde Site Yönetimi → Mesajlar'da görünür.

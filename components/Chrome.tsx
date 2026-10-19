@@ -52,7 +52,7 @@ function useScrollSpy(ids: readonly string[]) {
 }
 
 export default function Chrome() {
-  const { t, u, lang, langOpen, openLang, session, openAuth, A } = useSite();
+  const { t, u, lang, langOpen, openLang, session, openAuth, A, openCatalog } = useSite();
   const ids = SECTIONS.map((s) => s.id);
   const active = useScrollSpy(ids);
   const dock = useRef<HTMLElement>(null);
@@ -67,7 +67,6 @@ export default function Chrome() {
     if (a) d.scrollTo({ left: a.offsetLeft - (d.clientWidth - a.offsetWidth) / 2, behavior: prefersReducedMotion() ? 'auto' : 'smooth' });
   }, [active]);
 
-  const mail = `mailto:info@arasmetal.com?subject=${encodeURIComponent(u('cat'))}`;
   const login = useCallback(() => openAuth(), [openAuth]);
 
   return (
@@ -100,10 +99,10 @@ export default function Chrome() {
             <Icon n="globe" />
             <span>{curTag}</span>
           </button>
-          <a className="pill pill--k top__cta" href={mail}>
+          <button className="pill pill--k top__cta" type="button" aria-haspopup="dialog" onClick={openCatalog}>
             <span>{t('cta.cat')}</span>
             <Icon n="arr" />
-          </a>
+          </button>
         </div>
       </header>
 

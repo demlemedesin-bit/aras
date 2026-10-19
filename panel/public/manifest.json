@@ -1,0 +1,66 @@
+{
+  "id": "/dashboard",
+  "name": "Aras Metal",
+  "short_name": "Aras Metal",
+  "description": "Aras Metal Yönetim Paneli",
+  "start_url": "/dashboard",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone"],
+  "background_color": "#0c0c10",
+  "theme_color": "#299826",
+  "orientation": "any",
+  "lang": "tr",
+  "dir": "ltr",
+  "categories": ["business", "productivity"],
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Aras Metal Dashboard"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Görevler",
+      "short_name": "Görevler",
+      "url": "/dashboard/gorevler",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Operasyon",
+      "short_name": "Operasyon",
+      "url": "/dashboard/operasyon",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Onay",
+      "short_name": "Onay",
+      "url": "/dashboard/onay",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    }
+  ],
+  "prefer_related_applications": false
+}

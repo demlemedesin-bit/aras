@@ -4,6 +4,7 @@ import Preloader from '@/components/Preloader';
 import Chrome from '@/components/Chrome';
 import LangPanel from '@/components/LangPanel';
 import AuthDialog from '@/components/AuthDialog';
+import CatalogDialog from '@/components/CatalogDialog';
 import Tour from '@/components/Tour';
 import Hero from '@/components/sections/Hero';
 import About from '@/components/sections/About';
@@ -41,6 +42,7 @@ export default async function Home() {
       </main>
       <Footer />
       <AuthDialog />
+      <CatalogDialog />
       <Tour />
       <LangPanel />
     </SiteProvider>

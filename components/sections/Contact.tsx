@@ -3,40 +3,23 @@
 import { useState, type FormEvent } from 'react';
 import { useSite } from '../SiteProvider';
 import { Icon } from '../Icon';
+import { sendSubmission } from '@/lib/submit';
 
 export default function Contact() {
-  const { t, u, lang, content } = useSite();
+  const { t, lang, content } = useSite();
 
-  const [state, setState] = useState<'idle' | 'sending' | 'ok'>('idle');
+  const [state, setState] = useState<'idle' | 'sending' | 'ok' | 'err'>('idle');
 
-  // Mesaj Supabase'e kaydedilir (panelde görünür); olmazsa e-posta uygulaması önceden doldurulmuş açılır.
+  // Mesaj Supabase'e kaydedilir ve panelde görünür. E-posta uygulaması açılmaz.
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const f = e.currentTarget;
     if (!f.reportValidity()) return;
     const d = new FormData(f);
-    const mailto = () => {
-      const subject = u('s') + d.get('name');
-      const body = `${u('nm')}${d.get('name')}\n${u('co')}${d.get('company') || '-'}\n${u('em')}${d.get('email')}\n\n${d.get('msg')}`;
-      location.href = `mailto:${content.contact.mail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    };
-    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-    if (!url || !key) return mailto();
     setState('sending');
-    try {
-      const r = await fetch(`${url}/rest/v1/submissions`, {
-        method: 'POST',
-        headers: { apikey: key, Authorization: `Bearer ${key}`, 'Content-Type': 'application/json', Prefer: 'return=minimal' },
-        body: JSON.stringify({ name: d.get('name'), company: d.get('company') || null, email: d.get('email'), message: d.get('msg'), lang, topic: 'contact' }),
-      });
-      if (!r.ok) throw new Error(String(r.status));
-      f.reset();
-      setState('ok');
-    } catch {
-      setState('idle');
-      mailto();
-    }
+    const ok = await sendSubmission({ name: String(d.get('name')), email: String(d.get('email')), company: String(d.get('company') ?? ''), message: String(d.get('msg')), topic: 'contact', lang });
+    if (ok) f.reset();
+    setState(ok ? 'ok' : 'err');
   };
 
   const lines = t('ct.adrv').split('<br>');
@@ -52,7 +35,7 @@ export default function Contact() {
           <dl className="info">
             <div><dt>{t('ct.tel')}</dt><dd><a href={CONTACT.telHref}>{CONTACT.tel}</a></dd></div>
             <div><dt>{t('ct.fax')}</dt><dd><a href={CONTACT.faxHref}>{CONTACT.fax}</a></dd></div>
-            <div><dt>{t('ct.mail')}</dt><dd><a href={`mailto:${CONTACT.mail}`}>{CONTACT.mail}</a></dd></div>
+            <div><dt>{t('ct.mail')}</dt><dd>{CONTACT.mail}</dd></div>
             <div>
               <dt>{t('ct.adr')}</dt>
               <dd>
@@ -89,7 +72,7 @@ export default function Contact() {
           <div className="fld"><textarea id="fm" name="msg" placeholder=" " required /><label htmlFor="fm">{t('f.msg')}</label></div>
           <div className="f__act">
             <button className="btn" type="submit" disabled={state === 'sending'}>{t('f.send')}</button>
-            <p className="f__note" role="status">{state === 'ok' ? t('f.ok') : t('f.note')}</p>
+            <p className="f__note" role="status">{state === 'ok' ? t('f.ok') : state === 'err' ? t('f.err') : t('f.note')}</p>
           </div>
         </form>
       </div>

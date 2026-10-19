@@ -28,6 +28,9 @@ type Ctx = {
   auth: { open: boolean; next: string | null };
   openAuth: (next?: string | null) => void;
   closeAuth: () => void;
+  catalogOpen: boolean;
+  openCatalog: () => void;
+  closeCatalog: () => void;
   tourOpen: boolean;
   openTour: (from?: HTMLElement | null) => void;
   closeTour: () => void;
@@ -50,6 +53,8 @@ export function SiteProvider({ children, content }: { children: ReactNode; conte
   const [session, setSession] = useState<Session | null>(null);
   const [auth, setAuth] = useState<{ open: boolean; next: string | null }>({ open: false, next: null });
   const [tourOpen, setTourOpen] = useState(false);
+  const [catalogOpen, setCatalogOpen] = useState(false);
+  const lastCatalog = useRef<HTMLElement | null>(null);
   const lastLang = useRef<HTMLElement | null>(null);
   const lastAuth = useRef<HTMLElement | null>(null);
   const lastTour = useRef<HTMLElement | null>(null);
@@ -90,9 +95,9 @@ export function SiteProvider({ children, content }: { children: ReactNode; conte
   useEffect(() => {
     const root = document.documentElement;
     root.classList.toggle('lang-open', langOpen);
-    root.classList.toggle('auth-open', auth.open);
+    root.classList.toggle('auth-open', auth.open || catalogOpen);
     root.style.overflow = tourOpen ? 'hidden' : '';
-  }, [langOpen, auth.open, tourOpen]);
+  }, [langOpen, auth.open, catalogOpen, tourOpen]);
 
   const pickWorld = useCallback((w: World, scrollTo?: string) => {
     setWorld(w);
@@ -127,6 +132,15 @@ export function SiteProvider({ children, content }: { children: ReactNode; conte
     lastTour.current?.focus?.();
   }, []);
 
+  const openCatalog = useCallback(() => {
+    lastCatalog.current = document.activeElement as HTMLElement | null;
+    setCatalogOpen(true);
+  }, []);
+  const closeCatalog = useCallback(() => {
+    setCatalogOpen(false);
+    lastCatalog.current?.focus?.();
+  }, []);
+
   const signedIn = useCallback((s: Session) => setSession(s), []);
   const signOut = useCallback(() => {
     clearSession();
@@ -153,11 +167,14 @@ export function SiteProvider({ children, content }: { children: ReactNode; conte
       auth,
       openAuth,
       closeAuth,
+      catalogOpen,
+      openCatalog,
+      closeCatalog,
       tourOpen,
       openTour,
       closeTour,
     }),
-    [lang, setLang, dicts, content, world, pickWorld, langOpen, openLang, session, signedIn, signOut, auth, openAuth, closeAuth, tourOpen, openTour, closeTour],
+    [lang, setLang, dicts, content, world, pickWorld, langOpen, openLang, session, signedIn, signOut, auth, openAuth, closeAuth, catalogOpen, openCatalog, closeCatalog, tourOpen, openTour, closeTour],
   );
 
   return <SiteCtx.Provider value={value}>{children}</SiteCtx.Provider>;

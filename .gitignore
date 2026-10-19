@@ -7,3 +7,8 @@ next-env.d.ts
 .vercel
 .DS_Store
 !.env.example
+*.tsbuildinfo
+panel/.next
+panel/node_modules
+panel/.env*
+!panel/.env.example

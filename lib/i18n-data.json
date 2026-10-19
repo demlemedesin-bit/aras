@@ -294,7 +294,8 @@
       "about.p2": "Upholding our commitment to delivering unique designs, superior quality, and durability, Aras Metal continues to blend craftsmanship tradition with contemporary aesthetics. Explore our catalog and elevate your living spaces with timeless elegance.",
       "hist.y1": "Early years",
       "hist.y2": "Mid-1980s",
-      "hist.y3": "2000s"
+      "hist.y3": "2000s",
+      "dp.all": "For all of our products"
     },
     "de": {
       "skip": "Zum Inhalt springen",
@@ -438,7 +439,8 @@
       "about.p2": "Mit unserem Anspruch auf einzigartiges Design, hervorragende Qualität und Langlebigkeit verbindet Aras Metal weiterhin Handwerkstradition mit zeitgemäßer Ästhetik. Entdecken Sie unseren Katalog und werten Sie Ihre Wohnräume mit zeitloser Eleganz auf.",
       "hist.y1": "Die Anfänge",
       "hist.y2": "Mitte der 1980er",
-      "hist.y3": "2000er"
+      "hist.y3": "2000er",
+      "dp.all": "Für unser gesamtes Sortiment"
     },
     "fr": {
       "skip": "Aller au contenu",
@@ -582,7 +584,8 @@
       "about.p2": "Fidèle à son engagement de proposer des designs uniques, une qualité supérieure et une grande durabilité, Aras Metal continue d’associer tradition artisanale et esthétique contemporaine. Parcourez notre catalogue et sublimez vos espaces de vie avec une élégance intemporelle.",
       "hist.y1": "Les débuts",
       "hist.y2": "Milieu des années 1980",
-      "hist.y3": "Années 2000"
+      "hist.y3": "Années 2000",
+      "dp.all": "Pour tous nos produits"
     },
     "es": {
       "skip": "Saltar al contenido",
@@ -726,7 +729,8 @@
       "about.p2": "Fiel a su compromiso de ofrecer diseños únicos, calidad superior y durabilidad, Aras Metal sigue uniendo la tradición artesanal con la estética contemporánea. Explore nuestro catálogo y eleve sus espacios con una elegancia atemporal.",
       "hist.y1": "Los primeros años",
       "hist.y2": "Mediados de los 80",
-      "hist.y3": "Años 2000"
+      "hist.y3": "Años 2000",
+      "dp.all": "Para todos nuestros productos"
     },
     "it": {
       "skip": "Vai al contenuto",
@@ -870,7 +874,8 @@
       "about.p2": "Fedele all’impegno di offrire design unici, qualità superiore e durata, Aras Metal continua a unire la tradizione artigianale all’estetica contemporanea. Sfoglia il nostro catalogo e valorizza i tuoi spazi con un’eleganza senza tempo.",
       "hist.y1": "I primi anni",
       "hist.y2": "Metà degli anni ’80",
-      "hist.y3": "Anni 2000"
+      "hist.y3": "Anni 2000",
+      "dp.all": "Per tutti i nostri prodotti"
     },
     "tr": {
       "skip": "İçeriğe geç",
@@ -1014,7 +1019,8 @@
       "about.p2": "Özgün tasarım, üstün kalite ve dayanıklılık taahhüdümüzü sürdürerek Aras Metal, zanaat geleneğini çağdaş estetikle buluşturmaya devam ediyor. Kataloğumuzu inceleyin ve yaşam alanlarınızı zamansız bir zarafetle yükseltin.",
       "hist.y1": "İlk yıllar",
       "hist.y2": "1980’lerin ortası",
-      "hist.y3": "2000’ler"
+      "hist.y3": "2000’ler",
+      "dp.all": "Ürünlerimizin tümü için"
     }
   },
   "auth": {

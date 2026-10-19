@@ -1,10 +1,34 @@
 'use client'
 import { useCallback, useEffect, useState } from 'react'
 import { ArrowDown, ArrowUp, Plus, RotateCcw, Trash2 } from 'lucide-react'
-import { LANGS, LANG_NAMES, Label, PageHead, api, getRows, useToast, type Row } from '@panel/components/site/ui'
+import { MediaPicker, preview, LANGS, LANG_NAMES, Label, PageHead, api, getRows, useToast, type Row } from '@panel/components/site/ui'
 import { DEFAULT_CATEGORIES, catName, type Cat } from '@/lib/categories'
 
 const slug = (s: string) => s.toLowerCase().replace(/ç/g, 'c').replace(/ğ/g, 'g').replace(/ı/g, 'i').replace(/ö/g, 'o').replace(/ş/g, 's').replace(/ü/g, 'u').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+function Photos({ photos, onChange }: { photos: string[]; onChange: (p: string[]) => void }) {
+  const say = useToast(); const [busy, setBusy] = useState(false); const [pick, setPick] = useState(false)
+  async function up(files: FileList) {
+    setBusy(true)
+    try { const add: string[] = []; for (const f of Array.from(files)) { const fd = new FormData(); fd.append('file', f); add.push((await api('POST', '/api/site', fd)).path) } onChange([...photos, ...add]) } catch (e: any) { say(e.message) } finally { setBusy(false) }
+  }
+  return (
+    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
+      {photos.map((u, i) => (
+        <div key={u + i} style={{ position: 'relative' }} title={i === 0 ? 'Kapak görseli' : ''}>
+          <div style={{ width: 62, height: 62, borderRadius: 8, background: `var(--s3) center/cover url(${preview(u)})`, border: i === 0 ? '2px solid var(--ac, #2a6)' : '1px solid var(--bdr)' }} />
+          <div style={{ position: 'absolute', top: -6, right: -6, display: 'flex', gap: 2 }}>
+            {i > 0 && <button type="button" className="btn-ghost" style={{ padding: '0 5px', fontSize: 11 }} aria-label="Sola al" onClick={() => onChange(mv(photos, i, -1))}>‹</button>}
+            <button type="button" className="btn-danger" style={{ padding: '0 5px', fontSize: 11 }} aria-label="Kaldır" onClick={() => onChange(photos.filter((_, j) => j !== i))}>×</button>
+          </div>
+        </div>
+      ))}
+      <label className="btn-ghost" style={{ cursor: 'pointer' }}>{busy ? '…' : '+ Yükle'}<input type="file" accept="image/*" multiple hidden onChange={(e) => e.target.files?.length && up(e.target.files)} /></label>
+      <button type="button" className="btn-ghost" onClick={() => setPick(true)}>Kütüphane</button>
+      {pick && <MediaPicker onClose={() => setPick(false)} onPick={(p) => { onChange([...photos, p]); setPick(false) }} />}
+    </div>
+  )
+}
+
 const mv = <T,>(a: T[], i: number, d: -1 | 1) => { const b = [...a]; const j = i + d; if (j < 0 || j >= b.length) return b; [b[i], b[j]] = [b[j], b[i]]; return b }
 
 export default function Page() {
@@ -57,14 +81,21 @@ export default function Page() {
               <button className="btn-ghost" aria-label="Aşağı" onClick={() => setTree(mv(tree, i, 1))}><ArrowDown size={14} /></button>
               <button className="btn-danger" aria-label="Sil" onClick={() => { if (!m.subs.length || confirm(`${catName(m.name, 'tr')} ve ${m.subs.length} alt kategorisi silinsin mi? Bağlı ürünler kategorisiz kalır.`)) setTree(tree.filter((_, j) => j !== i)) }}><Trash2 size={14} /></button>
             </div>
+            <div style={{ margin: '12px 0 0' }}>
+              <Label>Görseller (ilki kapak olur, ‹ ile öne al)</Label>
+              <Photos photos={m.photos ?? []} onChange={(p) => setMain(i, { photos: p, img: p[0] })} />
+            </div>
             <div style={{ margin: '12px 0 0 18px', paddingLeft: 14, borderLeft: '2px solid var(--bdr)', display: 'grid', gap: 8 }}>
               {m.subs.map((s, k) => (
-                <div key={s.id} style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                <div key={s.id} style={{ display: 'grid', gap: 8 }}>
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                   <input className="inp" style={{ flex: 1 }} placeholder={`Alt kategori adı (${LANG_NAMES[lang]})`} value={nm(s.name)} onChange={(e) => setSub(i, k, { ...s.name, [lang]: e.target.value })} />
                   <span style={{ color: 'var(--tx3)', fontSize: 12.5, minWidth: 60 }}>{counts[s.id] ?? 0} ürün</span>
                   <button className="btn-ghost" aria-label="Yukarı" onClick={() => setMain(i, { subs: mv(m.subs, k, -1) })}><ArrowUp size={14} /></button>
                   <button className="btn-ghost" aria-label="Aşağı" onClick={() => setMain(i, { subs: mv(m.subs, k, 1) })}><ArrowDown size={14} /></button>
                   <button className="btn-danger" aria-label="Sil" onClick={() => setMain(i, { subs: m.subs.filter((_, l) => l !== k) })}><Trash2 size={14} /></button>
+                </div>
+                <Photos photos={s.photos ?? []} onChange={(p) => setMain(i, { subs: m.subs.map((x, l) => (l === k ? { ...x, photos: p, img: p[0] } : x)) })} />
                 </div>
               ))}
               <div><button className="btn-ghost" onClick={() => addSub(i)}><Plus size={14} /> Alt kategori ekle</button></div>

@@ -507,3 +507,15 @@ html.lb-open{overflow:hidden}
 .dp .dp__g{grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}
 @media (max-width:820px){.dp__wrap{grid-template-columns:1fr}.dp__tg{display:inline-flex}.dp__nav{display:none;position:static}.dp__nav.open{display:grid}}
 .dp__noimg{font-weight:700;color:var(--ash);font-size:1.2rem}
+
+.mm{position:relative}
+.mm__b{display:inline-flex;align-items:center;gap:6px;position:relative;padding:8px 0}
+.mm__b svg{width:10px;height:10px}
+.mm__p{position:absolute;top:100%;left:-18px;min-width:240px;margin:0;padding:12px 8px;list-style:none;background:#fff;border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.16),0 0 0 1px rgba(0,0,0,.06);opacity:0;visibility:hidden;transform:translateY(6px);transition:opacity .2s,transform .2s,visibility .2s}
+.mm:hover .mm__p,.mm:focus-within .mm__p{opacity:1;visibility:visible;transform:none}
+.mm__p a{display:block;padding:8px 12px;border-radius:8px;font-weight:600;white-space:nowrap}
+.mm__p a:hover{background:#f2f2f2}
+.mm__p ul{margin:0 0 4px;padding:0 0 0 14px;list-style:none}
+.mm__p ul a{font-weight:500;font-size:14px;color:#444;padding:5px 12px}
+@media (max-width:900px){.mm{display:none}}
+.top__nav .mm__p a::after{display:none}

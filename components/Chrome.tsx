@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { LANGS } from '@/lib/i18n';
 import { prefersReducedMotion, useSite } from './SiteProvider';
 import { Icon } from './Icon';
+import { catName } from '@/lib/categories';
 
 const SECTIONS = [
   { id: 'tarihce', key: 'nav.hist' },
@@ -52,7 +53,7 @@ function useScrollSpy(ids: readonly string[]) {
 }
 
 export default function Chrome() {
-  const { t, u, lang, langOpen, openLang, session, openAuth, A, openCatalog } = useSite();
+  const { t, u, lang, langOpen, openLang, session, openAuth, A, openCatalog, pickWorld, content } = useSite();
   const ids = SECTIONS.map((s) => s.id);
   const active = useScrollSpy(ids);
   const dock = useRef<HTMLElement>(null);
@@ -77,6 +78,44 @@ export default function Chrome() {
           <img src="/images/logo.png" alt="" width={340} height={130} />
         </a>
         <nav className="top__nav" aria-label={u('menu')}>
+          {(['home', 'garden'] as const).map((w) => (
+            <div className="mm" key={w}>
+              <a
+                href="#koleksiyonlar"
+                className="mm__b"
+                onClick={(e) => { e.preventDefault(); pickWorld(w, 'koleksiyonlar'); }}
+              >
+                {t(w === 'home' ? 'tab.home' : 'tab.garden')}
+                <Icon n="arr" rotate={90} />
+              </a>
+              <ul className="mm__p">
+                {content.categories.filter((m) => m.world === w).map((m) => (
+                  <li key={m.id}>
+                    <a
+                      href={session ? `/bayi/urunler?k=${m.id}` : '#koleksiyonlar'}
+                      onClick={session ? undefined : (e) => { e.preventDefault(); pickWorld(w, 'koleksiyonlar'); }}
+                    >
+                      {catName(m.name, lang)}
+                    </a>
+                    {m.subs.length > 0 && (
+                      <ul>
+                        {m.subs.map((x) => (
+                          <li key={x.id}>
+                            <a
+                              href={session ? `/bayi/urunler?k=${m.id}` : '#koleksiyonlar'}
+                              onClick={session ? undefined : (e) => { e.preventDefault(); pickWorld(w, 'koleksiyonlar'); }}
+                            >
+                              {catName(x.name, lang)}
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
           {SECTIONS.filter((s) => HEADER_NAV.includes(s.id)).map((s) => (
             <a key={s.id} href={`#${s.id}`} aria-current={active === s.id ? 'true' : undefined}>
               {t(s.key)}

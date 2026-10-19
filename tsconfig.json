@@ -25,6 +25,9 @@
     "paths": {
       "@/*": [
         "./*"
+      ],
+      "@panel/*": [
+        "./panel/src/*"
       ]
     }
   },
@@ -37,7 +40,6 @@
   ],
   "exclude": [
     "node_modules",
-    "panel",
     "scripts"
   ]
 }

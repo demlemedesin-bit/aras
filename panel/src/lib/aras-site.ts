@@ -1,3 +1,4 @@
+import { revalidatePath, revalidateTag } from 'next/cache'
 // Aras Metal web sitesi içeriği (aynı Supabase projesi). YALNIZCA sunucuda kullanın: service role anahtarı gerekir.
 const URL_ = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!
@@ -37,9 +38,7 @@ export async function siteListMedia() {
 export async function siteDeleteMedia(name: string) {
   await check(await fetch(`${URL_}/storage/v1/object/site-media`, { method: 'DELETE', headers: h(), body: JSON.stringify({ prefixes: [name] }) }))
 }
-/** Web sitesine "içerik değişti" haberi: önbelleği anında yeniler. */
+/** Site ile panel aynı uygulamada: önbelleği doğrudan yenile. */
 export async function siteRevalidate() {
-  const site = process.env.NEXT_PUBLIC_SITE_URL, secret = process.env.SITE_REVALIDATE_SECRET
-  if (!site || !secret) return false
-  try { return (await fetch(`${site}/api/revalidate`, { method: 'POST', headers: { Authorization: `Bearer ${secret}` } })).ok } catch { return false }
+  try { revalidateTag('site-content', { expire: 0 }); revalidatePath('/'); return true } catch { return false }
 }

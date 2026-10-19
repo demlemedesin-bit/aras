@@ -2,7 +2,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
+import { createClient } from '@panel/lib/supabase/client'
 import { LayoutDashboard, CheckSquare, Users, BarChart2, FileText, ShieldCheck } from 'lucide-react'
 
 const NAV_ALL = [

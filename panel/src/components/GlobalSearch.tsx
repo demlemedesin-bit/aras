@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
+import { createClient } from '@panel/lib/supabase/client'
 import { Search, FolderOpen, CheckSquare, Users, FileText, X } from 'lucide-react'
 
 const ICONS: Record<string,any> = { projects: FolderOpen, tasks: CheckSquare, clients: Users, contents: FileText }

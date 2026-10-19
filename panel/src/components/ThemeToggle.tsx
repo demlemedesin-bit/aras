@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { Sun, Moon } from 'lucide-react'
-import { createClient } from '@/lib/supabase/client'
+import { createClient } from '@panel/lib/supabase/client'
 
 export default function ThemeToggle() {
   const [theme, setTheme] = useState<'dark'|'light'>('dark')

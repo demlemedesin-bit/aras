@@ -1,9 +1,9 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
-import { createClient } from '@/lib/supabase/client'
+import { createClient } from '@panel/lib/supabase/client'
 import { Bell, CheckCheck, X, AlertCircle, CheckCircle2, MessageSquare, UserCog } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { fmtRelative } from '@/lib/utils'
+import { fmtRelative } from '@panel/lib/utils'
 
 const TYPE_CONFIG: Record<string, { icon: any; color: string; bg: string }> = {
   task_assigned:    { icon: UserCog,      color: 'var(--ac)',    bg: 'var(--ac2)'    },

@@ -21,11 +21,13 @@ export async function GET(req: Request) {
     if (sp.get('media')) return NextResponse.json({ files: await siteListMedia() })
     if (sp.get('unread')) return NextResponse.json({ unread: await siteCount('submissions', 'status=eq.new') })
     if (sp.get('stats')) {
-      const [texts, collections, products, gallery, news, partners, inbox, unread, subs] = await Promise.all([
+      const [texts, collections, products, gallery, news, partners, subs] = await Promise.all([
         siteCount('site_texts'), siteCount('site_collections'), siteCount('site_products'), siteCount('site_gallery_images'),
-        siteCount('site_news'), siteCount('site_partners'), siteCount('submissions'), siteCount('submissions', 'status=eq.new'),
+        siteCount('site_news'), siteCount('site_partners'),
         siteSelect('submissions') as Promise<{ created_at: string; topic?: string; status?: string; country?: string }[]>,
       ])
+      const inbox = subs.length
+      const unread = subs.filter((m) => m.status === 'new').length
       const day = (d: Date) => d.toISOString().slice(0, 10)
       const today = new Date()
       const trend = Array.from({ length: 14 }, (_, i) => { const d = new Date(today); d.setDate(d.getDate() - (13 - i)); return { day: day(d), n: 0 } })

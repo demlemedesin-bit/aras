@@ -57,7 +57,11 @@ export default function Chrome() {
   const ids = SECTIONS.map((s) => s.id);
   const active = useScrollSpy(ids);
   const dock = useRef<HTMLElement>(null);
-  const [sheet, setSheet] = useState<'home' | 'garden' | null>(null);
+  const [menu, setMenu] = useState(false);
+  useEffect(() => {
+    document.documentElement.style.overflow = menu ? 'hidden' : '';
+    return () => { document.documentElement.style.overflow = ''; };
+  }, [menu]);
   const curTag = LANGS.find((l) => l.c === lang)?.tag ?? 'TR';
   const authLabel = session ? `${A.hi}${session.name.split(' ')[0]}` : A.btn;
 
@@ -124,6 +128,9 @@ export default function Chrome() {
           ))}
         </nav>
         <div className="top__r">
+          <button className="burger" type="button" aria-expanded={menu} aria-label={u('menu')} onClick={() => setMenu((m) => !m)}>
+            <span /><span /><span />
+          </button>
           <button className={`pill authbtn${session ? ' on' : ''}`} type="button" aria-haspopup="dialog" onClick={login}>
             <Icon n="lock" />
             <span>{authLabel}</span>
@@ -147,17 +154,6 @@ export default function Chrome() {
       </header>
 
       <nav className="dock" ref={dock} aria-label={u('menu')}>
-        {(['home', 'garden'] as const).map((w) => (
-          <a
-            key={w}
-            href="#koleksiyonlar"
-            aria-haspopup="true"
-            aria-expanded={sheet === w}
-            onClick={(e) => { e.preventDefault(); setSheet(sheet === w ? null : w); }}
-          >
-            {t(w === 'home' ? 'tab.home' : 'tab.garden')}
-          </a>
-        ))}
         {SECTIONS.map((s) => (
           <a key={s.id} href={`#${s.id}`} aria-current={active === s.id ? 'true' : undefined}>
             {t(s.key)}
@@ -165,36 +161,42 @@ export default function Chrome() {
         ))}
       </nav>
 
-      {sheet && (
-        <>
-          <div className="msheet__bg" onClick={() => setSheet(null)} />
-          <div className="msheet" role="dialog" aria-label={t(sheet === 'home' ? 'tab.home' : 'tab.garden')}>
-            <b className="msheet__h">{t(sheet === 'home' ? 'tab.home' : 'tab.garden')}</b>
-            <ul>
-              {content.categories.filter((m) => m.world === sheet).map((m) => {
-                const go = (e: React.MouseEvent) => {
-                  if (session) return;
-                  e.preventDefault();
-                  setSheet(null);
-                  pickWorld(sheet, 'koleksiyonlar');
-                };
-                const href = session ? `/bayi/urunler?k=${m.id}` : '#koleksiyonlar';
-                return (
-                  <li key={m.id}>
-                    <a href={href} onClick={go}>{catName(m.name, lang)}</a>
-                    {m.subs.length > 0 && (
-                      <ul>
-                        {m.subs.map((x) => (
-                          <li key={x.id}><a href={href} onClick={go}>{catName(x.name, lang)}</a></li>
-                        ))}
-                      </ul>
-                    )}
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        </>
+      {menu && (
+        <div className="drw" role="dialog" aria-label={u('menu')}>
+          {(['home', 'garden'] as const).map((w) => (
+            <details key={w} className="drw__g">
+              <summary>{t(w === 'home' ? 'tab.home' : 'tab.garden')}</summary>
+              <ul>
+                {content.categories.filter((m) => m.world === w).map((m) => {
+                  const href = session ? `/bayi/urunler?k=${m.id}` : '#koleksiyonlar';
+                  const go = (e: React.MouseEvent) => {
+                    if (session) return;
+                    e.preventDefault();
+                    setMenu(false);
+                    pickWorld(w, 'koleksiyonlar');
+                  };
+                  return m.subs.length ? (
+                    <li key={m.id}>
+                      <details>
+                        <summary>{catName(m.name, lang)}</summary>
+                        <ul>
+                          {m.subs.map((x) => (
+                            <li key={x.id}><a href={href} onClick={go}>{catName(x.name, lang)}</a></li>
+                          ))}
+                        </ul>
+                      </details>
+                    </li>
+                  ) : (
+                    <li key={m.id}><a href={href} onClick={go}>{catName(m.name, lang)}</a></li>
+                  );
+                })}
+              </ul>
+            </details>
+          ))}
+          {SECTIONS.filter((x) => x.id !== 'koleksiyonlar').map((x) => (
+            <a key={x.id} className="drw__l" href={`#${x.id}`} onClick={() => setMenu(false)}>{t(x.key)}</a>
+          ))}
+        </div>
       )}
     </>
   );

@@ -112,4 +112,4 @@ export function PageHead({ title, sub, action }: { title: string; sub?: string; 
     </div>
   )
 }
-export const grid = (min = 240): CSSProperties => ({ display: 'grid', gridTemplateColumns: `repeat(auto-fill,minmax(${min}px,1fr))`, gap: 14 })
+export const grid = (min = 240): CSSProperties => ({ display: 'grid', gridTemplateColumns: `repeat(auto-fit,minmax(min(${min}px,100%),1fr))`, gap: 14 })

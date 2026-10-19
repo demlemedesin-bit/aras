@@ -3,9 +3,9 @@ import { revalidatePath, revalidateTag } from 'next/cache'
 const URL_ = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!
 
-export const SITE_TABLES = ['site_texts', 'site_settings', 'site_collections', 'site_products', 'site_gallery_groups', 'site_gallery_images', 'site_news', 'site_partners', 'submissions', 'site_dealers', 'site_history', 'site_ad_spend'] as const
+export const SITE_TABLES = ['site_texts', 'site_settings', 'site_collections', 'site_products', 'site_gallery_groups', 'site_gallery_images', 'site_news', 'site_partners', 'submissions', 'site_dealers', 'site_history', 'site_ad_spend', 'site_seo_keywords'] as const
 export type SiteTable = (typeof SITE_TABLES)[number]
-const PK: Record<SiteTable, string[]> = { site_texts: ['ns', 'key'], site_settings: ['key'], site_collections: ['id'], site_products: ['id'], site_gallery_groups: ['id'], site_gallery_images: ['id'], site_news: ['id'], site_partners: ['id'], submissions: ['id'], site_dealers: ['id'], site_history: ['id'], site_ad_spend: ['campaign'] }
+const PK: Record<SiteTable, string[]> = { site_texts: ['ns', 'key'], site_settings: ['key'], site_collections: ['id'], site_products: ['id'], site_gallery_groups: ['id'], site_gallery_images: ['id'], site_news: ['id'], site_partners: ['id'], submissions: ['id'], site_dealers: ['id'], site_history: ['id'], site_ad_spend: ['campaign'], site_seo_keywords: ['id'] }
 export const pkOf = (t: SiteTable) => PK[t]
 
 const h = (extra: Record<string, string> = {}) => ({ apikey: KEY, Authorization: `Bearer ${KEY}`, 'Content-Type': 'application/json', ...extra })
@@ -90,4 +90,30 @@ export async function seoAudit(base: string) {
   add('speed', 'Yanıt süresi', ms < 800 ? 'ok' : ms < 2000 ? 'warn' : 'bad', `${ms} ms`)
   const score = Math.round((checks.reduce((a, c) => a + (c.status === 'ok' ? 1 : c.status === 'warn' ? 0.5 : 0), 0) / checks.length) * 100)
   return { url: root, ms, score, checks }
+}
+
+/** Birden fazla sayfayı tarayıp sayfa bazında SEO özeti çıkarır. */
+export async function seoPages(base: string, paths: string[]) {
+  const root = base.replace(/\/$/, '')
+  const out = []
+  for (const path of paths.slice(0, 12)) {
+    const t0 = Date.now()
+    let html = '', status = 0
+    try { const r = await fetch(root + path, { cache: 'no-store', headers: { 'User-Agent': 'ArasSeoCheck/1.0' } }); status = r.status; html = await r.text() } catch {}
+    const ms = Date.now() - t0
+    const pick = (re: RegExp) => html.match(re)?.[1]?.trim() ?? ''
+    const attr = (n: string) => pick(new RegExp(`<meta[^>]+(?:name|property)=["']${n}["'][^>]*content=["']([^"']*)["']`, 'i')) || pick(new RegExp(`<meta[^>]+content=["']([^"']*)["'][^>]+(?:name|property)=["']${n}["']`, 'i'))
+    const body = html.replace(/<script[\s\S]*?<\/script>/gi, '').replace(/<style[\s\S]*?<\/style>/gi, '').replace(/<[^>]+>/g, ' ')
+    const words = body.split(/\s+/).filter((w) => w.length > 1).length
+    const imgs = html.match(/<img\b[^>]*>/gi) || []
+    out.push({
+      path, status, ms,
+      title: pick(/<title[^>]*>([^<]*)<\/title>/i), desc: attr('description'),
+      h1: (html.match(/<h1[\s>]/gi) || []).length, h2: (html.match(/<h2[\s>]/gi) || []).length,
+      words, images: imgs.length, noAlt: imgs.filter((i) => !/\balt=["'][^"']+["']/i.test(i)).length,
+      canonical: /<link[^>]+rel=["']canonical["']/i.test(html), noindex: /<meta[^>]+name=["']robots["'][^>]*noindex/i.test(html),
+      og: !!attr('og:image'), jsonld: /application\/ld\+json/i.test(html),
+    })
+  }
+  return out
 }

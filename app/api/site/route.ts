@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@panel/lib/supabase/server'
 import { buildReport, buildRealtime, type Sub } from '@panel/lib/analytics'
-import { SITE_TABLES, seoAudit, siteRpc, siteCount, siteDelete, siteDeleteMedia, siteListMedia, siteRevalidate, siteSelect, siteUpload, siteUpsert, siteUpdate, pkOf, type SiteTable } from '@panel/lib/aras-site'
+import { SITE_TABLES, seoAudit, seoPages, siteRpc, siteCount, siteDelete, siteDeleteMedia, siteListMedia, siteRevalidate, siteSelect, siteUpload, siteUpsert, siteUpdate, pkOf, type SiteTable } from '@panel/lib/aras-site'
 
 // Yalnızca giriş yapmış admin/manager rolü site içeriğini düzenleyebilir.
 async function guard() {
@@ -13,7 +13,7 @@ async function guard() {
 }
 const isTable = (t: unknown): t is SiteTable => typeof t === 'string' && (SITE_TABLES as readonly string[]).includes(t)
 const fail = (e: unknown, s = 500) => NextResponse.json({ error: e instanceof Error ? e.message : String(e) }, { status: s })
-const ORDER: Record<string, string> = { site_texts: 'ns,key', site_settings: 'key', site_ad_spend: 'campaign' }
+const ORDER: Record<string, string> = { site_texts: 'ns,key', site_settings: 'key', site_ad_spend: 'campaign', site_seo_keywords: 'keyword' }
 
 export async function GET(req: Request) {
   if (!(await guard())) return fail('Yetkisiz', 401)
@@ -37,6 +37,7 @@ export async function GET(req: Request) {
       const prevReq = subs.filter((m) => { const t = new Date(m.created_at).getTime(); return t < since && t >= since - days * 86400000 }).length
       return NextResponse.json({ ...a, days, requests, prevRequests: prevReq })
     }
+    if (sp.get('seopages')) return NextResponse.json({ pages: await seoPages(process.env.NEXT_PUBLIC_SITE_URL || 'https://arasmetal.com', (sp.get('seopages') || '/').split(',').filter((x) => x.startsWith('/'))) })
     if (sp.get('seo')) return NextResponse.json(await seoAudit(process.env.NEXT_PUBLIC_SITE_URL || 'https://arasmetal.com'))
     if (sp.get('unread')) return NextResponse.json({ unread: await siteCount('submissions', 'status=eq.new') })
     if (sp.get('stats')) {

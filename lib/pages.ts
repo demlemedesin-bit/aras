@@ -1,12 +1,13 @@
 import type { Lang } from './i18n';
+import { CAREERS_X, FAQ_LEAD, FAQ_X, PRIVACY_X } from './pages-extra';
 
 export type Block = { h?: string; p?: string[]; ul?: string[] };
 export type PageDoc = { title: string; lead: string; blocks: Block[] };
-type L2 = { tr: PageDoc; en: PageDoc };
+type L2 = { tr: PageDoc; en: PageDoc } & Partial<Record<Lang, PageDoc>>;
 
 const MAIL = 'info@arasmetal.com';
 
-export const PRIVACY: L2 = {
+const PRIVACY_BASE: { tr: PageDoc; en: PageDoc } = {
   tr: {
     title: 'Gizlilik politikası',
     lead: 'Aras Metal olarak kişisel verilerinizi 6698 sayılı KVKK ve ilgili mevzuata uygun işleriz. Bu sayfa hangi verileri, neden ve ne kadar süre işlediğimizi açıklar.',
@@ -49,7 +50,7 @@ export const PRIVACY: L2 = {
   },
 };
 
-export const FAQ: { tr: { q: string; a: string }[]; en: { q: string; a: string }[] } = {
+const FAQ_BASE: { tr: { q: string; a: string }[]; en: { q: string; a: string }[] } = {
   tr: [
     { q: 'Ürünleri nasıl sipariş edebilirim?', a: 'Sitedeki "Katalog iste" formunu doldurun. Satış ekibimiz katalog ve fiyat bilgisiyle sizinle iletişime geçer.' },
     { q: 'Bayi girişi ne işe yarar?', a: 'Firmanız için "Bayi girişi"nden başvuru yaparsınız. Başvurunuz ekibimizce onaylandığında e-posta ve şifrenizle giriş yapabilirsiniz.' },
@@ -68,9 +69,14 @@ export const FAQ: { tr: { q: string; a: string }[]; en: { q: string; a: string }
   ],
 };
 
-export const CAREERS: { tr: Record<string, string>; en: Record<string, string> } = {
+const CAREERS_BASE: { tr: Record<string, string>; en: Record<string, string> } = {
   tr: { title: 'Kariyer', lead: 'Aras Metal ekibine katılmak ister misiniz? Bilgilerinizi ve kendinizi tanıtan kısa bir not bırakın; uygun bir pozisyon olduğunda sizinle iletişime geçelim.', name: 'Ad soyad', email: 'E-posta', phone: 'Telefon', msg: 'Hangi alanda çalışmak istiyorsunuz? Kısaca kendinizden bahsedin', send: 'Başvuruyu gönder', ok: 'Başvurunuz alındı. Teşekkürler.', err: 'Gönderilemedi. Lütfen tekrar deneyin.', fill: 'Lütfen tüm alanları doldurun.', note: 'Başvurunuz yalnızca işe alım sürecinde kullanılır. Ayrıntılar için gizlilik politikasına bakın.' },
   en: { title: 'Careers', lead: 'Would you like to join the Aras Metal team? Leave your details and a short note about yourself, and we will contact you when a suitable role opens.', name: 'Full name', email: 'Email', phone: 'Phone', msg: 'Which area would you like to work in? Tell us a little about yourself', send: 'Send application', ok: 'Your application has been received. Thank you.', err: 'Could not send. Please try again.', fill: 'Please fill in every field.', note: 'Your application is only used for recruitment. See the privacy policy for details.' },
 };
 
-export const pick = <T,>(d: { tr: T; en: T }, lang: Lang): T => (lang === 'tr' ? d.tr : d.en);
+export const PRIVACY: L2 = { ...PRIVACY_BASE, ...PRIVACY_X };
+export const FAQ: { tr: { q: string; a: string }[]; en: { q: string; a: string }[] } & Partial<Record<Lang, { q: string; a: string }[]>> = { ...FAQ_BASE, ...FAQ_X };
+export const CAREERS: { tr: Record<string, string>; en: Record<string, string> } & Partial<Record<Lang, Record<string, string>>> = { ...CAREERS_BASE, ...CAREERS_X };
+export { FAQ_LEAD };
+
+export const pick = <T,>(d: { tr: T; en: T } & Partial<Record<Lang, T>>, lang: Lang): T => d[lang] ?? d.en;

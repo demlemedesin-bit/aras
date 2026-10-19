@@ -279,7 +279,9 @@
       "fair.awards": "Awards",
       "fair.empty": "Content for this section will be added soon.",
       "prod.ask": "Request catalogue",
-      "nav.fair": "Fairs & awards"
+      "nav.fair": "Fairs & awards",
+      "ft.cookie": "Cookie policy",
+      "ft.terms": "Terms of use"
     },
     "de": {
       "skip": "Zum Inhalt springen",
@@ -408,7 +410,9 @@
       "fair.awards": "Auszeichnungen",
       "fair.empty": "Inhalte für diesen Bereich folgen in Kürze.",
       "prod.ask": "Katalog anfordern",
-      "nav.fair": "Messen & Preise"
+      "nav.fair": "Messen & Preise",
+      "ft.cookie": "Cookie-Richtlinie",
+      "ft.terms": "Nutzungsbedingungen"
     },
     "fr": {
       "skip": "Aller au contenu",
@@ -537,7 +541,9 @@
       "fair.awards": "Récompenses",
       "fair.empty": "Le contenu de cette section sera ajouté prochainement.",
       "prod.ask": "Demander le catalogue",
-      "nav.fair": "Salons & prix"
+      "nav.fair": "Salons & prix",
+      "ft.cookie": "Cookies",
+      "ft.terms": "Conditions d’utilisation"
     },
     "es": {
       "skip": "Saltar al contenido",
@@ -666,7 +672,9 @@
       "fair.awards": "Premios",
       "fair.empty": "Pronto añadiremos contenido a esta sección.",
       "prod.ask": "Pedir catálogo",
-      "nav.fair": "Ferias y premios"
+      "nav.fair": "Ferias y premios",
+      "ft.cookie": "Cookies",
+      "ft.terms": "Condiciones de uso"
     },
     "it": {
       "skip": "Vai al contenuto",
@@ -795,7 +803,9 @@
       "fair.awards": "Premi",
       "fair.empty": "I contenuti di questa sezione saranno aggiunti a breve.",
       "prod.ask": "Richiedi il catalogo",
-      "nav.fair": "Fiere e premi"
+      "nav.fair": "Fiere e premi",
+      "ft.cookie": "Cookie policy",
+      "ft.terms": "Condizioni d’uso"
     },
     "tr": {
       "skip": "İçeriğe geç",
@@ -924,7 +934,9 @@
       "fair.awards": "Ödüller",
       "fair.empty": "Bu bölüm için içerik yakında eklenecek.",
       "prod.ask": "Katalog iste",
-      "nav.fair": "Fuarlar ve ödüller"
+      "nav.fair": "Fuarlar ve ödüller",
+      "ft.cookie": "Çerez politikası",
+      "ft.terms": "Kullanım koşulları"
     }
   },
   "auth": {

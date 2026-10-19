@@ -3,7 +3,8 @@
 import { useState, type FormEvent } from 'react';
 import { useSite } from './SiteProvider';
 import { sendSubmission } from '@/lib/submit';
-import { CAREERS, FAQ, PRIVACY, pick, type PageDoc } from '@/lib/pages';
+import { CAREERS, FAQ, FAQ_LEAD, PRIVACY, pick } from '@/lib/pages';
+import { COOKIES, TERMS } from '@/lib/legal';
 
 function Head({ title, lead }: { title: string; lead: string }) {
   return (
@@ -14,9 +15,9 @@ function Head({ title, lead }: { title: string; lead: string }) {
   );
 }
 
-export function Doc({ doc }: { doc: { tr: PageDoc; en: PageDoc } }) {
+export function Doc({ doc }: { doc: typeof PRIVACY }) {
   const { lang } = useSite();
-  const d = pick(doc, lang);
+  const d = doc[lang] ?? doc.en;
   return (
     <article className="sub__in">
       <Head title={d.title} lead={d.lead} />
@@ -31,13 +32,15 @@ export function Doc({ doc }: { doc: { tr: PageDoc; en: PageDoc } }) {
   );
 }
 export const Privacy = () => <Doc doc={PRIVACY} />;
+export const Cookies = () => <Doc doc={COOKIES} />;
+export const Terms = () => <Doc doc={TERMS} />;
 
 export function Faq() {
   const { lang, t } = useSite();
   const items = pick(FAQ, lang);
   return (
     <article className="sub__in">
-      <Head title={t('ft.faq')} lead={lang === 'tr' ? 'Sık sorulan sorular ve yanıtları.' : 'Frequently asked questions and their answers.'} />
+      <Head title={t('ft.faq')} lead={FAQ_LEAD[lang]} />
       <div className="faq">
         {items.map((f) => (
           <details key={f.q}>

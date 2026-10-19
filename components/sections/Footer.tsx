@@ -18,6 +18,8 @@ export default function Footer() {
         <li><a href="/kariyer">{t('ft.car')}</a></li>
         <li><a href="/sss">{t('ft.faq')}</a></li>
         <li><a href="/gizlilik">{t('ft.priv')}</a></li>
+        <li><a href="/cerez-politikasi">{t('ft.cookie')}</a></li>
+        <li><a href="/kullanim-kosullari">{t('ft.terms')}</a></li>
         <li><a href="#katalog" onClick={(e) => { e.preventDefault(); openCatalog(); }}>{t('cta.cat')}</a></li>
       </ul>
       <div className="ft__bar">

@@ -5,11 +5,11 @@ import type { Lang, Dict } from './i18n';
 /** Sitenin tüm yönetilebilir içeriği. Kaynak: Supabase (panelden düzenlenir); ulaşılamazsa gömülü varsayılanlar. */
 export type Content = {
   texts: Record<'t' | 'ui' | 'auth' | 'meta', Record<string, Partial<Record<Lang, string>>>>;
-  collections: { id: string; world: 'home' | 'garden'; href: string; title: string; desc: string; count: number; img: string; pos?: string; subs?: string[] }[];
-  products: { id: string; code: string; name: string; cat: string; world: 'home' | 'garden'; img: string; href: string }[];
+  collections: { id: string; world: 'home' | 'garden'; title: string; desc: string; count: number; img: string; pos?: string; subs?: string[] }[];
+  products: { id: string; code: string; name: string; cat: string; world: 'home' | 'garden'; img: string }[];
   gallery: { src: string; group: string; label: string; n: number; alt?: Partial<Record<Lang, string>> }[];
   galleryGroups: { id: string; label: string }[];
-  news: { href: string; d: string; year?: string; h: string; badge?: string; award?: boolean }[];
+  news: { id: number; d: string; year?: string; h: string; badge?: string; award?: boolean }[];
   partners: { name: string; href: string; img: string }[];
   history: { id: string; year: string; title: Partial<Record<Lang, string>>; body: Partial<Record<Lang, string>>; img: string }[];
   hero: { showroom: string; home: string; garden: string };
@@ -33,7 +33,7 @@ export const FALLBACK: Content = {
   products: PRODUCTS.map((p) => ({ ...p })),
   gallery: GALLERY.map((g) => ({ ...g })),
   galleryGroups: GALLERY_GROUPS.map((g) => ({ id: g.id, label: g.label })),
-  news: NEWS.map((n) => ({ href: n.href, d: n.d, year: 'year' in n ? n.year : undefined, h: n.h, badge: 'badge' in n ? n.badge : undefined, award: 'award' in n ? n.award : false })),
+  news: NEWS.map((n, i) => ({ id: i, d: n.d, year: 'year' in n ? n.year : undefined, h: n.h, badge: 'badge' in n ? n.badge : undefined, award: 'award' in n ? n.award : false })),
   partners: PARTNERS.map((p) => ({ ...p })),
   history: [],
   hero: { ...HERO },
@@ -86,15 +86,15 @@ export async function getContent(): Promise<Content> {
     const s = Object.fromEntries(settings.map((x) => [x.key, x.value]));
     if (s.hero) out.hero = { ...FALLBACK.hero, ...s.hero };
     if (s.contact) out.contact = { ...FALLBACK.contact, ...s.contact };
-    if (cols.length) out.collections = cols.map((c: any) => ({ id: c.id, world: c.world, href: c.href, title: c.title_key, desc: c.desc_key, count: c.count, img: c.img, pos: c.pos ?? undefined, subs: c.subs?.length ? c.subs : undefined }));
-    if (prods.length) out.products = prods.map((p: any) => ({ id: p.id, code: p.code, name: p.name_key, cat: p.cat_key, world: p.world, img: p.img, href: p.href }));
+    if (cols.length) out.collections = cols.map((c: any) => ({ id: c.id, world: c.world, title: c.title_key, desc: c.desc_key, count: c.count, img: c.img, pos: c.pos ?? undefined, subs: c.subs?.length ? c.subs : undefined }));
+    if (prods.length) out.products = prods.map((p: any) => ({ id: p.id, code: p.code, name: p.name_key, cat: p.cat_key, world: p.world, img: p.img }));
     if (groups.length) {
       out.galleryGroups = groups.map((g: any) => ({ id: g.id, label: g.label_key }));
       const label = Object.fromEntries(groups.map((g: any) => [g.id, g.label_key]));
       const cnt: Record<string, number> = {};
       out.gallery = imgs.filter((i: any) => label[i.group_id]).map((i: any) => ({ src: i.src, group: i.group_id, label: label[i.group_id], n: (cnt[i.group_id] = (cnt[i.group_id] ?? 0) + 1), alt: i.alt }));
     }
-    if (news.length) out.news = news.map((n: any) => ({ href: n.href, d: n.date_key ?? '', year: n.year ?? undefined, h: n.head_key, badge: n.badge_key ?? undefined, award: n.award }));
+    if (news.length) out.news = news.map((n: any) => ({ id: n.id, d: n.date_key ?? '', year: n.year ?? undefined, h: n.head_key, badge: n.badge_key ?? undefined, award: n.award }));
     if (partners.length) out.partners = partners.map((p: any) => ({ name: p.name, href: p.href, img: p.img }));
     out.history = history.map((h: any) => ({ id: h.id, year: h.year, title: h.title ?? {}, body: h.body ?? {}, img: h.img ?? '' }));
     return resolveMedia(out);

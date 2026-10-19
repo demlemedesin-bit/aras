@@ -21,7 +21,7 @@ export default function News() {
       </div>
       <ul className="nws">
         {list.map((n) => (
-          <li key={n.d + n.h} className={'award' in n && n.award ? 'aw' : undefined}>
+          <li key={n.id} className={'award' in n && n.award ? 'aw' : undefined}>
             <div className="nw">
               <span className="nw__d">{n.year ?? t(n.d)}</span>
               <h3>

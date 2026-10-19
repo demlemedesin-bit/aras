@@ -15,9 +15,6 @@ export default function Footer() {
         <li><a href="#tarihce">{t('nav.hist')}</a></li>
         <li><a href="#showroom">{t('nav.sr')}</a></li>
         <li><a href="#haberler">{t('nav.fair')}</a></li>
-        <li><a href="https://arasmetal.com/careers/" target="_blank" rel="noopener">{t('ft.car')}</a></li>
-        <li><a href="https://arasmetal.com/faq/" target="_blank" rel="noopener">{t('ft.faq')}</a></li>
-        <li><a href="https://arasmetal.com/privacy-policy/" target="_blank" rel="noopener">{t('ft.priv')}</a></li>
         <li><a href="#katalog" onClick={(e) => { e.preventDefault(); openCatalog(); }}>{t('cta.cat')}</a></li>
       </ul>
       <div className="ft__bar">

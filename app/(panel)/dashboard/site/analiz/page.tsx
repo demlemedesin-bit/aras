@@ -9,7 +9,7 @@ const LANG: Record<string, string> = { tr: 'Türkçe', en: 'İngilizce', de: 'Al
 const country = (c: string) => { try { return c.length === 2 ? new Intl.DisplayNames(['tr'], { type: 'region' }).of(c) ?? c : c } catch { return c } }
 const PERIODS = [7, 14, 30, 90]
 const EVENT: Record<string, string> = { catalog_open: 'Katalog formu açıldı', catalog_submit: 'Katalog talebi gönderildi', contact_submit: 'İletişim formu gönderildi', tour_open: '360° tur açıldı', phone_click: 'Telefona tıklandı', mail_click: 'E-postaya tıklandı', whatsapp_click: 'WhatsApp\'a tıklandı', map_click: 'Haritaya tıklandı', social_click: 'Sosyal medyaya tıklandı', lang_change: 'Dil değiştirildi' }
-const SECTION: [string, string][] = [['top', 'Açılış'], ['hakkimizda', 'Hakkımızda'], ['koleksiyonlar', 'Koleksiyonlar'], ['urunler', 'Ürünler'], ['galeri', 'Galeri'], ['showroom', 'Showroom'], ['surdurulebilirlik', 'Sürdürülebilirlik'], ['haberler', 'Haberler'], ['iletisim', 'İletişim']]
+const SECTION: [string, string][] = [['top', 'Açılış'], ['tarihce', 'Tarihçe'], ['hakkimizda', 'Hakkımızda'], ['koleksiyonlar', 'Koleksiyonlar'], ['urunler', 'Ürünler'], ['galeri', 'Galeri'], ['showroom', 'Showroom'], ['surdurulebilirlik', 'Sürdürülebilirlik'], ['haberler', 'Fuarlar ve ödüller'], ['iletisim', 'İletişim']]
 
 function Kpi({ label, value, Icon, delta, spark }: { label: string; value: string | number; Icon: typeof Users; delta?: React.ReactNode; spark?: number[] }) {
   return (

@@ -6,7 +6,7 @@ export const runtime = 'nodejs'
 const BOT = /bot|crawl|spider|slurp|facebookexternalhit|preview|headless|lighthouse|pingdom|uptime|monitor|vercel|curl|wget|python|axios|node-fetch|go-http|java\//i
 const LANGS = ['tr', 'en', 'de', 'fr', 'es', 'it']
 const EVENTS = ['catalog_open', 'catalog_submit', 'contact_submit', 'tour_open', 'lang_change', 'phone_click', 'mail_click', 'whatsapp_click', 'map_click', 'social_click']
-const SECTIONS = ['top', 'hakkimizda', 'koleksiyonlar', 'urunler', 'galeri', 'showroom', 'surdurulebilirlik', 'haberler', 'iletisim']
+const SECTIONS = ['top', 'tarihce', 'hakkimizda', 'koleksiyonlar', 'urunler', 'galeri', 'showroom', 'surdurulebilirlik', 'haberler', 'iletisim']
 const hits = new Map<string, number>()
 
 export async function POST(req: Request) {

@@ -6,16 +6,16 @@ import { prefersReducedMotion, useSite } from './SiteProvider';
 import { Icon } from './Icon';
 
 const SECTIONS = [
-  { id: 'hakkimizda', key: 'nav.about' },
+  { id: 'tarihce', key: 'nav.hist' },
   { id: 'koleksiyonlar', key: 'nav.col' },
-  { id: 'galeri', key: 'nav.gal' },
   { id: 'urunler', key: 'nav.prod' },
+  { id: 'haberler', key: 'nav.fair' },
+  { id: 'hakkimizda', key: 'nav.about' },
   { id: 'showroom', key: 'nav.sr' },
-  { id: 'haberler', key: 'nav.news' },
   { id: 'iletisim', key: 'nav.contact' },
 ] as const;
 
-const HEADER_NAV = ['hakkimizda', 'koleksiyonlar', 'urunler', 'iletisim'];
+const HEADER_NAV = ['tarihce', 'koleksiyonlar', 'urunler', 'iletisim'];
 
 /** Ekranın ortasındaki bölümün id'sini döndürür. */
 function useScrollSpy(ids: readonly string[]) {

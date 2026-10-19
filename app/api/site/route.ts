@@ -71,7 +71,8 @@ export async function GET(req: Request) {
         if (c) countries[c] = (countries[c] || 0) + 1
       }
       const topCountries = Object.entries(countries).sort((a, b) => b[1] - a[1]).slice(0, 5).map(([country, n]) => ({ country, n }))
-      return NextResponse.json({ texts, collections, products, gallery, news, partners, inbox, unread, catalog, contact, pending, trend, topCountries, latest: subs.slice(0, 6), read, done, today: today_n, week: week_n, dealersPending, alerts: { stale, missingTr, noImg, passive } })
+      const history = await siteCount('site_history').catch(() => 0)
+      return NextResponse.json({ history, texts, collections, products, gallery, news, partners, inbox, unread, catalog, contact, pending, trend, topCountries, latest: subs.slice(0, 6), read, done, today: today_n, week: week_n, dealersPending, alerts: { stale, missingTr, noImg, passive } })
     }
     const table = sp.get('table')
     if (!isTable(table)) return fail('Geçersiz tablo', 400)

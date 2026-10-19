@@ -428,3 +428,35 @@ html.lb-open{overflow:hidden}
 @media (max-width:520px){
   .top__cta{display:none}
 }
+
+/* Tarihçe */
+.hist{background:var(--pb)}
+.hist__empty{margin-top:32px;color:var(--ash)}
+.hl{position:relative;margin-top:clamp(40px,6vw,80px);max-width:980px}
+.hl::before{content:"";position:absolute;left:calc(clamp(96px,16vw,190px) + 8px);top:10px;bottom:10px;width:2px;background:#000}
+.hl li{position:relative;display:grid;grid-template-columns:clamp(96px,16vw,190px) minmax(0,1fr);gap:0 36px;padding-bottom:clamp(34px,5vw,64px)}
+.hl li.last{padding-bottom:0}
+.hl li::before{content:"";position:absolute;left:clamp(96px,16vw,190px);top:6px;width:18px;height:18px;border-radius:50%;background:#000;box-shadow:0 0 0 6px var(--pb)}
+.hl li.last::before{background:var(--gr)}
+.hl__y{font-size:clamp(1.3rem,2.6vw,2.2rem);font-weight:700;font-stretch:85%;line-height:1.1;letter-spacing:-.01em}
+.hl__b{padding-left:36px}
+.hl__b b{display:block;font-size:clamp(1.1rem,1.9vw,1.5rem);font-weight:600;line-height:1.25}
+.hl__b p{margin-top:8px;max-width:56ch;color:var(--ash)}
+.hl__b img{margin-top:16px;width:100%;max-width:520px;border-radius:18px;object-fit:cover}
+@media (max-width:640px){
+  .hl::before{left:8px}
+  .hl li{grid-template-columns:1fr;padding-left:40px}
+  .hl li::before{left:0}
+  .hl__b{padding-left:0;margin-top:6px}
+}
+
+/* Kayan ürün şeridi */
+.marq{margin-top:clamp(44px,6vw,80px);overflow:hidden;padding:12px 0 28px;-webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent)}
+.marq__t{display:flex;width:max-content;animation:marq 60s linear infinite;will-change:transform}
+.marq:hover .marq__t,.marq:focus-within .marq__t{animation-play-state:paused}
+.marq li{flex:none;width:clamp(230px,27vw,360px);margin-right:clamp(24px,3.4vw,56px)}
+.marq .pc{width:100%;text-align:left;cursor:pointer}
+.pc__ask{display:inline-block;margin-top:14px;padding:8px 16px;border-radius:99px;font-size:.9rem;font-weight:600;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.4);transition:background .25s,color .25s}
+.pc:hover .pc__ask,.pc:focus-visible .pc__ask{background:var(--gr);color:#000;box-shadow:none}
+@keyframes marq{to{transform:translateX(-50%)}}
+@media (prefers-reduced-motion:reduce){.marq{overflow-x:auto;-webkit-mask-image:none;mask-image:none}.marq__t{animation:none}}

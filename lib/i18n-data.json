@@ -171,7 +171,7 @@
       "nav.about": "About",
       "nav.col": "Collections",
       "nav.prod": "Products",
-      "nav.news": "News",
+      "nav.news": "Fairs & awards",
       "nav.contact": "Contact",
       "cta.cat": "Request catalogue",
       "sp.2l": "Range",
@@ -271,7 +271,15 @@
       "f.phone": "Phone",
       "f.country": "Country",
       "f.sending": "Sending…",
-      "f.err": "Could not send. Please try again."
+      "f.err": "Could not send. Please try again.",
+      "nav.hist": "History",
+      "hist.h": "Our history",
+      "hist.empty": "Our history will be added soon.",
+      "fair.fairs": "Trade fairs",
+      "fair.awards": "Awards",
+      "fair.empty": "Content for this section will be added soon.",
+      "prod.ask": "Request catalogue",
+      "nav.fair": "Fairs & awards"
     },
     "de": {
       "skip": "Zum Inhalt springen",
@@ -292,7 +300,7 @@
       "nav.about": "Über uns",
       "nav.col": "Kollektionen",
       "nav.prod": "Produkte",
-      "nav.news": "Neuigkeiten",
+      "nav.news": "Messen & Preise",
       "nav.contact": "Kontakt",
       "cta.cat": "Katalog anfordern",
       "sp.2l": "Sortiment",
@@ -392,7 +400,15 @@
       "f.phone": "Telefon",
       "f.country": "Land",
       "f.sending": "Wird gesendet…",
-      "f.err": "Senden fehlgeschlagen. Bitte versuchen Sie es erneut."
+      "f.err": "Senden fehlgeschlagen. Bitte versuchen Sie es erneut.",
+      "nav.hist": "Geschichte",
+      "hist.h": "Unsere Geschichte",
+      "hist.empty": "Unsere Geschichte folgt in Kürze.",
+      "fair.fairs": "Messen",
+      "fair.awards": "Auszeichnungen",
+      "fair.empty": "Inhalte für diesen Bereich folgen in Kürze.",
+      "prod.ask": "Katalog anfordern",
+      "nav.fair": "Messen & Preise"
     },
     "fr": {
       "skip": "Aller au contenu",
@@ -413,7 +429,7 @@
       "nav.about": "À propos",
       "nav.col": "Collections",
       "nav.prod": "Produits",
-      "nav.news": "Actualités",
+      "nav.news": "Salons & prix",
       "nav.contact": "Contact",
       "cta.cat": "Demander le catalogue",
       "sp.2l": "Gamme",
@@ -513,7 +529,15 @@
       "f.phone": "Téléphone",
       "f.country": "Pays",
       "f.sending": "Envoi…",
-      "f.err": "Échec de l'envoi. Veuillez réessayer."
+      "f.err": "Échec de l'envoi. Veuillez réessayer.",
+      "nav.hist": "Histoire",
+      "hist.h": "Notre histoire",
+      "hist.empty": "Notre histoire sera ajoutée prochainement.",
+      "fair.fairs": "Salons",
+      "fair.awards": "Récompenses",
+      "fair.empty": "Le contenu de cette section sera ajouté prochainement.",
+      "prod.ask": "Demander le catalogue",
+      "nav.fair": "Salons & prix"
     },
     "es": {
       "skip": "Saltar al contenido",
@@ -534,7 +558,7 @@
       "nav.about": "Nosotros",
       "nav.col": "Colecciones",
       "nav.prod": "Productos",
-      "nav.news": "Noticias",
+      "nav.news": "Ferias y premios",
       "nav.contact": "Contacto",
       "cta.cat": "Solicitar catálogo",
       "sp.2l": "Gama",
@@ -634,7 +658,15 @@
       "f.phone": "Teléfono",
       "f.country": "País",
       "f.sending": "Enviando…",
-      "f.err": "No se pudo enviar. Inténtelo de nuevo."
+      "f.err": "No se pudo enviar. Inténtelo de nuevo.",
+      "nav.hist": "Historia",
+      "hist.h": "Nuestra historia",
+      "hist.empty": "Pronto añadiremos nuestra historia.",
+      "fair.fairs": "Ferias",
+      "fair.awards": "Premios",
+      "fair.empty": "Pronto añadiremos contenido a esta sección.",
+      "prod.ask": "Pedir catálogo",
+      "nav.fair": "Ferias y premios"
     },
     "it": {
       "skip": "Vai al contenuto",
@@ -655,7 +687,7 @@
       "nav.about": "Chi siamo",
       "nav.col": "Collezioni",
       "nav.prod": "Prodotti",
-      "nav.news": "Notizie",
+      "nav.news": "Fiere e premi",
       "nav.contact": "Contatti",
       "cta.cat": "Richiedi il catalogo",
       "sp.2l": "Gamma",
@@ -755,7 +787,15 @@
       "f.phone": "Telefono",
       "f.country": "Paese",
       "f.sending": "Invio…",
-      "f.err": "Invio non riuscito. Riprovate."
+      "f.err": "Invio non riuscito. Riprovate.",
+      "nav.hist": "Storia",
+      "hist.h": "La nostra storia",
+      "hist.empty": "La nostra storia sarà aggiunta a breve.",
+      "fair.fairs": "Fiere",
+      "fair.awards": "Premi",
+      "fair.empty": "I contenuti di questa sezione saranno aggiunti a breve.",
+      "prod.ask": "Richiedi il catalogo",
+      "nav.fair": "Fiere e premi"
     },
     "tr": {
       "skip": "İçeriğe geç",
@@ -764,7 +804,7 @@
       "nav.col": "Koleksiyonlar",
       "nav.prod": "Ürünler",
       "nav.sr": "Showroom",
-      "nav.news": "Haberler",
+      "nav.news": "Fuarlar ve ödüller",
       "nav.contact": "İletişim",
       "tab.home": "Ev",
       "tab.gohome": "Ev ürünlerini gör",
@@ -876,7 +916,15 @@
       "f.phone": "Telefon",
       "f.country": "Ülke",
       "f.sending": "Gönderiliyor…",
-      "f.err": "Gönderilemedi. Lütfen tekrar deneyin."
+      "f.err": "Gönderilemedi. Lütfen tekrar deneyin.",
+      "nav.hist": "Tarihçe",
+      "hist.h": "Tarihçemiz",
+      "hist.empty": "Tarihçe içeriği yakında eklenecek.",
+      "fair.fairs": "Fuarlar",
+      "fair.awards": "Ödüller",
+      "fair.empty": "Bu bölüm için içerik yakında eklenecek.",
+      "prod.ask": "Katalog iste",
+      "nav.fair": "Fuarlar ve ödüller"
     }
   },
   "auth": {

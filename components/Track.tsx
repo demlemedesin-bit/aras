@@ -2,7 +2,7 @@
 import { useEffect } from 'react';
 import { track } from '@/lib/track';
 
-const SECTIONS = ['top', 'hakkimizda', 'koleksiyonlar', 'urunler', 'galeri', 'showroom', 'surdurulebilirlik', 'haberler', 'iletisim'];
+const SECTIONS = ['top', 'tarihce', 'hakkimizda', 'koleksiyonlar', 'urunler', 'galeri', 'showroom', 'surdurulebilirlik', 'haberler', 'iletisim'];
 
 /** Sayfa görüntüleme, bölüm görüntüleme ve tıklama olayları. */
 export default function Track() {

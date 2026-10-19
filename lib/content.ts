@@ -11,6 +11,7 @@ export type Content = {
   galleryGroups: { id: string; label: string }[];
   news: { href: string; d: string; year?: string; h: string; badge?: string; award?: boolean }[];
   partners: { name: string; href: string; img: string }[];
+  history: { id: string; year: string; title: Partial<Record<Lang, string>>; body: Partial<Record<Lang, string>>; img: string }[];
   hero: { showroom: string; home: string; garden: string };
   contact: typeof CONTACT;
 };
@@ -34,6 +35,7 @@ export const FALLBACK: Content = {
   galleryGroups: GALLERY_GROUPS.map((g) => ({ id: g.id, label: g.label })),
   news: NEWS.map((n) => ({ href: n.href, d: n.d, year: 'year' in n ? n.year : undefined, h: n.h, badge: 'badge' in n ? n.badge : undefined, award: 'award' in n ? n.award : false })),
   partners: PARTNERS.map((p) => ({ ...p })),
+  history: [],
   hero: { ...HERO },
   contact: CONTACT,
 };
@@ -59,6 +61,7 @@ const resolveMedia = (c: Content): Content => ({
   products: c.products.map((x) => ({ ...x, img: media(x.img) })),
   gallery: c.gallery.map((x) => ({ ...x, src: media(x.src) })),
   partners: c.partners.map((x) => ({ ...x, img: media(x.img) })),
+  history: c.history.map((x) => ({ ...x, img: media(x.img) })),
   hero: { showroom: media(c.hero.showroom), home: media(c.hero.home), garden: media(c.hero.garden) },
 });
 
@@ -66,7 +69,7 @@ export async function getContent(): Promise<Content> {
   if (!URL_ || !KEY) return FALLBACK;
   try {
     const act = 'active=eq.true&order=sort';
-    const [texts, settings, cols, prods, groups, imgs, news, partners] = await Promise.all([
+    const [texts, settings, cols, prods, groups, imgs, news, partners, history] = await Promise.all([
       rest<{ ns: string; key: string; value: Record<string, string> }>('site_texts'),
       rest<{ key: string; value: any }>('site_settings'),
       rest<any>('site_collections', `select=*&${act}`),
@@ -75,6 +78,7 @@ export async function getContent(): Promise<Content> {
       rest<any>('site_gallery_images', `select=*&${act}`),
       rest<any>('site_news', `select=*&${act}`),
       rest<any>('site_partners', `select=*&${act}`),
+      rest<any>('site_history', `select=*&${act}`).catch(() => [] as any[]),
     ]);
     if (!texts.length) return FALLBACK;
     const out: Content = { ...FALLBACK, texts: { t: { ...FALLBACK.texts.t }, ui: { ...FALLBACK.texts.ui }, auth: { ...FALLBACK.texts.auth }, meta: { ...FALLBACK.texts.meta } } };
@@ -92,6 +96,7 @@ export async function getContent(): Promise<Content> {
     }
     if (news.length) out.news = news.map((n: any) => ({ href: n.href, d: n.date_key ?? '', year: n.year ?? undefined, h: n.head_key, badge: n.badge_key ?? undefined, award: n.award }));
     if (partners.length) out.partners = partners.map((p: any) => ({ name: p.name, href: p.href, img: p.img }));
+    out.history = history.map((h: any) => ({ id: h.id, year: h.year, title: h.title ?? {}, body: h.body ?? {}, img: h.img ?? '' }));
     return resolveMedia(out);
   } catch (e) {
     console.error('[content] Supabase okunamadı, varsayılan içerik kullanılıyor:', e);

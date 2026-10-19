@@ -1,7 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { useEffect, useMemo, useState } from 'react'
-import { AlertTriangle, CheckCircle2, ChevronRight, Inbox, Users, Eye, Percent, Package, Layers, Images, Newspaper, Handshake, Type, Plus } from 'lucide-react'
+import { AlertTriangle, CheckCircle2, ChevronRight, Inbox, Users, Eye, Percent, Package, Layers, Images, Newspaper, Handshake, Type, Plus, History as HistoryIcon } from 'lucide-react'
 import TopBar from '@panel/components/TopBar'
 import { useMe } from '@panel/components/Sidebar'
 import { Pill, ToastProvider, api, grid, type Row } from '@panel/components/site/ui'
@@ -28,7 +28,7 @@ type ReactNodeLike = string | number
 const CONTENT: { k: string; label: string; href: string; Icon: typeof Package }[] = [
   { k: 'products', label: 'Ürünler', href: 'urunler', Icon: Package },
   { k: 'collections', label: 'Koleksiyonlar', href: 'koleksiyonlar', Icon: Layers },
-  { k: 'gallery', label: 'Galeri görselleri', href: 'galeri', Icon: Images },
+  { k: 'history', label: 'Tarihçe kayıtları', href: 'tarihce', Icon: HistoryIcon },
   { k: 'news', label: 'Haberler', href: 'haberler', Icon: Newspaper },
   { k: 'partners', label: 'İş ortakları', href: 'ortaklar', Icon: Handshake },
   { k: 'texts', label: 'Site metinleri', href: 'metinler', Icon: Type },

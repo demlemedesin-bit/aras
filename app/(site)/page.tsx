@@ -9,7 +9,7 @@ import Tour from '@/components/Tour';
 import Hero from '@/components/sections/Hero';
 import About from '@/components/sections/About';
 import Collections from '@/components/sections/Collections';
-import Gallery from '@/components/sections/Gallery';
+import History from '@/components/sections/History';
 import Products from '@/components/sections/Products';
 import Showroom from '@/components/sections/Showroom';
 import Steel from '@/components/sections/Steel';
@@ -31,13 +31,13 @@ export default async function Home() {
       <Chrome />
       <main id="icerik">
         <Hero />
-        <About />
+        <History />
         <Collections />
-        <Gallery />
         <Products />
+        <News />
+        <About />
         <Showroom />
         <Steel />
-        <News />
         <Contact />
       </main>
       <Footer />

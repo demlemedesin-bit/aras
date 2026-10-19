@@ -12,9 +12,9 @@ export default function Footer() {
       <p className="ft__tag">{t('ft.tag')}</p>
       <ul className="ft__l">
         <li><a href="#hakkimizda">{t('nav.about')}</a></li>
-        <li><a href="#galeri">{t('nav.gal')}</a></li>
+        <li><a href="#tarihce">{t('nav.hist')}</a></li>
         <li><a href="#showroom">{t('nav.sr')}</a></li>
-        <li><a href="#haberler">{t('nav.news')}</a></li>
+        <li><a href="#haberler">{t('nav.fair')}</a></li>
         <li><a href="https://arasmetal.com/careers/" target="_blank" rel="noopener">{t('ft.car')}</a></li>
         <li><a href="https://arasmetal.com/faq/" target="_blank" rel="noopener">{t('ft.faq')}</a></li>
         <li><a href="https://arasmetal.com/privacy-policy/" target="_blank" rel="noopener">{t('ft.priv')}</a></li>

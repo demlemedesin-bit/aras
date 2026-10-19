@@ -3,9 +3,9 @@ import { revalidatePath, revalidateTag } from 'next/cache'
 const URL_ = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!
 
-export const SITE_TABLES = ['site_texts', 'site_settings', 'site_collections', 'site_products', 'site_gallery_groups', 'site_gallery_images', 'site_news', 'site_partners', 'submissions', 'site_dealers'] as const
+export const SITE_TABLES = ['site_texts', 'site_settings', 'site_collections', 'site_products', 'site_gallery_groups', 'site_gallery_images', 'site_news', 'site_partners', 'submissions', 'site_dealers', 'site_history'] as const
 export type SiteTable = (typeof SITE_TABLES)[number]
-const PK: Record<SiteTable, string[]> = { site_texts: ['ns', 'key'], site_settings: ['key'], site_collections: ['id'], site_products: ['id'], site_gallery_groups: ['id'], site_gallery_images: ['id'], site_news: ['id'], site_partners: ['id'], submissions: ['id'], site_dealers: ['id'] }
+const PK: Record<SiteTable, string[]> = { site_texts: ['ns', 'key'], site_settings: ['key'], site_collections: ['id'], site_products: ['id'], site_gallery_groups: ['id'], site_gallery_images: ['id'], site_news: ['id'], site_partners: ['id'], submissions: ['id'], site_dealers: ['id'], site_history: ['id'] }
 export const pkOf = (t: SiteTable) => PK[t]
 
 const h = (extra: Record<string, string> = {}) => ({ apikey: KEY, Authorization: `Bearer ${KEY}`, 'Content-Type': 'application/json', ...extra })

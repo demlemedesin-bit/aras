@@ -1,7 +1,7 @@
 import { track } from './track';
 
 /** Form gönderimi: Supabase `submissions` tablosuna kaydedilir. E-posta uygulaması açılmaz. */
-export type Submission = { name: string; email: string; company?: string; phone?: string; country?: string; message?: string; topic: 'catalog' | 'contact'; lang: string };
+export type Submission = { name: string; email: string; company?: string; phone?: string; country?: string; message?: string; topic: 'catalog' | 'contact' | 'career'; lang: string };
 
 export async function sendSubmission(s: Submission): Promise<boolean> {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;

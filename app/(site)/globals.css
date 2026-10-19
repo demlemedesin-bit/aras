@@ -460,3 +460,24 @@ html.lb-open{overflow:hidden}
 .pc:hover .pc__ask,.pc:focus-visible .pc__ask{background:var(--gr);color:#000;box-shadow:none}
 @keyframes marq{to{transform:translateX(-50%)}}
 @media (prefers-reduced-motion:reduce){.marq{overflow-x:auto;-webkit-mask-image:none;mask-image:none}.marq__t{animation:none}}
+
+/* Alt sayfalar */
+.top--sub{position:sticky;top:0}
+.sub{min-height:70vh;padding:clamp(110px,14vw,180px) var(--gut) clamp(60px,8vw,110px)}
+.sub__in{max-width:780px;margin:0 auto}
+.sub__h .lead{margin-top:22px;max-width:60ch}
+.sub__b{margin-top:clamp(28px,4vw,44px)}
+.sub__b p,.sub__b li{margin-top:10px;color:var(--ash);line-height:1.6;max-width:68ch}
+.sub__b ul{margin-top:6px;padding-left:1.2em;list-style:disc}
+.faq{margin-top:clamp(32px,5vw,56px);border-top:1.5px solid #000}
+.faq details{border-bottom:1.5px solid #000;padding:20px 0}
+.faq summary{cursor:pointer;font-weight:600;font-size:1.15rem;list-style:none}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";float:right;font-size:1.4rem;line-height:1}
+.faq details[open] summary::after{content:"−"}
+.faq p{margin-top:12px;color:var(--ash);max-width:62ch;line-height:1.6}
+.sub__f{display:grid;gap:16px;margin-top:clamp(28px,4vw,48px)}
+.sub__f label{display:grid;gap:6px;font-weight:600;font-size:.95rem}
+.sub__f input,.sub__f textarea{font:inherit;padding:14px 16px;border-radius:14px;border:1.5px solid #000;background:#fff;color:#000}
+.sub__f small{color:var(--ash)}
+.sub__ok{color:#1e7a1c;font-weight:600}

@@ -18,7 +18,7 @@ export default function Page() {
         {shown.map((r) => (
           <button key={r.id} onClick={() => { setOpen(r); if (r.status === 'new') setStatus(r, 'read') }} style={{ display: 'flex', width: '100%', gap: 12, padding: '12px 20px', borderBottom: '1px solid var(--bdr)', background: 'none', border: 0, borderBlockEnd: '1px solid var(--bdr)', color: 'inherit', textAlign: 'left', cursor: 'pointer', alignItems: 'center' }}>
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontWeight: r.status === 'new' ? 700 : 500 }}>{r.name}{r.company ? ` · ${r.company}` : ''} {r.topic === 'catalog' && <Pill tone="ok">Katalog talebi</Pill>}</div>
+              <div style={{ fontWeight: r.status === 'new' ? 700 : 500 }}>{r.name}{r.company ? ` · ${r.company}` : ''} {r.topic === 'catalog' && <Pill tone="ok">Katalog talebi</Pill>}{r.topic === 'career' && <Pill tone="ac">Kariyer</Pill>}</div>
               <div style={{ color: 'var(--tx3)', fontSize: 12.5, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.message}</div>
             </div>
             <Pill tone={(ST[r.status] ?? ST.read)[1]}>{(ST[r.status] ?? ST.read)[0]}</Pill>
@@ -34,7 +34,7 @@ export default function Page() {
             {open.status !== 'done' && <button className="btn-ghost" onClick={() => setStatus(open, 'done')}>Cevaplandı işaretle</button>}
             <a className="btn" href={`mailto:${open.email}?subject=${encodeURIComponent('Aras Metal')}`} onClick={() => setStatus(open, 'done')}>E-posta ile yanıtla</a>
           </>}>
-          <div style={{ color: 'var(--tx3)', fontSize: 12.5, marginBottom: 12 }}>{open.email}{open.phone ? ` · ${open.phone}` : ''}{open.company ? ` · ${open.company}` : ''}{open.country ? ` · ${open.country}` : ''} · {open.topic === 'catalog' ? 'Katalog talebi' : 'İletişim'} · {open.lang?.toUpperCase()} · {new Date(open.created_at).toLocaleString('tr-TR')}</div>
+          <div style={{ color: 'var(--tx3)', fontSize: 12.5, marginBottom: 12 }}>{open.email}{open.phone ? ` · ${open.phone}` : ''}{open.company ? ` · ${open.company}` : ''}{open.country ? ` · ${open.country}` : ''} · {open.topic === 'catalog' ? 'Katalog talebi' : open.topic === 'career' ? 'Kariyer başvurusu' : 'İletişim'} · {open.lang?.toUpperCase()} · {new Date(open.created_at).toLocaleString('tr-TR')}</div>
           <div style={{ whiteSpace: 'pre-wrap', lineHeight: 1.6 }}>{open.message}</div>
         </Modal>
       )}

@@ -11,10 +11,13 @@ export default function Footer() {
     <footer className="ft">
       <p className="ft__tag">{t('ft.tag')}</p>
       <ul className="ft__l">
-        <li><a href="#hakkimizda">{t('nav.about')}</a></li>
-        <li><a href="#tarihce">{t('nav.hist')}</a></li>
-        <li><a href="#showroom">{t('nav.sr')}</a></li>
-        <li><a href="#haberler">{t('nav.fair')}</a></li>
+        <li><a href="/#hakkimizda">{t('nav.about')}</a></li>
+        <li><a href="/#tarihce">{t('nav.hist')}</a></li>
+        <li><a href="/#showroom">{t('nav.sr')}</a></li>
+        <li><a href="/#haberler">{t('nav.fair')}</a></li>
+        <li><a href="/kariyer">{t('ft.car')}</a></li>
+        <li><a href="/sss">{t('ft.faq')}</a></li>
+        <li><a href="/gizlilik">{t('ft.priv')}</a></li>
         <li><a href="#katalog" onClick={(e) => { e.preventDefault(); openCatalog(); }}>{t('cta.cat')}</a></li>
       </ul>
       <div className="ft__bar">

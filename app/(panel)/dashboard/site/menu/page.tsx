@@ -1,6 +1,6 @@
 'use client'
 import { useState } from 'react'
-import { ArrowDown, ArrowUp, Plus, RotateCcw, Trash2 } from 'lucide-react'
+import { ArrowDown, ArrowUp, GripVertical, Plus, RotateCcw, Trash2 } from 'lucide-react'
 import { LANGS, LANG_NAMES, PageHead } from '@panel/components/site/ui'
 import { useSetting } from '@panel/components/site/useSetting'
 import { ACTION_HREF, DEFAULT_NAV, KIND_NAMES, PAGE_PATHS, SECTION_IDS, kindOf, type Link, type LinkKind, type NavCfg } from '@/lib/site-config'
@@ -17,6 +17,27 @@ const BASIC: LinkKind[] = ['section', 'page', 'url', 'catalog', 'login', 'lang',
 const dflt = (l: Link, lang: string) => (l.key ? ((i18n as any).t[lang]?.[l.key] ?? (i18n as any).t.tr?.[l.key] ?? '') : '')
 const lbl = (l: Link, lang: string) => (l.label as Record<string, string> | undefined)?.[lang] ?? ''
 const FIELD = { fontSize: 12, color: 'var(--tx3)', marginBottom: 3 } as const
+
+/** Sürükle-bırak ile sıralanan liste; tutamaç dışında yazı kutuları normal çalışır. */
+function Sortable({ items, onChange, render }: { items: Link[]; onChange: (l: Link[]) => void; render: (l: Link, i: number) => React.ReactNode }) {
+  const [drag, setDrag] = useState<number | null>(null)
+  const [armed, setArmed] = useState<number | null>(null)
+  const [over, setOver] = useState<number | null>(null)
+  return (
+    <>
+      {items.map((l, i) => (
+        <div key={l.id} draggable={armed === i}
+          onDragStart={() => setDrag(i)} onDragEnd={() => { setDrag(null); setArmed(null); setOver(null) }}
+          onDragOver={(e) => { if (drag !== null) { e.preventDefault(); setOver(i) } }}
+          onDrop={() => { if (drag === null || drag === i) return; const a = [...items]; const [m] = a.splice(drag, 1); a.splice(i, 0, m); onChange(a); setDrag(null); setOver(null); setArmed(null) }}
+          style={{ display: 'flex', gap: 6, alignItems: 'flex-start', borderTop: over === i && drag !== null && drag !== i ? '3px solid var(--ac)' : '3px solid transparent', opacity: drag === i ? 0.4 : 1 }}>
+          <span onMouseDown={() => setArmed(i)} onMouseUp={() => setArmed(null)} title="Sürükleyip bırakarak sırala" style={{ cursor: 'grab', padding: '14px 2px', color: 'var(--tx3)' }}><GripVertical size={18} /></span>
+          <div style={{ flex: 1, minWidth: 0 }}>{render(l, i)}</div>
+        </div>
+      ))}
+    </>
+  )
+}
 
 /** Tek bağlantı: ad + “tıklayınca ne olsun” + hedef. */
 function Row({ l, lang, kinds, onChange, onMove, onDelete, depth = 0 }: { l: Link; lang: string; kinds: LinkKind[]; onChange: (p: Partial<Link>) => void; onMove: (d: -1 | 1) => void; onDelete: () => void; depth?: number }) {
@@ -69,12 +90,12 @@ function Row({ l, lang, kinds, onChange, onMove, onDelete, depth = 0 }: { l: Lin
       {k === 'menu' && (
         <div style={{ display: 'grid', gap: 8 }}>
           <div style={{ fontSize: 12, color: 'var(--tx3)' }}>Üzerine gelince aşağıdaki bağlantılar açılır.</div>
-          {children.map((c, i) => (
-            <Row key={c.id} l={c} lang={lang} kinds={BASIC} depth={1}
+          <Sortable items={children} onChange={(c) => onChange({ children: c })} render={(c, i) => (
+            <Row l={c} lang={lang} kinds={BASIC} depth={0}
               onChange={(p) => onChange({ children: children.map((x, j) => (j === i ? { ...x, ...p } : x)) })}
               onMove={(d) => onChange({ children: mv(children, i, d) })}
               onDelete={() => onChange({ children: children.filter((_, j) => j !== i) })} />
-          ))}
+          )} />
           <div><button className="btn-ghost" onClick={() => onChange({ children: [...children, { id: `c${Date.now().toString(36)}`, label: {}, href: '#iletisim', show: true, kind: 'section' }] })}><Plus size={14} /> Alt bağlantı ekle</button></div>
         </div>
       )}
@@ -103,7 +124,7 @@ export default function Page() {
         <div style={{ color: 'var(--tx3)', fontSize: 12.5 }}>{cur.hint} {saved ? '' : 'Henüz kaydedilmedi; varsayılan liste gösteriliyor.'} Ad boş bırakılırsa varsayılan metin (gri yazı) kullanılır. Kaydedince sitede anında görünür; Tasarım sayfasındaki önizlemeden kontrol edebilirsiniz.</div>
       </div>
       <div style={{ display: 'grid', gap: 8 }}>
-        {list.map((l, i) => <Row key={l.id} l={l} lang={lang} kinds={kinds} onChange={(p) => patch(i, p)} onMove={(d) => set(mv(list, i, d))} onDelete={() => set(list.filter((_, j) => j !== i))} />)}
+        <Sortable items={list} onChange={set} render={(l, i) => <Row l={l} lang={lang} kinds={kinds} onChange={(p) => patch(i, p)} onMove={(d) => set(mv(list, i, d))} onDelete={() => set(list.filter((_, j) => j !== i))} />} />
       </div>
       <div style={{ marginTop: 14 }}><button className="btn" onClick={() => set([...list, { id: `l${Date.now().toString(36)}`, label: {}, href: '#iletisim', show: true, kind: 'section' }])}><Plus size={14} /> Bağlantı ekle</button></div>
     </>

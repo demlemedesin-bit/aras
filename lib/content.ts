@@ -3,7 +3,7 @@ import { COLLECTIONS, PRODUCTS, GALLERY_GROUPS, GALLERY, NEWS, PARTNERS, CONTACT
 import type { Lang, Dict } from './i18n';
 import type { PagesOverride } from './page-docs';
 import { DEFAULT_CATEGORIES, type Cat } from './categories';
-import { DEFAULT_NAV, DEFAULT_CAREERS, type NavCfg, type CareerCfg } from './site-config';
+import { DEFAULT_NAV, DEFAULT_CAREERS, DEFAULT_LAYOUT, normLayout, type NavCfg, type CareerCfg, type LayoutCfg } from './site-config';
 
 /** Sitenin tüm yönetilebilir içeriği. Kaynak: Supabase (panelden düzenlenir); ulaşılamazsa gömülü varsayılanlar. */
 export type Content = {
@@ -21,6 +21,7 @@ export type Content = {
   categories: Cat[];
   nav: NavCfg;
   careers: CareerCfg;
+  layout: LayoutCfg;
 };
 
 const pivot = (byLang: Record<string, Record<string, string>>) => {
@@ -49,6 +50,7 @@ export const FALLBACK: Content = {
   categories: DEFAULT_CATEGORIES,
   nav: DEFAULT_NAV,
   careers: DEFAULT_CAREERS,
+  layout: DEFAULT_LAYOUT,
 };
 
 const URL_ = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -101,6 +103,7 @@ export async function getContent(): Promise<Content> {
     if (Array.isArray(s.categories) && s.categories.length) out.categories = s.categories;
     if (s.nav) out.nav = { v: 2, header: Array.isArray(s.nav.header) ? (s.nav.v === 2 ? s.nav.header : [...DEFAULT_NAV.header.filter((x) => x.kind === 'cats'), ...s.nav.header]) : DEFAULT_NAV.header, dock: Array.isArray(s.nav.dock) ? s.nav.dock : DEFAULT_NAV.dock, footer: Array.isArray(s.nav.footer) ? s.nav.footer : DEFAULT_NAV.footer };
     if (s.careers) out.careers = { ...DEFAULT_CAREERS, ...s.careers, phone: { ...DEFAULT_CAREERS.phone, ...s.careers.phone }, message: { ...DEFAULT_CAREERS.message, ...s.careers.message }, labels: s.careers.labels ?? {}, positions: s.careers.positions ?? [], extra: s.careers.extra ?? [] };
+    if (s.theme?.layout) out.layout = normLayout(s.theme.layout);
     if (s.contact) out.contact = { ...FALLBACK.contact, ...s.contact };
     if (cols.length) out.collections = cols.map((c: any) => ({ id: c.id, world: c.world, title: c.title_key, desc: c.desc_key, count: c.count, img: c.img, pos: c.pos ?? undefined, subs: c.subs?.length ? c.subs : undefined }));
     if (prods.length) out.products = prods.map((p: any) => ({ id: p.id, code: p.code, name: p.name_key, cat: p.cat_key, world: p.world, img: p.img }));

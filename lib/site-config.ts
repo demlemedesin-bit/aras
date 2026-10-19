@@ -56,7 +56,21 @@ export type Theme = {
   headFont: string; // '' = gövde fontu ile aynı
   base: number;
   overrides?: Override[];
+  layout?: LayoutCfg;
 };
+export type LayoutCfg = { order: string[]; hidden: string[] };
+/** Ana sayfa bölümleri (id = sayfadaki <section id>). */
+export const SECTION_DEFS: { id: string; n: string }[] = [
+  { id: 'top', n: 'Ana görsel (Hero)' }, { id: 'tarihce', n: 'Tarihçe' }, { id: 'koleksiyonlar', n: 'Koleksiyonlar' }, { id: 'urunler', n: 'Ürünler' }, { id: 'haberler', n: 'Fuarlar ve ödüller' },
+  { id: 'hakkimizda', n: 'Hakkımızda' }, { id: 'showroom', n: 'Showroom' }, { id: 'surdurulebilirlik', n: 'Çelik / sürdürülebilirlik' }, { id: 'iletisim', n: 'İletişim' },
+];
+export const DEFAULT_LAYOUT: LayoutCfg = { order: SECTION_DEFS.map((x) => x.id), hidden: [] };
+/** Kayıtlı sırayı geçerli bölümlerle uzlaştırır (yeni bölümler sona eklenir). */
+export function normLayout(l?: Partial<LayoutCfg> | null): LayoutCfg {
+  const known = SECTION_DEFS.map((x) => x.id);
+  const order = [...(l?.order ?? []).filter((id) => known.includes(id)), ...known.filter((id) => !(l?.order ?? []).includes(id))];
+  return { order: [...new Set(order)], hidden: (l?.hidden ?? []).filter((id) => known.includes(id)) };
+}
 export type Override = { id: string; sel: string; note?: string; css: Record<string, string> };
 export const THEME_DEFAULT: Theme = {
   colors: { k: '#000000', w: '#ffffff', z: '#eceeee', z2: '#d8dcdc', ash: '#4f5555', gr: '#299826', gr2: '#1e7a1c', gl: '#8dc47e', fg: '#10361a', pb: '#fafafa', bt: '#000000', btt: '#ffffff', hd: '#ffffff', dk: '#000000', dkt: '#ffffff' },

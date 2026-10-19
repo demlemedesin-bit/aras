@@ -19,6 +19,10 @@ import Footer from '@/components/sections/Footer';
 
 import { getContent } from '@/lib/content';
 
+const SECTIONS: Record<string, () => React.ReactElement> = {
+  top: Hero, tarihce: History, koleksiyonlar: Collections, urunler: Products, haberler: News, hakkimizda: About, showroom: Showroom, surdurulebilirlik: Steel, iletisim: Contact,
+};
+
 /** İçerik panelden değişince /api/revalidate ile anında, aksi halde 5 dakikada bir yenilenir. */
 export const revalidate = 300;
 
@@ -30,15 +34,10 @@ export default async function Home() {
       <Preloader />
       <Chrome />
       <main id="icerik">
-        <Hero />
-        <History />
-        <Collections />
-        <Products />
-        <News />
-        <About />
-        <Showroom />
-        <Steel />
-        <Contact />
+        {content.layout.order.filter((id) => !content.layout.hidden.includes(id)).map((id) => {
+          const C = SECTIONS[id];
+          return C ? <C key={id} /> : null;
+        })}
       </main>
       <Footer />
       <AuthDialog />

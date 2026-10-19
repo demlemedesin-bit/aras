@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@panel/lib/supabase/server'
+import { buildReport, buildRealtime, type Sub } from '@panel/lib/analytics'
 import { SITE_TABLES, seoAudit, siteRpc, siteCount, siteDelete, siteDeleteMedia, siteListMedia, siteRevalidate, siteSelect, siteUpload, siteUpsert, siteUpdate, pkOf, type SiteTable } from '@panel/lib/aras-site'
 
 // Yalnızca giriş yapmış admin/manager rolü site içeriğini düzenleyebilir.
@@ -19,6 +20,12 @@ export async function GET(req: Request) {
   const sp = new URL(req.url).searchParams
   try {
     if (sp.get('media')) return NextResponse.json({ files: await siteListMedia() })
+    if (sp.get('report')) {
+      const days = Math.min(90, Math.max(1, Number(sp.get('days')) || 14))
+      const subs = (await siteSelect('submissions')) as Sub[]
+      return NextResponse.json(await buildReport(days, subs))
+    }
+    if (sp.get('realtime')) return NextResponse.json(await buildRealtime())
     if (sp.get('analytics')) {
       const days = Math.min(90, Math.max(1, Number(sp.get('days')) || 14))
       const [a, subs] = await Promise.all([

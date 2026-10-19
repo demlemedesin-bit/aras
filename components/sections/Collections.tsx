@@ -33,6 +33,10 @@ export default function Collections() {
       pos: old?.pos,
       subs: m.subs.map((x) => ({ id: x.id, name: catName(x.name, lang), img: x.img })),
       photos: (m.photos?.length ? m.photos : m.subs.flatMap((x) => x.photos ?? [])).slice(0, 8),
+      groups: [
+        ...(m.photos?.length ? [{ name: catName(m.name, lang), photos: m.photos }] : []),
+        ...m.subs.filter((x) => x.photos?.length).map((x) => ({ name: catName(x.name, lang), photos: x.photos as string[] })),
+      ],
     };
   });
   const visible = all.filter((c) => world === 'all' || c.world === world);
@@ -42,6 +46,12 @@ export default function Collections() {
     if (visible.length && !visible.some((c) => c.id === open)) setOpen(visible[0].id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [world]);
+
+  const openLb = (c: (typeof all)[number], n: number): LB => {
+    const g = c.groups.length ? c.groups : [{ name: c.title, photos: c.photos }];
+    const k = Math.max(0, g.findIndex((x) => x.photos.includes(c.photos[n])));
+    return { groups: g, g: k, i: Math.max(0, g[k].photos.indexOf(c.photos[n])), title: c.groups.length > 1 ? c.title : undefined };
+  };
 
   const onClick = (e: MouseEvent, c: (typeof all)[number]) => {
     if (open !== c.id) {
@@ -113,8 +123,8 @@ export default function Collections() {
                         tabIndex={0}
                         aria-label={`${c.title} ${n + 1}`}
                         style={{ backgroundImage: `url(${u})` }}
-                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); setLb({ photos: c.photos, i: n, title: c.title }); }}
-                        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); setLb({ photos: c.photos, i: n, title: c.title }); } }}
+                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); setLb(openLb(c, n)); }}
+                        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); setLb(openLb(c, n)); } }}
                       />
                     ))}
                   </span>
@@ -124,7 +134,7 @@ export default function Collections() {
           </li>
         ))}
       </ul>
-      <Lightbox lb={lb} set={setLb} />
+      <Lightbox lb={lb} set={setLb} cta={session ? { label: t('dp.h'), on: () => location.assign('/bayi/urunler') } : { label: t('dp.login'), on: openCatalog }} />
     </section>
   );
 }

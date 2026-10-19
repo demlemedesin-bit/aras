@@ -93,7 +93,7 @@ export function DealerCatalog({ allowed, company }: { allowed: boolean; company:
             <>
               <p className="dp__cap">{catSub ? catName(catSub.name, lang) : cat ? catName(cat.name, lang) : ''}</p>
               <ul className="dp__ph">
-                {photos.map((u, n) => <li key={u} onClick={() => setLb({ photos, i: n, title: catSub ? catName(catSub.name, lang) : cat ? catName(cat.name, lang) : '' })}><img src={u} alt="" loading="lazy" /></li>)}
+                {photos.map((u, n) => <li key={u} onClick={() => setLb({ groups: [{ name: catSub ? catName(catSub.name, lang) : cat ? catName(cat.name, lang) : '', photos }], g: 0, i: n })}><img src={u} alt="" loading="lazy" /></li>)}
               </ul>
             </>
           )}

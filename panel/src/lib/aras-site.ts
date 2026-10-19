@@ -43,3 +43,44 @@ export async function siteDeleteMedia(name: string) {
 export async function siteRevalidate() {
   try { revalidateTag('site-content', { expire: 0 }); revalidatePath('/'); return true } catch { return false }
 }
+
+export async function siteRpc<T = unknown>(fn: string, args: Record<string, unknown>): Promise<T> {
+  return (await check(await fetch(`${URL_}/rest/v1/rpc/${fn}`, { method: 'POST', headers: h(), body: JSON.stringify(args), cache: 'no-store' }))).json()
+}
+
+/** Sitenin ana sayfasını çekip temel SEO kontrollerini yapar. */
+export async function seoAudit(base: string) {
+  const root = base.replace(/\/$/, '')
+  type Check = { id: string; label: string; status: 'ok' | 'warn' | 'bad'; detail: string }
+  const checks: Check[] = []
+  const t0 = Date.now()
+  let html = '', status = 0
+  try { const r = await fetch(root, { cache: 'no-store', headers: { 'User-Agent': 'ArasSeoCheck/1.0' } }); status = r.status; html = await r.text() } catch {}
+  const ms = Date.now() - t0
+  const meta = (re: RegExp) => html.match(re)?.[1]?.trim() ?? ''
+  const attr = (name: string) => meta(new RegExp(`<meta[^>]+(?:name|property)=["']${name}["'][^>]*content=["']([^"']*)["']`, 'i')) || meta(new RegExp(`<meta[^>]+content=["']([^"']*)["'][^>]+(?:name|property)=["']${name}["']`, 'i'))
+  const add = (id: string, label: string, status: Check['status'], detail: string) => checks.push({ id, label, status, detail })
+
+  if (!status || status >= 400) { add('reach', 'Site erişilebilir', 'bad', `${root} adresi açılamadı (HTTP ${status || 'bağlantı yok'})`); return { url: root, ms, score: 0, checks } }
+  add('reach', 'Site erişilebilir', 'ok', `HTTP ${status}, ${ms} ms`)
+  add('https', 'HTTPS kullanılıyor', root.startsWith('https://') ? 'ok' : 'bad', root.startsWith('https://') ? 'Güvenli bağlantı' : 'Site HTTPS değil')
+  const title = meta(/<title[^>]*>([^<]*)<\/title>/i)
+  add('title', 'Sayfa başlığı', !title ? 'bad' : title.length < 30 || title.length > 60 ? 'warn' : 'ok', title ? `${title.length} karakter (ideal 30–60): ${title}` : 'Başlık yok')
+  const desc = attr('description')
+  add('desc', 'Meta açıklama', !desc ? 'bad' : desc.length < 110 || desc.length > 160 ? 'warn' : 'ok', desc ? `${desc.length} karakter (ideal 110–160)` : 'Açıklama yok')
+  add('og', 'Sosyal paylaşım kartı (Open Graph)', attr('og:title') && attr('og:image') ? 'ok' : attr('og:title') ? 'warn' : 'bad', attr('og:image') ? 'Başlık ve görsel tanımlı' : 'Paylaşım görseli yok')
+  add('canonical', 'Canonical adres', /<link[^>]+rel=["']canonical["']/i.test(html) ? 'ok' : 'warn', /<link[^>]+rel=["']canonical["']/i.test(html) ? 'Tanımlı' : 'Tanımlı değil')
+  add('viewport', 'Mobil uyumluluk etiketi', attr('viewport') ? 'ok' : 'bad', attr('viewport') ? 'viewport tanımlı' : 'viewport yok')
+  add('lang', 'Sayfa dili', meta(/<html[^>]+lang=["']([^"']+)["']/i) ? 'ok' : 'warn', meta(/<html[^>]+lang=["']([^"']+)["']/i) || 'lang etiketi yok')
+  const h1 = (html.match(/<h1[\s>]/gi) || []).length
+  add('h1', 'Ana başlık (H1)', h1 === 1 ? 'ok' : h1 === 0 ? 'warn' : 'warn', h1 === 1 ? 'Tek H1 var' : h1 === 0 ? 'H1 bulunamadı' : `${h1} adet H1 var (1 olmalı)`)
+  const imgs = html.match(/<img\b[^>]*>/gi) || []
+  const noAlt = imgs.filter((i) => !/\balt=["'][^"']+["']/i.test(i)).length
+  add('alt', 'Görsellerde alternatif metin', !imgs.length ? 'ok' : noAlt === 0 ? 'ok' : noAlt / imgs.length > 0.3 ? 'bad' : 'warn', imgs.length ? `${imgs.length} görselin ${noAlt} tanesinde alt metin yok` : 'Görsel bulunamadı')
+  for (const [id, label, path] of [['robots', 'robots.txt', '/robots.txt'], ['sitemap', 'sitemap.xml', '/sitemap.xml']] as const) {
+    try { const r = await fetch(root + path, { cache: 'no-store' }); add(id, label, r.ok ? 'ok' : 'bad', r.ok ? 'Mevcut' : `Bulunamadı (HTTP ${r.status})`) } catch { add(id, label, 'bad', 'Okunamadı') }
+  }
+  add('speed', 'Yanıt süresi', ms < 800 ? 'ok' : ms < 2000 ? 'warn' : 'bad', `${ms} ms`)
+  const score = Math.round((checks.reduce((a, c) => a + (c.status === 'ok' ? 1 : c.status === 'warn' ? 0.5 : 0), 0) / checks.length) * 100)
+  return { url: root, ms, score, checks }
+}

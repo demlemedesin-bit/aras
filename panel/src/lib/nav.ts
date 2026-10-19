@@ -1,6 +1,6 @@
 import {
   LayoutDashboard, Package, Layers, Images, Newspaper, Handshake, Inbox,
-  Type, FolderOpen, SlidersHorizontal, UserCog,
+  Type, FolderOpen, SlidersHorizontal, UserCog, BarChart3, Search,
   type LucideIcon,
 } from 'lucide-react'
 
@@ -10,6 +10,10 @@ export const NAV: { g: string; items: NavItem[] }[] = [
   { g: 'Genel', items: [
     { href: '/dashboard', label: 'Dashboard', Icon: LayoutDashboard },
     { href: '/dashboard/site/mesajlar', label: 'Talepler & Mesajlar', Icon: Inbox, badge: 'unread' },
+  ]},
+  { g: 'Analiz', items: [
+    { href: '/dashboard/site/analiz', label: 'Ziyaretçi analizi', Icon: BarChart3 },
+    { href: '/dashboard/site/seo', label: 'SEO', Icon: Search },
   ]},
   { g: 'Katalog', items: [
     { href: '/dashboard/site/urunler', label: 'Ürünler', Icon: Package },

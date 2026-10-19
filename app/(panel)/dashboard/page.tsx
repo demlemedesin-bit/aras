@@ -1,62 +1,13 @@
 'use client'
 import Link from 'next/link'
 import { useEffect, useMemo, useState } from 'react'
-import { AlertTriangle, CheckCircle2, ChevronRight, Inbox, CalendarDays, Clock, BookOpen, Package, Layers, Images, Newspaper, Handshake, Type, Plus } from 'lucide-react'
+import { AlertTriangle, CheckCircle2, ChevronRight, Inbox, Users, Eye, Percent, Package, Layers, Images, Newspaper, Handshake, Type, Plus } from 'lucide-react'
 import TopBar from '@panel/components/TopBar'
 import { useMe } from '@panel/components/Sidebar'
 import { Pill, ToastProvider, api, grid, type Row } from '@panel/components/site/ui'
+import { AreaChart, Delta, Spark, dayLabel } from '@panel/components/site/charts'
 
-const dayLabel = (d: string) => new Date(d + 'T12:00:00').toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' })
-
-/* Yumuşak eğri (Catmull-Rom → Bezier) */
-function curve(pts: [number, number][]) {
-  if (pts.length < 2) return ''
-  let d = `M${pts[0][0]},${pts[0][1]}`
-  for (let i = 0; i < pts.length - 1; i++) {
-    const p0 = pts[i - 1] ?? pts[i], p1 = pts[i], p2 = pts[i + 1], p3 = pts[i + 2] ?? p2
-    const c1 = [p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6]
-    const c2 = [p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6]
-    d += ` C${c1[0]},${c1[1]} ${c2[0]},${c2[1]} ${p2[0]},${p2[1]}`
-  }
-  return d
-}
-
-function AreaChart({ data }: { data: { day: string; n: number }[] }) {
-  const W = 600, H = 170, P = 8
-  const max = Math.max(3, ...data.map((d) => d.n))
-  const pts: [number, number][] = data.map((d, i) => [P + (i * (W - 2 * P)) / (data.length - 1), H - P - (d.n / max) * (H - 2 * P)])
-  const line = curve(pts)
-  const area = `${line} L${pts[pts.length - 1][0]},${H} L${pts[0][0]},${H} Z`
-  return (
-    <div style={{ padding: '14px 20px 16px' }}>
-      <div style={{ position: 'relative' }}>
-        <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" style={{ width: '100%', height: 170, display: 'block' }} role="img" aria-label="Son 14 günde gelen talepler">
-          <defs><linearGradient id="ag" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="var(--ac)" stopOpacity=".28" /><stop offset="1" stopColor="var(--ac)" stopOpacity="0" /></linearGradient></defs>
-          {[0.25, 0.5, 0.75].map((g) => <line key={g} x1="0" x2={W} y1={H * g} y2={H * g} stroke="var(--bdr)" strokeDasharray="4 5" vectorEffect="non-scaling-stroke" />)}
-          <path d={area} fill="url(#ag)" />
-          <path d={line} fill="none" stroke="var(--ac)" strokeWidth="2.2" strokeLinejoin="round" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
-        </svg>
-        <span style={{ position: 'absolute', top: 0, left: 0, fontSize: 11, color: 'var(--tx3)' }}>{max}</span>
-      </div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--tx3)', fontSize: 11.5, marginTop: 8 }}>
-        {data.filter((_, i) => i % 3 === 0 || i === data.length - 1).map((d) => <span key={d.day}>{dayLabel(d.day)}</span>)}
-      </div>
-    </div>
-  )
-}
-
-function Spark({ data }: { data: number[] }) {
-  const W = 84, H = 30, max = Math.max(1, ...data)
-  const pts: [number, number][] = data.map((n, i) => [(i * W) / (data.length - 1), H - 3 - (n / max) * (H - 8)])
-  return (
-    <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} aria-hidden="true">
-      <path d={curve(pts)} fill="none" stroke="var(--ac)" strokeWidth="1.8" strokeLinecap="round" />
-      <circle cx={pts[pts.length - 1][0]} cy={pts[pts.length - 1][1]} r="2.6" fill="var(--ac)" />
-    </svg>
-  )
-}
-
-function Stat({ label, value, sub, Icon, tone, spark, href }: { label: string; value: ReactNodeLike; sub: string; Icon: typeof Inbox; tone: 'ac' | 'amber' | 'blue' | 'green'; spark?: number[]; href?: string }) {
+function Stat({ label, value, sub, Icon, tone, spark, href, delta }: { label: string; value: ReactNodeLike; sub: string; delta?: React.ReactNode; Icon: typeof Inbox; tone: 'ac' | 'amber' | 'blue' | 'green'; spark?: number[]; href?: string }) {
   const c = { ac: ['var(--ac)', 'var(--ac2)'], amber: ['var(--amber)', 'var(--amber2)'], blue: ['var(--blue)', 'var(--blue2)'], green: ['var(--green)', 'var(--green2)'] }[tone]
   const body = (
     <>
@@ -65,7 +16,7 @@ function Stat({ label, value, sub, Icon, tone, spark, href }: { label: string; v
         <span style={{ width: 32, height: 32, borderRadius: 9, background: c[1], color: c[0], display: 'grid', placeItems: 'center' }}><Icon size={16} strokeWidth={1.9} /></span>
       </div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: 16 }}>
-        <div><div className="kpi-value">{value}</div><div className="kpi-sub">{sub}</div></div>
+        <div><div className="kpi-value">{value}</div><div className="kpi-sub" style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' }}><span>{sub}</span>{delta}</div></div>
         {spark && <Spark data={spark} />}
       </div>
     </>
@@ -86,11 +37,19 @@ const CONTENT: { k: string; label: string; href: string; Icon: typeof Package }[
 export default function Dashboard() {
   const { name } = useMe()
   const [s, setS] = useState<Row | null>(null)
+  const [an, setAn] = useState<Row | null>(null)
+  const [seo, setSeo] = useState<Row | null>(null)
   const [err, setErr] = useState('')
-  useEffect(() => { api('GET', '/api/site?stats=1').then(setS).catch((e) => setErr(e.message)) }, [])
+  useEffect(() => {
+    api('GET', '/api/site?stats=1').then(setS).catch((e) => setErr(e.message))
+    api('GET', '/api/site?analytics=1&days=14').then(setAn).catch(() => {})
+    api('GET', '/api/site?seo=1').then(setSeo).catch(() => {})
+  }, [])
 
   const spark = useMemo(() => (s ? s.trend.map((d: Row) => d.n) : [0, 0]), [s])
-  const total14 = s ? spark.reduce((a: number, b: number) => a + b, 0) : 0
+  const visSpark = useMemo(() => (an ? an.daily.map((d: Row) => d.visitors) : [0, 0]), [an])
+  const viewSpark = useMemo(() => (an ? an.daily.map((d: Row) => d.views) : [0, 0]), [an])
+  const conv = an && an.totals.visitors ? ((an.requests / an.totals.visitors) * 100).toFixed(1).replace('.', ',') : '0'
   const alerts = useMemo(() => {
     if (!s) return []
     const a = s.alerts
@@ -99,8 +58,9 @@ export default function Dashboard() {
     if (a.missingTr) list.push({ text: `${a.missingTr} metinde en az bir dilde çeviri eksik`, href: '/dashboard/site/metinler' })
     if (a.noImg) list.push({ text: `${a.noImg} ürün/koleksiyonda görsel yok`, href: '/dashboard/site/urunler' })
     if (a.passive) list.push({ text: `${a.passive} ürün yayında değil`, href: '/dashboard/site/urunler' })
+    if (seo && seo.score < 80) list.push({ text: `SEO skoru ${seo.score}/100, ${seo.checks.filter((c: Row) => c.status !== 'ok').length} madde iyileştirilebilir`, href: '/dashboard/site/seo' })
     return list
-  }, [s])
+  }, [s, seo])
   const first = (name || '').split(' ')[0]
   const funnel: [string, number][] = s ? [['Yeni', s.unread], ['Okundu', s.read], ['Yanıtlandı', s.done]] : []
   const funnelMax = Math.max(1, s?.inbox ?? 1)
@@ -117,16 +77,21 @@ export default function Dashboard() {
         {err && <div className="card" style={{ padding: 16, color: 'var(--red)', marginBottom: 16 }}>{err}. SUPABASE_SERVICE_ROLE_KEY ortam değişkenini kontrol edin.</div>}
 
         <div style={grid(230)}>
-          <Stat label="Bugün" value={s ? s.today : '–'} sub="gelen talep" Icon={CalendarDays} tone="ac" spark={spark} href="/dashboard/site/mesajlar" />
-          <Stat label="Son 7 gün" value={s ? s.week : '–'} sub="gelen talep" Icon={Inbox} tone="blue" spark={spark} />
-          <Stat label="Yanıt bekleyen" value={s ? s.pending : '–'} sub={s ? `${s.unread} yeni, ${s.read} okundu` : ' '} Icon={Clock} tone="amber" href="/dashboard/site/mesajlar" />
-          <Stat label="Katalog talebi" value={s ? s.catalog : '–'} sub={s ? `${s.contact} iletişim mesajı` : ' '} Icon={BookOpen} tone="green" />
+          <Stat label="Ziyaretçi" value={an ? an.totals.visitors : '–'} sub="son 14 gün" Icon={Users} tone="ac" spark={visSpark} href="/dashboard/site/analiz" delta={an && <Delta cur={an.totals.visitors} prev={an.prev.visitors} />} />
+          <Stat label="Sayfa görüntüleme" value={an ? an.totals.views : '–'} sub="son 14 gün" Icon={Eye} tone="blue" spark={viewSpark} href="/dashboard/site/analiz" delta={an && <Delta cur={an.totals.views} prev={an.prev.views} />} />
+          <Stat label="Gelen talep" value={s ? s.trend.reduce((a: number, d: Row) => a + d.n, 0) : '–'} sub={s ? `${s.unread} yeni, ${s.pending} bekleyen` : ' '} Icon={Inbox} tone="amber" spark={spark} href="/dashboard/site/mesajlar" />
+          <Stat label="Talep dönüşümü" value={an ? `%${conv}` : '–'} sub="ziyaretçiden talebe" Icon={Percent} tone="green" href="/dashboard/site/analiz" />
         </div>
 
         <div style={{ ...grid(440), marginTop: 18 }}>
           <div className="card">
-            <div className="card-h"><span className="card-title">Son 14 gün talepler</span><span className="card-meta">{s ? `${total14} talep` : ''}</span></div>
-            {s ? <AreaChart data={s.trend} /> : <div style={{ padding: 20, color: 'var(--tx3)' }}>Yükleniyor…</div>}
+            <div className="card-h"><span className="card-title">Ziyaretçi ve talepler</span><Link href="/dashboard/site/analiz" className="card-meta">Ayrıntılı analiz</Link></div>
+            {an && s ? (
+              <>
+                <AreaChart labels={an.daily.map((d: Row) => dayLabel(d.day))} series={[{ name: 'Ziyaretçi', data: visSpark, color: 'var(--ac)', fill: true }, { name: 'Talep', data: spark, color: 'var(--amber)' }]} />
+                {an.totals.views === 0 && <div style={{ padding: '0 20px 16px', color: 'var(--tx3)', fontSize: 12.5 }}>Ziyaret ölçümü yeni açıldı, site ziyaret aldıkça grafik dolacak.</div>}
+              </>
+            ) : <div style={{ padding: 20, color: 'var(--tx3)' }}>Yükleniyor…</div>}
           </div>
           <div className="card">
             <div className="card-h"><span className="card-title">Dikkat gerekenler</span></div>

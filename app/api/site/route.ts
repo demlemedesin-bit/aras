@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@panel/lib/supabase/server'
-import { SITE_TABLES, siteCount, siteDelete, siteDeleteMedia, siteListMedia, siteRevalidate, siteSelect, siteUpload, siteUpsert, pkOf, type SiteTable } from '@panel/lib/aras-site'
+import { SITE_TABLES, seoAudit, siteRpc, siteCount, siteDelete, siteDeleteMedia, siteListMedia, siteRevalidate, siteSelect, siteUpload, siteUpsert, pkOf, type SiteTable } from '@panel/lib/aras-site'
 
 // Yalnızca giriş yapmış admin/manager rolü site içeriğini düzenleyebilir.
 async function guard() {
@@ -19,6 +19,18 @@ export async function GET(req: Request) {
   const sp = new URL(req.url).searchParams
   try {
     if (sp.get('media')) return NextResponse.json({ files: await siteListMedia() })
+    if (sp.get('analytics')) {
+      const days = Math.min(90, Math.max(1, Number(sp.get('days')) || 14))
+      const [a, subs] = await Promise.all([
+        siteRpc<Record<string, any>>('site_analytics', { p_days: days }),
+        siteSelect('submissions') as Promise<{ created_at: string }[]>,
+      ])
+      const since = Date.now() - days * 86400000
+      const requests = subs.filter((m) => new Date(m.created_at).getTime() >= since).length
+      const prevReq = subs.filter((m) => { const t = new Date(m.created_at).getTime(); return t < since && t >= since - days * 86400000 }).length
+      return NextResponse.json({ ...a, days, requests, prevRequests: prevReq })
+    }
+    if (sp.get('seo')) return NextResponse.json(await seoAudit(process.env.NEXT_PUBLIC_SITE_URL || 'https://arasmetal.com'))
     if (sp.get('unread')) return NextResponse.json({ unread: await siteCount('submissions', 'status=eq.new') })
     if (sp.get('stats')) {
       const [textRows, collRows, prodRows, gallery, newsRows, partners, subs] = await Promise.all([

@@ -25,6 +25,7 @@ export async function siteDelete(table: SiteTable, key: Record<string, string | 
 }
 export async function siteCount(table: SiteTable, filter = '') {
   const r = await fetch(`${URL_}/rest/v1/${table}?select=*${filter ? '&' + filter : ''}`, { method: 'HEAD', headers: h({ Prefer: 'count=exact' }), cache: 'no-store' })
+  if (!r.ok) throw new Error(`Supabase ${table} okunamadı (HTTP ${r.status}). SUPABASE_SERVICE_ROLE_KEY geçerli mi?`)
   return Number((r.headers.get('content-range') ?? '*/0').split('/')[1] || 0)
 }
 export async function siteUpload(path: string, file: Blob, contentType: string) {

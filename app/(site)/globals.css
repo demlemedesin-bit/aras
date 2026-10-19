@@ -517,5 +517,13 @@ html.lb-open{overflow:hidden}
 .mm__p a:hover{background:#f2f2f2}
 .mm__p ul{margin:0 0 4px;padding:0 0 0 14px;list-style:none}
 .mm__p ul a{font-weight:500;font-size:14px;color:#444;padding:5px 12px}
-@media (max-width:900px){.mm{display:none}}
 .top__nav .mm__p a::after{display:none}
+
+.msheet__bg{position:fixed;inset:0;z-index:940;background:rgba(0,0,0,.35)}
+.msheet{position:fixed;z-index:950;left:10px;right:10px;bottom:70px;max-height:calc(100vh - 150px);overflow:auto;padding:16px 12px;background:#fff;border-radius:20px;box-shadow:0 12px 40px rgba(0,0,0,.28)}
+.msheet__h{display:block;padding:0 12px 8px;font-size:13px;color:#666}
+.msheet ul{margin:0;padding:0;list-style:none}
+.msheet ul ul{padding-left:14px;margin-bottom:4px}
+.msheet a{display:block;padding:11px 12px;border-radius:10px;font-weight:600;font-size:16px;color:#000}
+.msheet ul ul a{font-weight:500;font-size:15px;color:#444;padding:8px 12px}
+.msheet a:active{background:#f2f2f2}

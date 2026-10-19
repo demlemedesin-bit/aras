@@ -20,7 +20,7 @@ export default function Collections() {
   const all = tree.map((m) => {
     const old = content.collections.find((c) => c.id === m.id);
     const mine = content.products.filter((p) => resolveCat(tree, p.cat).main?.id === m.id);
-    const img = old?.img ?? mine.find((p) => p.img)?.img ?? (m.world === 'garden' ? '/images/col-garden.webp' : '/images/lifestyle-1.webp');
+    const img = m.img ?? old?.img ?? mine.find((p) => p.img)?.img ?? (m.world === 'garden' ? '/images/col-garden.webp' : '/images/lifestyle-1.webp');
     return {
       id: m.id,
       world: m.world,
@@ -29,7 +29,8 @@ export default function Collections() {
       count: mine.length || old?.count || 0,
       img,
       pos: old?.pos,
-      subs: m.subs.map((x) => catName(x.name, lang)),
+      subs: m.subs.map((x) => ({ id: x.id, name: catName(x.name, lang), img: x.img })),
+      photos: (m.photos?.length ? m.photos : m.subs.flatMap((x) => x.photos ?? [])).slice(0, 8),
     };
   });
   const visible = all.filter((c) => world === 'all' || c.world === world);
@@ -97,8 +98,13 @@ export default function Collections() {
                 {c.subs.length > 0 && (
                   <span className="row__s">
                     {c.subs.map((k) => (
-                      <span key={k}>{k}</span>
+                      <span key={k.id}>{k.img && <i style={{ backgroundImage: `url(${k.img})` }} />}{k.name}</span>
                     ))}
+                  </span>
+                )}
+                {c.photos.length > 0 && (
+                  <span className="row__p" aria-hidden="true">
+                    {c.photos.map((u) => <i key={u} style={{ backgroundImage: `url(${u})` }} />)}
                   </span>
                 )}
               </span>

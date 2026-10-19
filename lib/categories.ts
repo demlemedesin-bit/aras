@@ -1,8 +1,8 @@
 import type { Lang } from './i18n';
 
 export type Names = Partial<Record<Lang, string>>;
-export type SubCat = { id: string; name: Names };
-export type Cat = { id: string; world: 'home' | 'garden'; name: Names; subs: SubCat[] };
+export type SubCat = { id: string; name: Names; img?: string; photos?: string[] };
+export type Cat = { id: string; world: 'home' | 'garden'; name: Names; subs: SubCat[]; img?: string; photos?: string[] };
 
 /** Panelde düzenlenmemişse kullanılan varsayılan ağaç (Home: 4, Garden: 6 ana kategori). */
 export const DEFAULT_CATEGORIES: Cat[] = [
@@ -27,7 +27,16 @@ export const DEFAULT_CATEGORIES: Cat[] = [
      "fr": "Boîtes à pain",
      "es": "Paneras",
      "it": "Portapane"
-    }
+    },
+    "photos": [
+     "/images/kitchen-bread-1.webp",
+     "/images/kitchen-bread-2.webp",
+     "/images/kitchen-bread-3.webp",
+     "/images/kitchen-bread-4.webp",
+     "/images/kitchen-bread-5.webp",
+     "/images/kitchen-bread-6.webp"
+    ],
+    "img": "/images/kitchen-bread-1.webp"
    },
    {
     "id": "kitchen-pitchers",
@@ -38,7 +47,15 @@ export const DEFAULT_CATEGORIES: Cat[] = [
      "fr": "Pichets",
      "es": "Jarras",
      "it": "Brocche"
-    }
+    },
+    "photos": [
+     "/images/kitchen-pitchers-1.webp",
+     "/images/kitchen-pitchers-2.webp",
+     "/images/kitchen-pitchers-3.webp",
+     "/images/kitchen-pitchers-4.webp",
+     "/images/kitchen-pitchers-5.webp"
+    ],
+    "img": "/images/kitchen-pitchers-1.webp"
    },
    {
     "id": "kitchen-storage-cans",
@@ -49,7 +66,15 @@ export const DEFAULT_CATEGORIES: Cat[] = [
      "fr": "Boîtes de rangement",
      "es": "Botes de almacenaje",
      "it": "Contenitori"
-    }
+    },
+    "photos": [
+     "/images/kitchen-storage-1.webp",
+     "/images/kitchen-storage-2.webp",
+     "/images/kitchen-storage-3.webp",
+     "/images/kitchen-storage-4.webp",
+     "/images/kitchen-storage-5.webp"
+    ],
+    "img": "/images/kitchen-storage-1.webp"
    },
    {
     "id": "kitchen-trays",
@@ -60,9 +85,18 @@ export const DEFAULT_CATEGORIES: Cat[] = [
      "fr": "Plateaux",
      "es": "Bandejas",
      "it": "Vassoi"
-    }
+    },
+    "photos": [
+     "/images/kitchen-trays-1.webp",
+     "/images/kitchen-trays-2.webp",
+     "/images/kitchen-trays-3.webp",
+     "/images/kitchen-trays-4.webp",
+     "/images/kitchen-trays-5.webp"
+    ],
+    "img": "/images/kitchen-trays-1.webp"
    }
-  ]
+  ],
+  "img": "/images/kitchen-bread-1.webp"
  },
  {
   "id": "pet",
@@ -75,7 +109,14 @@ export const DEFAULT_CATEGORIES: Cat[] = [
    "es": "Mascotas",
    "it": "Animali"
   },
-  "subs": []
+  "subs": [],
+  "photos": [
+   "/images/pet-1.webp",
+   "/images/pet-2.webp",
+   "/images/pet-3.webp",
+   "/images/pet-4.webp"
+  ],
+  "img": "/images/pet-1.webp"
  },
  {
   "id": "bathroom",
@@ -88,7 +129,14 @@ export const DEFAULT_CATEGORIES: Cat[] = [
    "es": "Baño",
    "it": "Bagno"
   },
-  "subs": []
+  "subs": [],
+  "photos": [
+   "/images/bathroom-1.webp",
+   "/images/bathroom-2.webp",
+   "/images/bathroom-3.webp",
+   "/images/bathroom-4.webp"
+  ],
+  "img": "/images/bathroom-1.webp"
  },
  {
   "id": "lifestyle",
@@ -101,7 +149,20 @@ export const DEFAULT_CATEGORIES: Cat[] = [
    "es": "Estilo de vida",
    "it": "Lifestyle"
   },
-  "subs": []
+  "subs": [],
+  "photos": [
+   "/images/lifestyle-1.webp",
+   "/images/lifestyle-2.webp",
+   "/images/lifestyle-3.webp",
+   "/images/lifestyle-4.webp",
+   "/images/lifestyle-5.webp",
+   "/images/lifestyle-6.webp",
+   "/images/lifestyle-7.webp",
+   "/images/lifestyle-8.webp",
+   "/images/lifestyle-9.webp",
+   "/images/lifestyle-10.webp"
+  ],
+  "img": "/images/lifestyle-1.webp"
  },
  {
   "id": "planters",
@@ -114,7 +175,8 @@ export const DEFAULT_CATEGORIES: Cat[] = [
    "es": "Maceteros",
    "it": "Fioriere"
   },
-  "subs": []
+  "subs": [],
+  "img": "/images/col-garden.webp"
  },
  {
   "id": "maintenance",

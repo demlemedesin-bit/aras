@@ -65,6 +65,7 @@ const resolveMedia = (c: Content): Content => ({
   ...c,
   collections: c.collections.map((x) => ({ ...x, img: media(x.img) })),
   products: c.products.map((x) => ({ ...x, img: media(x.img) })),
+  categories: c.categories.map((m) => ({ ...m, img: m.img ? media(m.img) : undefined, photos: m.photos?.map(media), subs: m.subs.map((x) => ({ ...x, img: x.img ? media(x.img) : undefined, photos: x.photos?.map(media) })) })),
   gallery: c.gallery.map((x) => ({ ...x, src: media(x.src) })),
   partners: c.partners.map((x) => ({ ...x, img: media(x.img) })),
   history: c.history.map((x) => ({ ...x, img: media(x.img) })),

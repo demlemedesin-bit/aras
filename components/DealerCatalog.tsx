@@ -37,6 +37,10 @@ export function DealerCatalog({ allowed, company }: { allowed: boolean; company:
     });
   }, [items, world, main, sub, q, lang, t]);
 
+  const cat = tree.find((m) => m.id === main);
+  const catSub = cat?.subs.find((x) => x.id === sub);
+  const photos = (catSub?.photos?.length ? catSub.photos : cat?.photos?.length ? cat.photos : cat?.subs.flatMap((x) => x.photos ?? []) ?? []).slice(0, 12);
+
   const pick = (m: string, s = '') => { setMain(m); setSub(s); setOpenNav(false); };
 
   if (!allowed) {
@@ -83,8 +87,16 @@ export function DealerCatalog({ allowed, company }: { allowed: boolean; company:
           ))}
         </nav>
         <div className="dp__main">
+          {photos.length > 0 && (
+            <>
+              <p className="dp__cap">{catSub ? catName(catSub.name, lang) : cat ? catName(cat.name, lang) : ''}</p>
+              <ul className="dp__ph">
+                {photos.map((u) => <li key={u} onClick={openCatalog}><img src={u} alt="" loading="lazy" /></li>)}
+              </ul>
+            </>
+          )}
           {list.length === 0 ? (
-            <p className="hist__empty">{t('dp.empty')}</p>
+            photos.length === 0 && <p className="hist__empty">{t('dp.empty')}</p>
           ) : (
             <ul className="dp__g">
               {list.map(({ p, c }) => (

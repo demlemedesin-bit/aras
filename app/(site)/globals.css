@@ -544,3 +544,12 @@ html.lb-open{overflow:hidden}
 .ck__r{background:#2b2b2b;color:#fff}
 .ck__a{background:var(--gr);color:#000}
 @media (max-width:700px){.ck{left:10px;right:10px;bottom:10px;max-width:none}}
+
+.row__s span i{width:24px;height:24px;margin:0 8px 0 -8px;border-radius:50%;background-size:cover;background-position:center;flex:none}
+.row__p{display:flex;gap:6px;margin-top:14px;flex-wrap:wrap}
+.row__p i{width:56px;height:70px;border-radius:8px;background-size:cover;background-position:center;box-shadow:0 0 0 2px rgba(255,255,255,.7)}
+.dp__ph{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin:0 0 22px;padding:0;list-style:none}
+.dp__ph li{aspect-ratio:4/5;border-radius:12px;overflow:hidden;background:#eee;cursor:pointer}
+.dp__ph img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s}
+.dp__ph li:hover img{transform:scale(1.05)}
+.dp__cap{margin:0 0 10px;font-weight:700;font-size:1.05rem}

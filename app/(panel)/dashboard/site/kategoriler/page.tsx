@@ -40,7 +40,7 @@ export default function Page() {
   const [counts, setCounts] = useState<Record<string, number>>({})
 
   const load = useCallback(() => {
-    getRows('site_settings').then((r) => { const c = r.find((x) => x.key === 'categories')?.value; if (Array.isArray(c) && c.length) { setTree(c); setSaved(true) } }).catch((e) => say(e.message))
+    getRows('site_settings').then((r) => { const c = r.find((x) => x.key === 'categories')?.value; if (Array.isArray(c) && c.length) { setTree(c); setSaved(true) } else { api('POST', '/api/site', { action: 'upsert', table: 'site_settings', row: { key: 'categories', value: DEFAULT_CATEGORIES } }).then(() => { setSaved(true); say('Varsayılan ağaç ve görseller panele aktarıldı, artık buradan yönetebilirsiniz.') }).catch((e) => say(e.message)) } }).catch((e) => say(e.message))
     getRows('site_products').then((r) => { const m: Record<string, number> = {}; for (const p of r) m[p.cat_key] = (m[p.cat_key] ?? 0) + 1; setCounts(m) }).catch(() => {})
   }, [say])
   useEffect(() => { load() }, [load])

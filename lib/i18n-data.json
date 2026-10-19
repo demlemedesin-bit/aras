@@ -273,7 +273,7 @@
       "f.sending": "Sending…",
       "f.err": "Could not send. Please try again.",
       "nav.hist": "History",
-      "hist.h": "Our history",
+      "hist.h": "Our journey to dreams",
       "hist.empty": "Our history will be added soon.",
       "fair.fairs": "Trade fairs",
       "fair.awards": "Awards",
@@ -288,7 +288,13 @@
       "dp.login": "Dealer login",
       "dp.search": "Search by product code or name",
       "dp.empty": "No products match your search.",
-      "dp.quote": "Request a quote"
+      "dp.quote": "Request a quote",
+      "about.h": "Welcome to Aras Metal",
+      "about.p1": "Discover exquisite galvanized home decor at Aras Metal, your trusted artisan for over 50 years. Our skilled craftsmen seamlessly blend traditional artistry with modern techniques, making us a leading manufacturer of galvanized home decor, garden, floral, and tabletop articles.",
+      "about.p2": "Upholding our commitment to delivering unique designs, superior quality, and durability, Aras Metal continues to blend craftsmanship tradition with contemporary aesthetics. Explore our catalog and elevate your living spaces with timeless elegance.",
+      "hist.y1": "Early years",
+      "hist.y2": "Mid-1980s",
+      "hist.y3": "2000s"
     },
     "de": {
       "skip": "Zum Inhalt springen",
@@ -411,7 +417,7 @@
       "f.sending": "Wird gesendet…",
       "f.err": "Senden fehlgeschlagen. Bitte versuchen Sie es erneut.",
       "nav.hist": "Geschichte",
-      "hist.h": "Unsere Geschichte",
+      "hist.h": "Unser Weg zu den Träumen",
       "hist.empty": "Unsere Geschichte folgt in Kürze.",
       "fair.fairs": "Messen",
       "fair.awards": "Auszeichnungen",
@@ -426,7 +432,13 @@
       "dp.login": "Händler-Login",
       "dp.search": "Nach Artikelnummer oder Name suchen",
       "dp.empty": "Keine Produkte zu Ihrer Suche gefunden.",
-      "dp.quote": "Angebot anfordern"
+      "dp.quote": "Angebot anfordern",
+      "about.h": "Willkommen bei Aras Metal",
+      "about.p1": "Entdecken Sie exquisite verzinkte Wohnaccessoires bei Aras Metal, Ihrem vertrauten Handwerksbetrieb seit über 50 Jahren. Unsere erfahrenen Handwerker verbinden traditionelle Handwerkskunst nahtlos mit modernen Techniken und machen uns zu einem führenden Hersteller verzinkter Artikel für Haus, Garten, Floristik und Tisch.",
+      "about.p2": "Mit unserem Anspruch auf einzigartiges Design, hervorragende Qualität und Langlebigkeit verbindet Aras Metal weiterhin Handwerkstradition mit zeitgemäßer Ästhetik. Entdecken Sie unseren Katalog und werten Sie Ihre Wohnräume mit zeitloser Eleganz auf.",
+      "hist.y1": "Die Anfänge",
+      "hist.y2": "Mitte der 1980er",
+      "hist.y3": "2000er"
     },
     "fr": {
       "skip": "Aller au contenu",
@@ -549,7 +561,7 @@
       "f.sending": "Envoi…",
       "f.err": "Échec de l'envoi. Veuillez réessayer.",
       "nav.hist": "Histoire",
-      "hist.h": "Notre histoire",
+      "hist.h": "Notre voyage vers les rêves",
       "hist.empty": "Notre histoire sera ajoutée prochainement.",
       "fair.fairs": "Salons",
       "fair.awards": "Récompenses",
@@ -564,7 +576,13 @@
       "dp.login": "Connexion revendeur",
       "dp.search": "Rechercher par code ou nom du produit",
       "dp.empty": "Aucun produit ne correspond à votre recherche.",
-      "dp.quote": "Demander un devis"
+      "dp.quote": "Demander un devis",
+      "about.h": "Bienvenue chez Aras Metal",
+      "about.p1": "Découvrez l’exquise décoration galvanisée d’Aras Metal, votre artisan de confiance depuis plus de 50 ans. Nos artisans qualifiés allient avec fluidité l’art traditionnel et les techniques modernes, ce qui fait de nous l’un des principaux fabricants d’articles galvanisés de décoration, de jardin, de fleuriste et d’art de la table.",
+      "about.p2": "Fidèle à son engagement de proposer des designs uniques, une qualité supérieure et une grande durabilité, Aras Metal continue d’associer tradition artisanale et esthétique contemporaine. Parcourez notre catalogue et sublimez vos espaces de vie avec une élégance intemporelle.",
+      "hist.y1": "Les débuts",
+      "hist.y2": "Milieu des années 1980",
+      "hist.y3": "Années 2000"
     },
     "es": {
       "skip": "Saltar al contenido",
@@ -687,7 +705,7 @@
       "f.sending": "Enviando…",
       "f.err": "No se pudo enviar. Inténtelo de nuevo.",
       "nav.hist": "Historia",
-      "hist.h": "Nuestra historia",
+      "hist.h": "Nuestro viaje hacia los sueños",
       "hist.empty": "Pronto añadiremos nuestra historia.",
       "fair.fairs": "Ferias",
       "fair.awards": "Premios",
@@ -702,7 +720,13 @@
       "dp.login": "Acceso distribuidores",
       "dp.search": "Buscar por código o nombre del producto",
       "dp.empty": "Ningún producto coincide con su búsqueda.",
-      "dp.quote": "Pedir presupuesto"
+      "dp.quote": "Pedir presupuesto",
+      "about.h": "Bienvenido a Aras Metal",
+      "about.p1": "Descubra la exquisita decoración galvanizada de Aras Metal, su artesano de confianza desde hace más de 50 años. Nuestros hábiles artesanos combinan a la perfección el arte tradicional con técnicas modernas, lo que nos convierte en un fabricante líder de artículos galvanizados de decoración del hogar, jardín, floristería y mesa.",
+      "about.p2": "Fiel a su compromiso de ofrecer diseños únicos, calidad superior y durabilidad, Aras Metal sigue uniendo la tradición artesanal con la estética contemporánea. Explore nuestro catálogo y eleve sus espacios con una elegancia atemporal.",
+      "hist.y1": "Los primeros años",
+      "hist.y2": "Mediados de los 80",
+      "hist.y3": "Años 2000"
     },
     "it": {
       "skip": "Vai al contenuto",
@@ -825,7 +849,7 @@
       "f.sending": "Invio…",
       "f.err": "Invio non riuscito. Riprovate.",
       "nav.hist": "Storia",
-      "hist.h": "La nostra storia",
+      "hist.h": "Il nostro viaggio verso i sogni",
       "hist.empty": "La nostra storia sarà aggiunta a breve.",
       "fair.fairs": "Fiere",
       "fair.awards": "Premi",
@@ -840,7 +864,13 @@
       "dp.login": "Accesso rivenditori",
       "dp.search": "Cerca per codice o nome del prodotto",
       "dp.empty": "Nessun prodotto corrisponde alla ricerca.",
-      "dp.quote": "Richiedi un preventivo"
+      "dp.quote": "Richiedi un preventivo",
+      "about.h": "Benvenuti in Aras Metal",
+      "about.p1": "Scopri l’esclusiva decorazione zincata di Aras Metal, il tuo artigiano di fiducia da oltre 50 anni. I nostri abili artigiani fondono con naturalezza l’arte tradizionale e le tecniche moderne, rendendoci un produttore leader di articoli zincati per la casa, il giardino, la floricoltura e la tavola.",
+      "about.p2": "Fedele all’impegno di offrire design unici, qualità superiore e durata, Aras Metal continua a unire la tradizione artigianale all’estetica contemporanea. Sfoglia il nostro catalogo e valorizza i tuoi spazi con un’eleganza senza tempo.",
+      "hist.y1": "I primi anni",
+      "hist.y2": "Metà degli anni ’80",
+      "hist.y3": "Anni 2000"
     },
     "tr": {
       "skip": "İçeriğe geç",
@@ -963,7 +993,7 @@
       "f.sending": "Gönderiliyor…",
       "f.err": "Gönderilemedi. Lütfen tekrar deneyin.",
       "nav.hist": "Tarihçe",
-      "hist.h": "Tarihçemiz",
+      "hist.h": "Hayallere yolculuğumuz",
       "hist.empty": "Tarihçe içeriği yakında eklenecek.",
       "fair.fairs": "Fuarlar",
       "fair.awards": "Ödüller",
@@ -978,7 +1008,13 @@
       "dp.login": "Bayi girişi",
       "dp.search": "Ürün kodu veya adı ara",
       "dp.empty": "Aramanıza uygun ürün bulunamadı.",
-      "dp.quote": "Teklif iste"
+      "dp.quote": "Teklif iste",
+      "about.h": "Aras Metal’e hoş geldiniz",
+      "about.p1": "50 yılı aşkın süredir güvenilir zanaatkârınız Aras Metal’de zarif galvaniz ev dekorasyonunu keşfedin. Usta zanaatkârlarımız geleneksel sanatı modern tekniklerle buluşturur; bu da bizi galvaniz ev dekorasyonu, bahçe, çiçekçilik ve sofra ürünlerinde önde gelen üreticilerden biri yapar.",
+      "about.p2": "Özgün tasarım, üstün kalite ve dayanıklılık taahhüdümüzü sürdürerek Aras Metal, zanaat geleneğini çağdaş estetikle buluşturmaya devam ediyor. Kataloğumuzu inceleyin ve yaşam alanlarınızı zamansız bir zarafetle yükseltin.",
+      "hist.y1": "İlk yıllar",
+      "hist.y2": "1980’lerin ortası",
+      "hist.y3": "2000’ler"
     }
   },
   "auth": {

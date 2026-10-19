@@ -16,7 +16,7 @@ export default function History() {
         <ol className="hl">
           {items.map((h, i) => (
             <li key={h.id} className={i === items.length - 1 ? 'last' : undefined}>
-              <span className="hl__y">{h.year}</span>
+              <span className="hl__y">{h.year.startsWith('t:') ? t(h.year.slice(2)) : h.year}</span>
               <div className="hl__b">
                 <b>{h.title[lang] ?? h.title.tr}</b>
                 {(h.body[lang] ?? h.body.tr) && <p>{h.body[lang] ?? h.body.tr}</p>}

@@ -5,6 +5,7 @@ import type { World } from '@/lib/data';
 import { useSite } from '../SiteProvider';
 import { Icon } from '../Icon';
 import { track } from '@/lib/track';
+import Lightbox, { type LB } from '../Lightbox';
 import { catName, resolveCat } from '@/lib/categories';
 
 const WORLDS: { id: World; key: string }[] = [
@@ -16,6 +17,7 @@ const WORLDS: { id: World; key: string }[] = [
 export default function Collections() {
   const { t, lang, world, pickWorld, openCatalog, session, content } = useSite();
   const [open, setOpen] = useState('kitchen');
+  const [lb, setLb] = useState<LB>(null);
   const tree = content.categories;
   const all = tree.map((m) => {
     const old = content.collections.find((c) => c.id === m.id);
@@ -103,8 +105,18 @@ export default function Collections() {
                   </span>
                 )}
                 {c.photos.length > 0 && (
-                  <span className="row__p" aria-hidden="true">
-                    {c.photos.map((u) => <i key={u} style={{ backgroundImage: `url(${u})` }} />)}
+                  <span className="row__p">
+                    {c.photos.map((u, n) => (
+                      <i
+                        key={u}
+                        role="button"
+                        tabIndex={0}
+                        aria-label={`${c.title} ${n + 1}`}
+                        style={{ backgroundImage: `url(${u})` }}
+                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); setLb({ photos: c.photos, i: n, title: c.title }); }}
+                        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); setLb({ photos: c.photos, i: n, title: c.title }); } }}
+                      />
+                    ))}
                   </span>
                 )}
               </span>
@@ -112,6 +124,7 @@ export default function Collections() {
           </li>
         ))}
       </ul>
+      <Lightbox lb={lb} set={setLb} />
     </section>
   );
 }

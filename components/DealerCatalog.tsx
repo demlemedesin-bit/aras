@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { useSite } from './SiteProvider';
+import Lightbox, { type LB } from './Lightbox';
 import { catName, resolveCat } from '@/lib/categories';
 
 export function DealerCatalog({ allowed, company }: { allowed: boolean; company: string }) {
@@ -37,6 +38,7 @@ export function DealerCatalog({ allowed, company }: { allowed: boolean; company:
     });
   }, [items, world, main, sub, q, lang, t]);
 
+  const [lb, setLb] = useState<LB>(null);
   const cat = tree.find((m) => m.id === main);
   const catSub = cat?.subs.find((x) => x.id === sub);
   const photos = (catSub?.photos?.length ? catSub.photos : cat?.photos?.length ? cat.photos : cat?.subs.flatMap((x) => x.photos ?? []) ?? []).slice(0, 12);
@@ -91,7 +93,7 @@ export function DealerCatalog({ allowed, company }: { allowed: boolean; company:
             <>
               <p className="dp__cap">{catSub ? catName(catSub.name, lang) : cat ? catName(cat.name, lang) : ''}</p>
               <ul className="dp__ph">
-                {photos.map((u) => <li key={u} onClick={openCatalog}><img src={u} alt="" loading="lazy" /></li>)}
+                {photos.map((u, n) => <li key={u} onClick={() => setLb({ photos, i: n, title: catSub ? catName(catSub.name, lang) : cat ? catName(cat.name, lang) : '' })}><img src={u} alt="" loading="lazy" /></li>)}
               </ul>
             </>
           )}
@@ -112,6 +114,7 @@ export function DealerCatalog({ allowed, company }: { allowed: boolean; company:
           )}
         </div>
       </div>
+      <Lightbox lb={lb} set={setLb} />
     </article>
   );
 }

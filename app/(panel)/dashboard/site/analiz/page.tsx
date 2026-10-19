@@ -1,95 +1,63 @@
 'use client'
-import { useEffect, useMemo, useState } from 'react'
-import { Users, Eye, Inbox, Percent } from 'lucide-react'
-import { PageHead, api, grid, useToast, type Row } from '@panel/components/site/ui'
-import { AreaChart, BarList, Delta, Spark, dayLabel } from '@panel/components/site/charts'
-
-const DEVICE: Record<string, string> = { mobile: 'Telefon', desktop: 'Bilgisayar', tablet: 'Tablet' }
-const LANG: Record<string, string> = { tr: 'Türkçe', en: 'İngilizce', de: 'Almanca', fr: 'Fransızca', es: 'İspanyolca', it: 'İtalyanca' }
-const country = (c: string) => { try { return c.length === 2 ? new Intl.DisplayNames(['tr'], { type: 'region' }).of(c) ?? c : c } catch { return c } }
-const PERIODS = [7, 14, 30, 90]
-const EVENT: Record<string, string> = { catalog_open: 'Katalog formu açıldı', catalog_submit: 'Katalog talebi gönderildi', contact_submit: 'İletişim formu gönderildi', tour_open: '360° tur açıldı', phone_click: 'Telefona tıklandı', mail_click: 'E-postaya tıklandı', whatsapp_click: 'WhatsApp\'a tıklandı', map_click: 'Haritaya tıklandı', social_click: 'Sosyal medyaya tıklandı', lang_change: 'Dil değiştirildi' }
-const SECTION: [string, string][] = [['top', 'Açılış'], ['tarihce', 'Tarihçe'], ['hakkimizda', 'Hakkımızda'], ['koleksiyonlar', 'Koleksiyonlar'], ['urunler', 'Ürünler'], ['galeri', 'Galeri'], ['showroom', 'Showroom'], ['surdurulebilirlik', 'Sürdürülebilirlik'], ['haberler', 'Fuarlar ve ödüller'], ['iletisim', 'İletişim']]
-
-function Kpi({ label, value, Icon, delta, spark }: { label: string; value: string | number; Icon: typeof Users; delta?: React.ReactNode; spark?: number[] }) {
-  return (
-    <div className="kpi">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-        <span className="kpi-label" style={{ marginBottom: 0 }}>{label}</span>
-        <span style={{ width: 32, height: 32, borderRadius: 9, background: 'var(--ac2)', color: 'var(--ac)', display: 'grid', placeItems: 'center' }}><Icon size={16} strokeWidth={1.9} /></span>
-      </div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: 16 }}>
-        <div><div className="kpi-value">{value}</div><div className="kpi-sub">{delta}</div></div>
-        {spark && <Spark data={spark} />}
-      </div>
-    </div>
-  )
-}
+import { useMemo } from 'react'
+import { AreaChart, BarList, Delta, dayLabel } from '@panel/components/site/charts'
+import { grid, type Row } from '@panel/components/site/ui'
+import { Empty, Heatmap, Kpi, Table, country, fmtDur, fmtNum, fmtPct, pageName, useReport, DEVICE } from '@panel/components/site/analytics-ui'
 
 export default function Page() {
-  const say = useToast()
-  const [days, setDays] = useState(14)
-  const [a, setA] = useState<Row | null>(null)
-  useEffect(() => { setA(null); api('GET', `/api/site?analytics=1&days=${days}`).then(setA).catch((e) => say(e.message)) }, [days, say])
-
-  const daily = a?.daily ?? []
-  const vis = useMemo(() => daily.map((d: Row) => d.visitors), [daily])
-  const conv = a && a.totals.visitors ? ((a.requests / a.totals.visitors) * 100).toFixed(1).replace('.', ',') : '0'
-  const total = (rows: Row[], k: string) => rows.reduce((s, r) => s + r[k], 0) || 1
-  const pct = (rows: Row[]) => { const t = total(rows, 'visitors'); return (v: number) => `%${Math.round((v / t) * 100)}` }
-
+  const { r, err, days, loading } = useReport()
+  const daily: Row[] = r?.daily ?? []
+  const vis = useMemo(() => daily.map((d) => d.visitors), [daily])
+  if (err) return <div className="card" style={{ padding: 20, color: 'var(--red)' }}>{err}</div>
+  const t = r?.totals, p = r?.prev
+  const v = (x: any) => (r ? x : '–')
+  const wd = ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz']
   return (
     <>
-      <PageHead title="Ziyaretçi analizi" sub="Siteyi kaç kişi, nereden ve hangi cihazla ziyaret ediyor. Çerez kullanmaz, kişisel veri saklamaz."
-        action={<div style={{ display: 'flex', gap: 6 }}>{PERIODS.map((p) => <button key={p} className={p === days ? 'btn' : 'btn-ghost'} onClick={() => setDays(p)}>{p} gün</button>)}</div>} />
-
-      {a && a.totals.views === 0 && (
-        <div className="card" style={{ padding: '14px 18px', marginBottom: 16, borderColor: 'var(--amber)', background: 'var(--amber2)' }}>
-          Henüz ziyaret verisi yok. Ölçüm yeni açıldı, site ziyaret aldıkça bu sayfa dolar. Yönetim paneline giriş yapmış tarayıcılar sayılmaz.
-        </div>
-      )}
-
-      <div style={grid(230)}>
-        <Kpi label="Ziyaretçi" value={a ? a.totals.visitors : '–'} Icon={Users} spark={vis} delta={a && <Delta cur={a.totals.visitors} prev={a.prev.visitors} />} />
-        <Kpi label="Sayfa görüntüleme" value={a ? a.totals.views : '–'} Icon={Eye} spark={daily.map((d: Row) => d.views)} delta={a && <Delta cur={a.totals.views} prev={a.prev.views} />} />
-        <Kpi label="Gelen talep" value={a ? a.requests : '–'} Icon={Inbox} delta={a && <Delta cur={a.requests} prev={a.prevRequests} />} />
-        <Kpi label="Talep dönüşümü" value={a ? `%${conv}` : '–'} Icon={Percent} delta={<span>ziyaretçiden talebe</span>} />
+      <Empty r={r} />
+      <div style={grid(200)}>
+        <Kpi label="Ziyaretçi" value={v(fmtNum(t?.visitors ?? 0))} sub={r && <Delta cur={t.visitors} prev={p.visitors} />} />
+        <Kpi label="Oturum" value={v(fmtNum(t?.sessions ?? 0))} sub={r && <Delta cur={t.sessions} prev={p.sessions} />} />
+        <Kpi label="Sayfa görüntüleme" value={v(fmtNum(t?.views ?? 0))} sub={r && <Delta cur={t.views} prev={p.views} />} />
+        <Kpi label="Oturum başına sayfa" value={v(String(t?.pagesPerSession ?? 0).replace('.', ','))} sub={r && <span style={{ color: 'var(--tx3)' }}>önceki: {String(p.pagesPerSession).replace('.', ',')}</span>} />
+        <Kpi label="Ort. oturum süresi" value={v(fmtDur(t?.avgDur ?? 0))} sub={r && <span style={{ color: 'var(--tx3)' }}>önceki: {fmtDur(p.avgDur)}</span>} />
+        <Kpi label="Hemen çıkma" value={v(fmtPct(t?.bounce ?? 0))} sub={r && <span style={{ color: 'var(--tx3)' }}>tek sayfa bakıp çıkan</span>} />
+        <Kpi label="Gelen talep" value={v(fmtNum(t?.requests ?? 0))} sub={r && <Delta cur={t.requests} prev={p.requests} />} />
+        <Kpi label="Dönüşüm oranı" value={v(r && t.sessions ? fmtPct(+((t.conversions / t.sessions) * 100).toFixed(1)) : '%0')} sub={r && <span style={{ color: 'var(--tx3)' }}>{t.conversions} oturum talep/başvuru yaptı</span>} />
       </div>
 
       <div className="card" style={{ marginTop: 18 }}>
-        <div className="card-h"><span className="card-title">Ziyaretçi ve görüntüleme</span><span className="card-meta">son {days} gün</span></div>
-        {a ? <AreaChart labels={daily.map((d: Row) => dayLabel(d.day))} series={[{ name: 'Ziyaretçi', data: vis, color: 'var(--ac)', fill: true }, { name: 'Görüntüleme', data: daily.map((d: Row) => d.views), color: 'var(--blue)' }]} /> : <div style={{ padding: 22, color: 'var(--tx3)' }}>Yükleniyor…</div>}
+        <div className="card-h"><span className="card-title">Ziyaretçi, oturum ve görüntüleme</span><span className="card-meta">son {days} gün</span></div>
+        {r ? <AreaChart labels={daily.map((d) => dayLabel(d.day))} series={[{ name: 'Ziyaretçi', data: vis, color: 'var(--ac)', fill: true }, { name: 'Oturum', data: daily.map((d) => d.sessions), color: 'var(--amber)' }, { name: 'Görüntüleme', data: daily.map((d) => d.views), color: 'var(--blue)' }]} /> : <div style={{ padding: 22, color: 'var(--tx3)' }}>{loading ? 'Yükleniyor…' : ''}</div>}
       </div>
 
       <div style={{ ...grid(440), marginTop: 18 }}>
         <div className="card">
-          <div className="card-h"><span className="card-title">Hangi bölümlere ulaşılıyor</span><span className="card-meta">ziyaretçi oranı</span></div>
-          <BarList items={SECTION.map(([id, label]) => ({ label, value: a?.sections?.find((x: Row) => x.name === id)?.visitors ?? 0 }))} format={(v) => (a && a.totals.visitors ? `%${Math.min(100, Math.round((v / a.totals.visitors) * 100))}` : '0')} empty="Henüz veri yok" />
+          <div className="card-h"><span className="card-title">Trafik kanalları</span><span className="card-meta">oturum</span></div>
+          <Table cols={[{ h: 'Kanal', k: 'name' }, { h: 'Oturum', k: 'sessions', r: true }, { h: 'Talep', k: 'conversions', r: true }, { h: 'Oran', k: 'rate', r: true, f: (x) => fmtPct(x) }]} rows={(r?.channels ?? []).filter((c: Row) => c.sessions)} />
         </div>
         <div className="card">
-          <div className="card-h"><span className="card-title">Etkileşimler</span><span className="card-meta">toplam sayı</span></div>
-          <BarList items={(a?.events ?? []).map((e: Row) => ({ label: EVENT[e.name] ?? e.name, value: e.total }))} empty="Henüz etkileşim yok" />
+          <div className="card-h"><span className="card-title">En çok bakılan sayfalar</span></div>
+          <Table cols={[{ h: 'Sayfa', k: 'path', f: pageName }, { h: 'Görüntüleme', k: 'views', r: true }, { h: 'Ort. süre', k: 'avgDur', r: true, f: fmtDur }]} rows={r?.pages ?? []} max={8} />
         </div>
       </div>
 
-      <div className="card" style={{ marginTop: 18 }}>
-        <div className="card-h"><span className="card-title">Talep hunisi</span><span className="card-meta">ziyaretçiden talebe</span></div>
-        <BarList items={a ? [
-          { label: 'Siteyi ziyaret eden', value: a.totals.visitors },
-          { label: 'Katalog formunu açan', value: a.events?.find((e: Row) => e.name === 'catalog_open')?.visitors ?? 0 },
-          { label: 'Talep gönderen', value: a.requests },
-        ] : []} empty="Yükleniyor…" />
+      <div style={{ ...grid(440), marginTop: 18 }}>
+        <div className="card">
+          <div className="card-h"><span className="card-title">Ziyaret yoğunluğu</span><span className="card-meta">gün × saat (TSİ)</span></div>
+          {r ? <Heatmap data={r.heat} /> : null}
+        </div>
+        <div className="card">
+          <div className="card-h"><span className="card-title">Haftanın günleri</span></div>
+          <BarList items={wd.map((d, i) => ({ label: d, value: r?.weekdays?.[i] ?? 0 }))} empty="Henüz veri yok" />
+        </div>
       </div>
 
-      <div style={{ ...grid(360), marginTop: 18 }}>
-        <div className="card"><div className="card-h"><span className="card-title">Trafik kaynakları</span></div>
-          <BarList items={(a?.referrers ?? []).map((r: Row) => ({ label: r.ref, value: r.visitors }))} format={pct(a?.referrers ?? [])} empty="Henüz veri yok" /></div>
-        <div className="card"><div className="card-h"><span className="card-title">Ülkeler</span></div>
-          <BarList items={(a?.countries ?? []).map((r: Row) => ({ label: country(r.country), value: r.visitors }))} format={pct(a?.countries ?? [])} empty="Henüz veri yok" /></div>
-        <div className="card"><div className="card-h"><span className="card-title">Cihazlar</span></div>
-          <BarList items={(a?.devices ?? []).map((r: Row) => ({ label: DEVICE[r.device] ?? r.device, value: r.visitors }))} format={pct(a?.devices ?? [])} empty="Henüz veri yok" /></div>
-        <div className="card"><div className="card-h"><span className="card-title">Site dili</span></div>
-          <BarList items={(a?.langs ?? []).map((r: Row) => ({ label: LANG[r.lang] ?? r.lang, value: r.visitors }))} format={pct(a?.langs ?? [])} empty="Henüz veri yok" /></div>
+      <div style={{ ...grid(300), marginTop: 18 }}>
+        <div className="card"><div className="card-h"><span className="card-title">Ülkeler</span></div><BarList items={(r?.countries ?? []).slice(0, 8).map((x: Row) => ({ label: country(x.country), value: x.n }))} empty="Henüz veri yok" /></div>
+        <div className="card"><div className="card-h"><span className="card-title">Cihazlar</span></div><BarList items={(r?.devices ?? []).map((x: Row) => ({ label: DEVICE[x.device] ?? x.device, value: x.n }))} empty="Henüz veri yok" /></div>
+        <div className="card"><div className="card-h"><span className="card-title">Yeni / tekrar gelen</span></div>
+          <BarList items={r ? [{ label: 'Yeni ziyaretçi', value: r.audience.new }, { label: 'Tekrar gelen', value: r.audience.returning }, { label: 'Tanımsız (çerez reddi)', value: r.audience.anonymous }] : []} empty="Henüz veri yok" /></div>
       </div>
     </>
   )

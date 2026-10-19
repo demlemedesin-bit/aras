@@ -12,7 +12,7 @@ export const NAV: { g: string; items: NavItem[] }[] = [
     { href: '/dashboard/site/mesajlar', label: 'Talepler & Mesajlar', Icon: Inbox, badge: 'unread' },
   ]},
   { g: 'Analiz', items: [
-    { href: '/dashboard/site/analiz', label: 'Ziyaretçi analizi', Icon: BarChart3 },
+    { href: '/dashboard/site/analiz', label: 'Analitik', Icon: BarChart3 },
     { href: '/dashboard/site/seo', label: 'SEO', Icon: Search },
   ]},
   { g: 'Katalog', items: [

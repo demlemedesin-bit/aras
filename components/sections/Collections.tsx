@@ -13,7 +13,7 @@ const WORLDS: { id: World; key: string }[] = [
 ];
 
 export default function Collections() {
-  const { t, world, pickWorld, session, openAuth, content } = useSite();
+  const { t, world, pickWorld, openCatalog, content } = useSite();
   const [open, setOpen] = useState('kitchen');
   const visible = content.collections.filter((c) => world === 'all' || c.world === world);
 
@@ -29,10 +29,8 @@ export default function Collections() {
       setOpen(c.id);
       return;
     }
-    if (!session) {
-      e.preventDefault();
-      openAuth(c.href);
-    }
+    e.preventDefault();
+    openCatalog();
   };
 
   return (
@@ -52,9 +50,9 @@ export default function Collections() {
           <li key={c.id}>
             <a
               className={`row acc__p${open === c.id ? ' open' : ''}`}
-              href={c.href}
-              target="_blank"
-              rel="noopener"
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onClick(e as unknown as MouseEvent, c); }}
               onClick={(e) => onClick(e, c)}
               onFocus={() => setOpen(c.id)}
               onMouseEnter={() => {

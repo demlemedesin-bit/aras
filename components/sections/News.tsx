@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { useSite } from '../SiteProvider';
-import { Icon } from '../Icon';
 
 export default function News() {
   const { t, content } = useSite();
@@ -22,14 +21,13 @@ export default function News() {
       </div>
       <ul className="nws">
         {list.map((n) => (
-          <li key={n.href} className={'award' in n && n.award ? 'aw' : undefined}>
-            <a className="nw" href={n.href} target="_blank" rel="noopener">
+          <li key={n.d + n.h} className={'award' in n && n.award ? 'aw' : undefined}>
+            <div className="nw">
               <span className="nw__d">{n.year ?? t(n.d)}</span>
               <h3>
                 {n.badge && <em>{t(n.badge)}</em>} <span>{t(n.h)}</span>
               </h3>
-              <i className="go"><Icon n="ne" /></i>
-            </a>
+            </div>
           </li>
         ))}
       </ul>

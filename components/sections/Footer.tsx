@@ -3,6 +3,7 @@
 import { LANGS } from '@/lib/i18n';
 import { prefersReducedMotion, useSite } from '../SiteProvider';
 import { Icon } from '../Icon';
+import { linkText } from '@/lib/site-config';
 
 export default function Footer() {
   const { t, u, lang, openLang, content, openCatalog } = useSite();
@@ -11,16 +12,15 @@ export default function Footer() {
     <footer className="ft">
       <p className="ft__tag">{t('ft.tag')}</p>
       <ul className="ft__l">
-        <li><a href="/#hakkimizda">{t('nav.about')}</a></li>
-        <li><a href="/#tarihce">{t('nav.hist')}</a></li>
-        <li><a href="/#showroom">{t('nav.sr')}</a></li>
-        <li><a href="/#haberler">{t('nav.fair')}</a></li>
-        <li><a href="/kariyer">{t('ft.car')}</a></li>
-        <li><a href="/sss">{t('ft.faq')}</a></li>
-        <li><a href="/gizlilik">{t('ft.priv')}</a></li>
-        <li><a href="/cerez-politikasi">{t('ft.cookie')}</a></li>
-        <li><a href="/kullanim-kosullari">{t('ft.terms')}</a></li>
-        <li><a href="#katalog" onClick={(e) => { e.preventDefault(); openCatalog(); }}>{t('cta.cat')}</a></li>
+        {content.nav.footer.filter((l) => l.show).map((l) => (
+          <li key={l.id}>
+            {l.href === '#katalog' ? (
+              <a href="#katalog" onClick={(e) => { e.preventDefault(); openCatalog(); }}>{linkText(l, lang, t)}</a>
+            ) : (
+              <a href={l.href} {...(/^https?:/.test(l.href) ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>{linkText(l, lang, t)}</a>
+            )}
+          </li>
+        ))}
       </ul>
       <div className="ft__bar">
         <button className="pill pill--w" type="button" aria-haspopup="dialog" onClick={(e) => openLang(true, e.currentTarget)}>

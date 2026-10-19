@@ -4,10 +4,11 @@ import Track from '@/components/Track';
 import Consent from '@/components/Consent';
 import Tags, { type AdsCfg } from '@/components/Tags';
 import { CONTACT } from '@/lib/data';
+import { themeCss, fontHref, type Theme } from '@/lib/site-config';
 
 const SITE = process.env.NEXT_PUBLIC_SITE_URL || 'https://arasmetal.com';
 
-type Meta = { google?: string; title?: string; desc?: string; og?: string; noindex?: boolean; ads?: AdsCfg };
+type Meta = { theme?: Partial<Theme>; google?: string; title?: string; desc?: string; og?: string; noindex?: boolean; ads?: AdsCfg };
 
 const mediaUrl = (v?: string) => (!v ? undefined : v.startsWith('storage:') ? `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/site-media/${v.slice(8)}` : v);
 
@@ -22,12 +23,12 @@ async function panelMeta(): Promise<Meta> {
     return r.json();
   };
   try {
-    const [seo, texts] = await Promise.all([get('site_settings?key=in.(seo,ads)&select=key,value'), get('site_texts?ns=eq.meta&key=in.(title,desc)&select=key,value')]);
+    const [seo, texts] = await Promise.all([get('site_settings?key=in.(seo,ads,theme)&select=key,value'), get('site_texts?ns=eq.meta&key=in.(title,desc)&select=key,value')]);
     const tr = (k: string) => (texts as { key: string; value?: Record<string, string> }[]).find((t) => t.key === k)?.value?.tr?.trim() || undefined;
     const rows = seo as { key: string; value?: any }[];
     const v = rows.find((x) => x.key === 'seo')?.value as { google_verification?: string; og_image?: string; noindex?: boolean } | undefined;
     const ads = rows.find((x) => x.key === 'ads')?.value as AdsCfg | undefined;
-    return { google: v?.google_verification?.trim() || undefined, og: mediaUrl(v?.og_image?.trim()), noindex: v?.noindex === true, title: tr('title'), desc: tr('desc'), ads };
+    return { theme: rows.find((x) => x.key === 'theme')?.value, google: v?.google_verification?.trim() || undefined, og: mediaUrl(v?.og_image?.trim()), noindex: v?.noindex === true, title: tr('title'), desc: tr('desc'), ads };
   } catch {
     return {};
   }
@@ -85,7 +86,10 @@ const JSON_LD = {
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const ads = (await panelMeta()).ads ?? {};
+  const pm = await panelMeta();
+  const ads = pm.ads ?? {};
+  const css = themeCss(pm.theme);
+  const font = fontHref(pm.theme);
   return (
     <html lang="tr" translate="no" className="notranslate" suppressHydrationWarning>
       <head>
@@ -94,6 +98,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <style dangerouslySetInnerHTML={{ __html: '#pre{display:none!important}html.pre-lock{overflow:auto!important}' }} />
         </noscript>
         <link rel="preload" href="/fonts/bricolage-latin.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
+        {font && <link rel="stylesheet" href={font} />}
+        {css && <style id="aras-theme" dangerouslySetInnerHTML={{ __html: css }} />}
       </head>
       <body>
         {children}

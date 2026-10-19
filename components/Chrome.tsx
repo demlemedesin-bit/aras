@@ -5,6 +5,7 @@ import { LANGS } from '@/lib/i18n';
 import { prefersReducedMotion, useSite } from './SiteProvider';
 import { Icon } from './Icon';
 import { catName } from '@/lib/categories';
+import { linkText } from '@/lib/site-config';
 
 const SECTIONS = [
   { id: 'tarihce', key: 'nav.hist' },
@@ -16,7 +17,6 @@ const SECTIONS = [
   { id: 'iletisim', key: 'nav.contact' },
 ] as const;
 
-const HEADER_NAV = ['tarihce', 'koleksiyonlar', 'urunler', 'iletisim'];
 
 /** Ekranın ortasındaki bölümün id'sini döndürür. */
 function useScrollSpy(ids: readonly string[]) {
@@ -121,9 +121,9 @@ export default function Chrome() {
               </ul>
             </div>
           ))}
-          {SECTIONS.filter((s) => HEADER_NAV.includes(s.id)).map((s) => (
-            <a key={s.id} href={`#${s.id}`} aria-current={active === s.id ? 'true' : undefined}>
-              {t(s.key)}
+          {content.nav.header.filter((l) => l.show).map((l) => (
+            <a key={l.id} href={l.href} aria-current={active === l.id ? 'true' : undefined} {...(/^https?:/.test(l.href) ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>
+              {linkText(l, lang, t)}
             </a>
           ))}
         </nav>
@@ -154,9 +154,9 @@ export default function Chrome() {
       </header>
 
       <nav className="dock" ref={dock} aria-label={u('menu')}>
-        {SECTIONS.map((s) => (
-          <a key={s.id} href={`#${s.id}`} aria-current={active === s.id ? 'true' : undefined}>
-            {t(s.key)}
+        {content.nav.dock.filter((l) => l.show).map((l) => (
+          <a key={l.id} href={l.href} aria-current={active === l.id ? 'true' : undefined}>
+            {linkText(l, lang, t)}
           </a>
         ))}
       </nav>
@@ -193,8 +193,8 @@ export default function Chrome() {
               </ul>
             </details>
           ))}
-          {SECTIONS.filter((x) => x.id !== 'koleksiyonlar').map((x) => (
-            <a key={x.id} className="drw__l" href={`#${x.id}`} onClick={() => setMenu(false)}>{t(x.key)}</a>
+          {content.nav.header.filter((l) => l.show && l.id !== 'koleksiyonlar').map((l) => (
+            <a key={l.id} className="drw__l" href={l.href} onClick={() => setMenu(false)}>{linkText(l, lang, t)}</a>
           ))}
         </div>
       )}

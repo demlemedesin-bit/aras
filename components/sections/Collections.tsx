@@ -62,6 +62,7 @@ export default function Collections() {
     e.preventDefault();
     track('event', 'collection_click');
     if (session) location.assign(`/bayi/urunler?k=${c.id}`);
+    else if (c.photos.length) setLb(openLb(c, 0));
     else openCatalog();
   };
 

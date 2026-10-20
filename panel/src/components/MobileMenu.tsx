@@ -11,7 +11,8 @@ import { useMe } from './Sidebar'
 export default function MobileMenu() {
   const pathname = usePathname()
   const [open, setOpen] = useState(false)
-  const { name, init, role, unread } = useMe()
+  const { name, init, role, unread, dealers, quotes } = useMe()
+  const cnt = { unread, dealers, quotes }
 
   useEffect(() => { setOpen(false) }, [pathname])
 
@@ -69,7 +70,7 @@ export default function MobileMenu() {
                   <Link key={href} href={href} className={`mm-item${isActive(pathname, href) ? ' active' : ''}`}>
                     <span className="mm-icon"><Icon size={14} strokeWidth={1.8} /></span>
                     <span style={{ flex: 1 }}>{label}</span>
-                    {badge === 'unread' && unread > 0 && <span style={{ background: 'var(--ac)', color: '#fff', fontSize: 10, fontWeight: 700, minWidth: 18, height: 18, borderRadius: 99, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: '0 5px' }}>{unread}</span>}
+                    {badge && cnt[badge] > 0 && <span style={{ background: 'var(--ac)', color: '#fff', fontSize: 10, fontWeight: 700, minWidth: 18, height: 18, borderRadius: 99, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: '0 5px' }}>{cnt[badge]}</span>}
                   </Link>
                 ))}
               </div>

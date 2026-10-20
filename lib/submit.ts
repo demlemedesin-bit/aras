@@ -1,7 +1,7 @@
 import { track } from './track';
 
 /** Form gönderimi: Supabase `submissions` tablosuna kaydedilir. E-posta uygulaması açılmaz. */
-export type Submission = { name: string; email: string; company?: string; phone?: string; country?: string; message?: string; topic: 'catalog' | 'contact' | 'career'; lang: string };
+export type Submission = { name: string; email: string; company?: string; phone?: string; country?: string; message?: string; topic: 'catalog' | 'contact' | 'career'; lang: string; items?: { id: string; code: string; name: string; qty: number; price?: number | null; currency?: string }[] };
 
 export async function sendSubmission(s: Submission): Promise<boolean> {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -20,6 +20,7 @@ export async function sendSubmission(s: Submission): Promise<boolean> {
         message: s.message?.trim() || (s.topic === 'catalog' ? 'Katalog talebi' : ''),
         topic: s.topic,
         lang: s.lang,
+        ...(s.items?.length ? { items: s.items.slice(0, 200) } : {}),
       }),
     });
     if (r.ok) track('event', s.topic === 'catalog' ? 'catalog_submit' : 'contact_submit');

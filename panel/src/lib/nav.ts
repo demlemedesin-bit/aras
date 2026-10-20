@@ -1,15 +1,16 @@
 import {
   LayoutDashboard, Package, Layers, Images, Newspaper, Handshake, Inbox,
-  Type, Megaphone, ClipboardList, FolderOpen, Building2, History, FileText, FolderTree, SlidersHorizontal, UserCog, BarChart3, Search, Palette, Briefcase, Menu,
+  Type, Megaphone, ClipboardList, FolderOpen, Building2, History, FileText, FolderTree, SlidersHorizontal, UserCog, BarChart3, Search, Palette, Briefcase, Menu, FileSpreadsheet, Tags,
   type LucideIcon,
 } from 'lucide-react'
 
-export type NavItem = { href: string; label: string; Icon: LucideIcon; admin?: boolean; badge?: 'unread' }
+export type NavItem = { href: string; label: string; Icon: LucideIcon; admin?: boolean; badge?: 'unread' | 'dealers' | 'quotes' }
 
 export const NAV: { g: string; items: NavItem[] }[] = [
   { g: 'Genel', items: [
     { href: '/dashboard', label: 'Dashboard', Icon: LayoutDashboard },
     { href: '/dashboard/site/mesajlar', label: 'Talepler & Mesajlar', Icon: Inbox, badge: 'unread' },
+    { href: '/dashboard/site/teklifler', label: 'Teklifler', Icon: FileSpreadsheet, badge: 'quotes' },
   ]},
   { g: 'Analiz', items: [
     { href: '/dashboard/site/analiz', label: 'Analitik', Icon: BarChart3 },
@@ -19,13 +20,14 @@ export const NAV: { g: string; items: NavItem[] }[] = [
   ]},
   { g: 'Katalog', items: [
     { href: '/dashboard/site/urunler', label: 'Ürünler', Icon: Package },
+    { href: '/dashboard/site/fiyat', label: 'Fiyat & Stok', Icon: Tags },
     { href: '/dashboard/site/kategoriler', label: 'Kategoriler', Icon: FolderTree },
     { href: '/dashboard/site/koleksiyonlar', label: 'Koleksiyonlar', Icon: Layers },
   ]},
   { g: 'Kurumsal', items: [
     { href: '/dashboard/site/tarihce', label: 'Tarihçe', Icon: History },
     { href: '/dashboard/site/haberler', label: 'Fuarlar ve ödüller', Icon: Newspaper },
-    { href: '/dashboard/site/bayiler', label: 'Firmalar / Bayiler', Icon: Building2 },
+    { href: '/dashboard/site/bayiler', label: 'Firmalar / Bayiler', Icon: Building2, badge: 'dealers' },
     { href: '/dashboard/site/ortaklar', label: 'İş Ortakları', Icon: Handshake },
   ]},
   { g: 'Site', items: [

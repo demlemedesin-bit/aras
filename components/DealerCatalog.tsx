@@ -6,8 +6,9 @@ import { useSite } from './SiteProvider';
 import Lightbox, { type LB } from './Lightbox';
 import { catName, resolveCat } from '@/lib/categories';
 import { sendSubmission } from '@/lib/submit';
+import type { Price } from '@/lib/dealer-server';
 
-type Props = { allowed: boolean; company: string; name?: string; email?: string; phone?: string };
+type Props = { allowed: boolean; company: string; name?: string; email?: string; phone?: string; prices?: Record<string, Price> };
 type Line = { id: string; qty: number };
 const KEY = 'aras-quote';
 
@@ -15,7 +16,7 @@ const Plus = () => <svg viewBox="0 0 24 24" width="18" height="18" fill="none" s
 const Check = () => <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>;
 const Search = () => <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="7" /><path d="M20 20l-3.5-3.5" /></svg>;
 
-export function DealerCatalog({ allowed, company, name = '', email = '', phone = '' }: Props) {
+export function DealerCatalog({ allowed, company, name = '', email = '', phone = '', prices = {} }: Props) {
   const { t, lang, world, pickWorld, openAuth, content, session } = useSite();
   const tree = content.categories;
   const [q, setQ] = useState('');
@@ -143,6 +144,7 @@ export function DealerCatalog({ allowed, company, name = '', email = '', phone =
                   <button type="button" className="dc__add" aria-pressed={on} aria-label={on ? t('dp.in') : t('dp.add')} title={on ? t('dp.in') : t('dp.add')} onClick={() => toggle(p.id)}>{on ? <Check /> : <Plus />}</button>
                 </div>
                 <b>{t(p.name)}</b>
+                <PriceTag pr={prices[p.id]} />
                 <small>{c.sub ? `${catName(c.main!.name, lang)} › ${catName(c.sub.name, lang)}` : c.main ? catName(c.main.name, lang) : t(p.cat)}</small>
               </li>
             );
@@ -158,14 +160,31 @@ export function DealerCatalog({ allowed, company, name = '', email = '', phone =
         </div>
       )}
 
-      {dlg && <QuoteDialog picked={picked} onClose={() => setDlg(false)} onQty={(id, qty) => save(lines.map((x) => (x.id === id ? { ...x, qty } : x)))} onRemove={(id) => save(lines.filter((x) => x.id !== id))} onSent={() => save([])} company={company} name={name || session?.name || ''} email={email || session?.email || ''} phone={phone} />}
+      {dlg && <QuoteDialog picked={picked} onClose={() => setDlg(false)} onQty={(id, qty) => save(lines.map((x) => (x.id === id ? { ...x, qty } : x)))} onRemove={(id) => save(lines.filter((x) => x.id !== id))} onSent={() => save([])} prices={prices} company={company} name={name || session?.name || ''} email={email || session?.email || ''} phone={phone} />}
       <Lightbox lb={lb} set={setLb} />
     </article>
   );
 }
 
-function QuoteDialog({ picked, onClose, onQty, onRemove, onSent, company, name, email, phone }: {
+const SYM: Record<string, string> = { TRY: '₺', USD: '$', EUR: '€' };
+const money = (n: number, c: string) => `${n.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${SYM[c] ?? c}`;
+const STOCK: Record<string, [string, string]> = { in: ['Stokta', 'in'], low: ['Sınırlı stok', 'low'], out: ['Tükendi', 'out'], order: ['Siparişle', 'order'] };
+
+function PriceTag({ pr }: { pr?: Price }) {
+  if (!pr) return null;
+  const st = STOCK[pr.stock] ?? STOCK.in;
+  return (
+    <span className="dc__pr">
+      {pr.price != null && <strong>{money(pr.price, pr.currency)}<small> / {pr.unit}</small></strong>}
+      <em className={`dc__stk dc__stk--${st[1]}`}>{st[0]}</em>
+      {pr.min_qty ? <small>Min. {pr.min_qty} {pr.unit}</small> : null}
+    </span>
+  );
+}
+
+function QuoteDialog({ picked, onClose, onQty, onRemove, onSent, prices, company, name, email, phone }: {
   picked: { l: Line; p: { id: string; code: string; name: string; img: string } }[];
+  prices: Record<string, Price>;
   onClose: () => void; onQty: (id: string, q: number) => void; onRemove: (id: string) => void; onSent: () => void;
   company: string; name: string; email: string; phone: string;
 }) {
@@ -180,13 +199,15 @@ function QuoteDialog({ picked, onClose, onQty, onRemove, onSent, company, name, 
     return () => { removeEventListener('keydown', k); document.body.style.overflow = o; };
   }, [onClose]);
 
+  const totals = picked.reduce<Record<string, number>>((a, { l, p }) => { const pr = prices[p.id]; if (pr?.price != null) a[pr.currency] = (a[pr.currency] ?? 0) + pr.price * l.qty; return a; }, {});
   async function submit(e: FormEvent) {
     e.preventDefault();
     if (!picked.length) return;
     setSt('busy');
     const rows = picked.map(({ l, p }) => `• ${p.code} — ${t(p.name)} × ${l.qty}`).join('\n');
     const message = `Bayi teklif talebi (${picked.length} ürün)\n${rows}${note.trim() ? `\n\nNot: ${note.trim()}` : ''}`;
-    const ok = await sendSubmission({ name, email, company, phone: ph, message, topic: 'catalog', lang });
+    const items = picked.map(({ l, p }) => ({ id: p.id, code: p.code, name: t(p.name), qty: l.qty, price: prices[p.id]?.price ?? null, currency: prices[p.id]?.currency }));
+    const ok = await sendSubmission({ name, email, company, phone: ph, message, topic: 'catalog', lang, items });
     setSt(ok ? 'ok' : 'err');
     if (ok) onSent();
   }
@@ -210,7 +231,7 @@ function QuoteDialog({ picked, onClose, onQty, onRemove, onSent, company, name, 
                 {picked.map(({ l, p }) => (
                   <li key={p.id}>
                     <span className="qd__im" style={p.img ? { backgroundImage: `url(${p.img})` } : undefined} />
-                    <span className="qd__n"><b>{t(p.name)}</b><small>{p.code}</small></span>
+                    <span className="qd__n"><b>{t(p.name)}</b><small>{p.code}{prices[p.id]?.price != null ? ` · ${money(prices[p.id].price as number, prices[p.id].currency)} × ${l.qty}` : ''}</small></span>
                     <span className="qd__q">
                       <button type="button" aria-label="−" onClick={() => (l.qty > 1 ? onQty(p.id, l.qty - 1) : onRemove(p.id))}>−</button>
                       <input inputMode="numeric" value={l.qty} aria-label={t('dp.qty')} onChange={(e) => onQty(p.id, Math.max(1, Math.min(99999, parseInt(e.target.value.replace(/\D/g, '')) || 1)))} />
@@ -220,6 +241,7 @@ function QuoteDialog({ picked, onClose, onQty, onRemove, onSent, company, name, 
                   </li>
                 ))}
               </ul>
+              {Object.keys(totals).length > 0 && <p className="qd__tot"><span>Tahmini toplam</span><b>{Object.entries(totals).map(([c, v]) => money(v, c)).join(' + ')}</b><small>KDV hariç, bilgi amaçlıdır. Kesin teklif size iletilir.</small></p>}
             </div>
             <form className="qd__f" onSubmit={submit}>
               <div className="qd__who">

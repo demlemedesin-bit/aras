@@ -693,3 +693,17 @@ html.lb-open{overflow:hidden}
  .qd__f{overflow:visible}
 }
 @media(max-width:520px){.dc__g{grid-template-columns:repeat(2,1fr)}.dc__fabt small{display:none}.dc__add{width:38px;height:38px}}
+
+.dc__pr{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;margin:6px 0 2px}
+.dc__pr strong{font-size:1.02rem;font-weight:700;color:var(--k)}
+.dc__pr strong small{font-weight:500;opacity:.6;font-size:.72rem}
+.dc__pr small{font-size:.72rem;opacity:.65}
+.dc__stk{font-style:normal;font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:99px;background:color-mix(in srgb,#1f9d55 14%,transparent);color:#1b7a46}
+.dc__stk--low{background:color-mix(in srgb,#d98a00 16%,transparent);color:#9a6200}
+.dc__stk--out{background:color-mix(in srgb,#d33 14%,transparent);color:#a22}
+.dc__stk--order{background:color-mix(in srgb,#456 14%,transparent);color:#456}
+.qd__tot{display:grid;gap:2px;margin:14px 0 0;padding:12px 14px;border-radius:12px;background:color-mix(in srgb,currentColor 6%,transparent)}
+.qd__tot span{font-size:.75rem;opacity:.65}
+.qd__tot b{font-size:1.15rem}
+.qd__tot small{font-size:.7rem;opacity:.6}
+.auth__pwc{margin:10px 0}.auth__pwc form{display:grid;gap:8px}.auth__lnk{background:none;border:0;padding:0;text-decoration:underline;cursor:pointer;color:inherit;font:inherit;opacity:.75}

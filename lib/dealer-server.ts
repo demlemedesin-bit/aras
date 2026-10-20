@@ -93,3 +93,20 @@ export function limited(key: string, max: number, windowMs: number) {
 }
 export const ipOf = (req: Request) => (req.headers.get('x-forwarded-for') || '').split(',')[0].trim() || 'unknown';
 export const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/;
+
+export type Price = { price: number | null; currency: string; unit: string; stock: 'in' | 'low' | 'out' | 'order'; min_qty: number | null; note: string | null };
+/** Fiyat ve stok yalnızca onaylı bayiye (sunucuda) okunur; tablo herkese kapalıdır. */
+export async function getPrices(): Promise<Record<string, Price>> {
+  try {
+    const r = await fetch(`${URL_}/rest/v1/site_prices?select=product_id,price,currency,unit,stock,min_qty,note`, { headers: H(), cache: 'no-store' });
+    if (!r.ok) return {};
+    const out: Record<string, Price> = {};
+    for (const x of (await r.json()) as (Price & { product_id: string })[]) out[x.product_id] = { price: x.price == null ? null : Number(x.price), currency: x.currency, unit: x.unit, stock: x.stock, min_qty: x.min_qty, note: x.note };
+    return out;
+  } catch {
+    return {};
+  }
+}
+export async function updatePassword(id: string, pw: string) {
+  await fetch(`${T}?id=eq.${id}`, { method: 'PATCH', headers: H(), body: JSON.stringify({ pw_hash: await hashPw(pw) }) });
+}

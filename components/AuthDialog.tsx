@@ -132,10 +132,43 @@ export default function AuthDialog() {
             <h3>{A.ah}</h3>
             <p>{A.ap}</p>
             <a className="btn auth__go" href="/bayi/urunler">{A.go}</a>
+            <PwChange lang={lang} />
             <button className="btn btn--line" ref={outRef} type="button" onClick={() => { signOut(); closeAuth(); }}>{A.out}</button>
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+const PWT: Record<string, [string, string, string, string, string, string]> = {
+  tr: ['Şifremi değiştir', 'Mevcut şifre', 'Yeni şifre (en az 8 karakter)', 'Kaydet', 'Şifreniz güncellendi.', 'Mevcut şifre yanlış veya yeni şifre çok kısa.'],
+  en: ['Change password', 'Current password', 'New password (min. 8 characters)', 'Save', 'Password updated.', 'Current password is wrong or new password is too short.'],
+};
+function PwChange({ lang }: { lang: string }) {
+  const T = PWT[lang] ?? PWT.en;
+  const [open, setOpen] = useState(false);
+  const [msg, setMsg] = useState<[boolean, string] | null>(null);
+  async function go(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const f = new FormData(e.currentTarget);
+    try {
+      const r = await fetch('/api/bayi/sifre', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ current: f.get('c'), next: f.get('n') }) });
+      const d = await r.json().catch(() => ({}));
+      setMsg(d.ok ? [true, T[4]] : [false, T[5]]);
+      if (d.ok) setOpen(false);
+    } catch { setMsg([false, T[5]]); }
+  }
+  return (
+    <div className="auth__pwc">
+      {!open ? <button type="button" className="auth__lnk" onClick={() => { setOpen(true); setMsg(null); }}>{T[0]}</button> : (
+        <form onSubmit={go}>
+          <label><span>{T[1]}</span><input name="c" type="password" autoComplete="current-password" required /></label>
+          <label><span>{T[2]}</span><input name="n" type="password" autoComplete="new-password" minLength={8} required /></label>
+          <button className="btn auth__go" type="submit">{T[3]}</button>
+        </form>
+      )}
+      {msg && <p className="auth__err" role="status" style={msg[0] ? { color: '#1b7a46' } : undefined}>{msg[1]}</p>}
     </div>
   );
 }

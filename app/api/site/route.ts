@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@panel/lib/supabase/server'
+import { hashPw } from '@/lib/dealer-server'
 import { buildReport, buildRealtime, type Sub } from '@panel/lib/analytics'
 import { SITE_TABLES, seoAudit, seoPages, siteRpc, siteCount, siteDelete, siteDeleteMedia, siteListMedia, siteRevalidate, siteSelect, siteUpload, siteUpsert, siteUpdate, pkOf, type SiteTable } from '@panel/lib/aras-site'
 
@@ -13,7 +14,7 @@ async function guard() {
 }
 const isTable = (t: unknown): t is SiteTable => typeof t === 'string' && (SITE_TABLES as readonly string[]).includes(t)
 const fail = (e: unknown, s = 500) => NextResponse.json({ error: e instanceof Error ? e.message : String(e) }, { status: s })
-const ORDER: Record<string, string> = { site_texts: 'ns,key', site_settings: 'key', site_ad_spend: 'campaign', site_seo_keywords: 'keyword' }
+const ORDER: Record<string, string> = { site_texts: 'ns,key', site_settings: 'key', site_ad_spend: 'campaign', site_seo_keywords: 'keyword', site_prices: 'product_id' }
 
 export async function GET(req: Request) {
   if (!(await guard())) return fail('Yetkisiz', 401)
@@ -39,7 +40,14 @@ export async function GET(req: Request) {
     }
     if (sp.get('seopages')) return NextResponse.json({ pages: await seoPages(process.env.NEXT_PUBLIC_SITE_URL || 'https://arasmetal.com', (sp.get('seopages') || '/').split(',').filter((x) => x.startsWith('/'))) })
     if (sp.get('seo')) return NextResponse.json(await seoAudit(process.env.NEXT_PUBLIC_SITE_URL || 'https://arasmetal.com'))
-    if (sp.get('unread')) return NextResponse.json({ unread: await siteCount('submissions', 'status=eq.new') })
+    if (sp.get('unread')) {
+      const [unread, dealers, quotes] = await Promise.all([
+        siteCount('submissions', 'status=eq.new'),
+        siteCount('site_dealers', 'status=eq.pending').catch(() => 0),
+        siteCount('submissions', 'items=not.is.null&stage=eq.new').catch(() => 0),
+      ])
+      return NextResponse.json({ unread, dealers, quotes })
+    }
     if (sp.get('stats')) {
       const dealersPending = await siteCount('site_dealers', 'status=eq.pending').catch(() => 0)
       const [textRows, collRows, prodRows, gallery, newsRows, partners, subs] = await Promise.all([
@@ -105,6 +113,36 @@ export async function POST(req: Request) {
       const st = ['pending', 'approved', 'rejected'].includes(row?.status) ? row.status : null
       if (!row?.id || !st) return fail('Geçersiz istek', 400)
       await siteUpdate('site_dealers', { id: row.id }, { status: st, note: typeof row.note === 'string' ? row.note.slice(0, 500) : null, approved_at: st === 'approved' ? new Date().toISOString() : null })
+      return NextResponse.json({ ok: true })
+    }
+    if (action === 'dealer-pw') {
+      const pw = typeof row?.password === 'string' && row.password.length >= 8 ? row.password.slice(0, 100) : null
+      if (!row?.id || !pw) return fail('Şifre en az 8 karakter olmalı', 400)
+      await siteUpdate('site_dealers', { id: row.id }, { pw_hash: await hashPw(pw) })
+      return NextResponse.json({ ok: true })
+    }
+    if (action === 'quote') {
+      const STAGES = ['new', 'review', 'quoted', 'won', 'lost']
+      if (!row?.id || !STAGES.includes(row.stage)) return fail('Geçersiz istek', 400)
+      const amt = row.quote_amount === '' || row.quote_amount == null ? null : Number(row.quote_amount)
+      if (amt !== null && !Number.isFinite(amt)) return fail('Tutar geçersiz', 400)
+      await siteUpdate('submissions', { id: row.id }, {
+        stage: row.stage, quote_amount: amt, quote_currency: ['TRY', 'USD', 'EUR'].includes(row.quote_currency) ? row.quote_currency : 'TRY',
+        internal_note: typeof row.internal_note === 'string' ? row.internal_note.slice(0, 2000) : null, status: row.stage === 'new' ? 'new' : 'read', updated_at: new Date().toISOString(),
+      })
+      return NextResponse.json({ ok: true })
+    }
+    if (action === 'prices') {
+      const rows = Array.isArray(row) ? row : []
+      if (!rows.length || rows.length > 1000) return fail('Geçersiz istek', 400)
+      for (const r of rows) {
+        const price = r.price === '' || r.price == null ? null : Number(r.price)
+        if (!r.product_id || (price !== null && (!Number.isFinite(price) || price < 0))) return fail(`Geçersiz satır: ${r.product_id ?? '?'}`, 400)
+        await siteUpsert('site_prices', {
+          product_id: String(r.product_id), price, currency: ['TRY', 'USD', 'EUR'].includes(r.currency) ? r.currency : 'TRY', unit: String(r.unit || 'adet').slice(0, 20),
+          stock: ['in', 'low', 'out', 'order'].includes(r.stock) ? r.stock : 'in', min_qty: r.min_qty ? Math.max(1, Math.floor(Number(r.min_qty))) : null, note: r.note ? String(r.note).slice(0, 200) : null, updated_at: new Date().toISOString(),
+        })
+      }
       return NextResponse.json({ ok: true })
     }
     if (!isTable(table)) return fail('Geçersiz istek', 400)

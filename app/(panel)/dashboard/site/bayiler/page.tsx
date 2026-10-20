@@ -1,6 +1,6 @@
 'use client'
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Check, X, Trash2, Search } from 'lucide-react'
+import { Check, X, Trash2, Search, KeyRound } from 'lucide-react'
 import { PageHead, Pill, api, getRows, useToast, type Row } from '@panel/components/site/ui'
 
 const ST: Record<string, [string, 'ok' | 'warn' | 'bad']> = { pending: ['Onay bekliyor', 'warn'], approved: ['Onaylı', 'ok'], rejected: ['Reddedildi', 'bad'] }
@@ -26,6 +26,14 @@ export default function Page() {
   async function remove(r: Row) {
     if (!confirm(`${r.company} kaydı silinsin mi? Bu işlem geri alınamaz.`)) return
     try { await api('POST', '/api/site', { action: 'delete', table: 'site_dealers', row: { id: r.id } }); say('Silindi.'); load() } catch (e: any) { say(e.message) }
+  }
+  async function resetPw(r: Row) {
+    const gen = Array.from(crypto.getRandomValues(new Uint8Array(10)), (b) => 'abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789'[b % 54]).join('')
+    const pw = prompt(`${r.company} için yeni şifre (en az 8 karakter). Boş bırakırsanız otomatik oluşturulur:`, gen)
+    if (pw === null) return
+    const val = pw.trim() || gen
+    if (val.length < 8) return say('Şifre en az 8 karakter olmalı.')
+    try { await api('POST', '/api/site', { action: 'dealer-pw', row: { id: r.id, password: val } }); prompt('Şifre değişti. Bayiye iletin (bu pencere kapanınca tekrar görünmez):', val) } catch (e: any) { say(e.message) }
   }
   async function toggleAuto(v: boolean) {
     setAuto(v)
@@ -62,6 +70,7 @@ export default function Page() {
               {r.status !== 'approved' && <button className="btn" onClick={() => setStatus(r, 'approved')}><Check size={14} /> Onayla</button>}
               {r.status === 'pending' && <button className="btn-ghost" onClick={() => setStatus(r, 'rejected')}><X size={14} /> Reddet</button>}
               {r.status === 'approved' && <button className="btn-ghost" onClick={() => setStatus(r, 'rejected')}>Erişimi kapat</button>}
+              <button className="btn-ghost" aria-label="Şifre sıfırla" title="Şifre sıfırla" onClick={() => resetPw(r)}><KeyRound size={14} /></button>
               <button className="btn-ghost" aria-label="Sil" onClick={() => remove(r)}><Trash2 size={14} /></button>
             </div>
           </div>

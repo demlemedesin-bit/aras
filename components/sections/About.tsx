@@ -8,7 +8,7 @@ export default function About() {
   return (
     <section className="about" id="hakkimizda">
       <figure className="about__f">
-        <img src={content.hero.about || '/images/about.webp'} alt="" loading="lazy" width={900} height={1200} />
+        <img src={content.hero.about || '/images/about.webp'} alt="Aras Metal üretim tesisi ve galvaniz çelik ürünleri" loading="lazy" width={900} height={1200} />
       </figure>
       <div className="about__t">
         <h2 className="h2">{t('about.h')}</h2>

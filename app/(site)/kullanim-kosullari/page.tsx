@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Crumbs from '@/components/Crumbs';
 import PageShell from '@/components/PageShell';
 import { Terms } from '@/components/SubPages';
 import { getContent } from '@/lib/content';
@@ -10,6 +11,7 @@ export const generateMetadata = (): Promise<Metadata> => pageMetadata('/kullanim
 export default async function Page() {
   return (
     <PageShell content={await getContent()}>
+      <Crumbs path="/kullanim-kosullari" name="Kullanım koşulları" />
       <Terms />
     </PageShell>
   );

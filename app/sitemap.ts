@@ -15,5 +15,5 @@ const PAGES: { path: string; freq: 'weekly' | 'monthly' | 'yearly'; priority: nu
 // Panelde "dizine ekleme" kapatılan sayfalar sitemap'ten çıkarılır.
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const seo = await getSeo();
-  return PAGES.filter((p) => !seo.pages[p.path || '/']?.noindex).map((p) => ({ url: `${SITE}${p.path}`, lastModified: new Date(), changeFrequency: p.freq, priority: p.priority }));
+  return PAGES.filter((p) => !seo.pages[p.path || '/']?.noindex).map((p) => ({ url: `${SITE}${p.path}`, lastModified: new Date(), changeFrequency: p.freq, priority: p.priority, ...(p.path === '' ? { images: [`${SITE}/images/hero-home.webp`, `${SITE}/images/hero-garden.webp`, `${SITE}/images/about.webp`] } : {}) }));
 }

@@ -18,6 +18,8 @@ import Contact from '@/components/sections/Contact';
 import Footer from '@/components/sections/Footer';
 
 import { getContent } from '@/lib/content';
+import { catName } from '@/lib/categories';
+import { absolute } from '@/lib/seo';
 
 const SECTIONS: Record<string, () => React.ReactElement> = {
   top: Hero, tarihce: History, koleksiyonlar: Collections, urunler: Products, haberler: News, hakkimizda: About, showroom: Showroom, surdurulebilirlik: Steel, iletisim: Contact,
@@ -28,8 +30,15 @@ export const revalidate = 300;
 
 export default async function Home() {
   const content = await getContent();
+  const ld = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: 'Aras Metal ürün kategorileri',
+    itemListElement: content.categories.map((c, i) => ({ '@type': 'ListItem', position: i + 1, name: catName(c.name, 'tr'), url: absolute('/#koleksiyonlar'), ...(c.img ? { image: c.img.startsWith('http') ? c.img : absolute(c.img) } : {}) })),
+  };
   return (
     <SiteProvider content={content}>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ld) }} />
       <Sprite />
       <Preloader />
       <Chrome />

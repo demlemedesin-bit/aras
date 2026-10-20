@@ -34,16 +34,16 @@ const PRIVACY_BASE: { tr: PageDoc; en: PageDoc } = {
     blocks: [
       { h: 'Data controller', p: ['Aras Metal, Adnan Kahveci Mah. Harbiye Cd. No:19, 34528 Beylikdüzü / Istanbul, Türkiye. Contact: ' + MAIL] },
       { h: 'What we collect', ul: [
-        'Catalogue and contact forms: name, email, company, phone, country and your message.',
+        'Catalog and contact forms: name, email, company, phone, country and your message.',
         'Dealer sign-up: name, company, email, phone and password. Passwords are never stored in plain text; they are irreversibly hashed.',
-        'Visit statistics: page viewed, language, country, city, device, browser, referring site, campaign and time spent. Your IP address is not stored. If you decline cookies, visitors are counted with an anonymous code that changes daily; if you accept, a random anonymous code is kept to recognise returning visitors.',
+        'Visit statistics: page viewed, language, country, city, device, browser, referring site, campaign and time spent. Your IP address is not stored. If you decline cookies, visitors are counted with an anonymous code that changes daily; if you accept, a random anonymous code is kept to recognize returning visitors.',
         'Session cookie: only if you sign in as a dealer, a single cookie keeps you signed in.' ] },
       { h: 'Why we process it', ul: [
-        'To answer catalogue, quote and information requests.',
+        'To answer catalog, quote and information requests.',
         'To review dealer applications and give approved companies access to product pages.',
         'To improve and secure the site.',
         'To review job applications.' ] },
-      { h: 'Retention', p: ['Form records are kept as long as the request requires, dealer records while the membership lasts. Visit statistics are kept for up to 400 days. After that, data is deleted or anonymised.'] },
+      { h: 'Retention', p: ['Form records are kept as long as the request requires, dealer records while the membership lasts. Visit statistics are kept for up to 400 days. After that, data is deleted or anonymized.'] },
       { h: 'Sharing', p: ['We do not sell your data. It is processed only to run the service by our infrastructure providers Supabase (database) and Vercel (hosting). It may be shared with authorities where the law requires.'] },
       { h: 'Your rights', p: ['You may request access to, correction or deletion of your data, and object to its processing. Write to ' + MAIL + '. We reply within 30 days.'] },
     ],
@@ -60,10 +60,10 @@ const FAQ_BASE: { tr: { q: string; a: string }[]; en: { q: string; a: string }[]
     { q: 'Hangi dillerde hizmet veriyorsunuz?', a: 'Site Türkçe, İngilizce, Almanca, Fransızca, İspanyolca ve İtalyanca olarak okunabilir. Dili sağ üstteki dil düğmesinden değiştirebilirsiniz.' },
   ],
   en: [
-    { q: 'How can I order products?', a: 'Fill in the "Request catalogue" form on the site. Our sales team will contact you with the catalogue and pricing.' },
+    { q: 'How can I order products?', a: 'Fill in the "Request catalog" form on the site. Our sales team will contact you with the catalog and pricing.' },
     { q: 'What is dealer sign-in for?', a: 'Apply for your company through "Dealer login". Once our team approves your application, you can sign in with your email and password.' },
     { q: 'How do I check my application?', a: 'Until it is approved, signing in tells you the application is pending. In urgent cases write to ' + MAIL + '.' },
-    { q: 'Why galvanised steel?', a: 'Galvanised steel is long lasting and 100% recyclable, which is why we use it for our home, garden and tableware products.' },
+    { q: 'Why galvanized steel?', a: 'Galvanized steel is long lasting and 100% recyclable, which is why we use it for our home, garden and tableware products.' },
     { q: 'Can I visit your showroom?', a: 'Yes. You can visit our showroom in Beylikdüzü / Istanbul or start the virtual tour on the site. Please contact us beforehand to arrange a visit.' },
     { q: 'Which languages are available?', a: 'The site is available in Turkish, English, German, French, Spanish and Italian. Change the language with the language button at the top right.' },
   ],

@@ -11,7 +11,7 @@ export default async function Page() {
   const [content, dealer] = await Promise.all([getContent(), currentDealer()]);
   return (
     <PageShell content={content}>
-      <DealerCatalog allowed={!!dealer} company={dealer?.company ?? ''} />
+      <DealerCatalog allowed={!!dealer} company={dealer?.company ?? ''} name={dealer?.name ?? ''} email={dealer?.email ?? ''} phone={dealer?.phone ?? ''} />
     </PageShell>
   );
 }

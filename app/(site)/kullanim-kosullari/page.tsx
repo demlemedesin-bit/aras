@@ -1,18 +1,8 @@
-import type { Metadata } from 'next';
-import Crumbs from '@/components/Crumbs';
-import PageShell from '@/components/PageShell';
-import { Terms } from '@/components/SubPages';
-import { getContent } from '@/lib/content';
-import { pageMetadata } from '@/lib/seo';
+import { SubView, subMeta } from '@/components/views/Sub';
 
 export const revalidate = 300;
-export const generateMetadata = (): Promise<Metadata> => pageMetadata('/kullanim-kosullari', { title: 'Kullanım koşulları | Aras Metal', desc: 'Aras Metal web sitesi kullanım koşulları.' });
+export const generateMetadata = () => subMeta('kullanim-kosullari', 'tr');
 
-export default async function Page() {
-  return (
-    <PageShell content={await getContent()}>
-      <Crumbs path="/kullanim-kosullari" name="Kullanım koşulları" />
-      <Terms />
-    </PageShell>
-  );
+export default function Page() {
+  return <SubView slug="kullanim-kosullari" lang="tr" />;
 }

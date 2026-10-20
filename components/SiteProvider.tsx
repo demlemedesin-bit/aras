@@ -1,8 +1,10 @@
 'use client';
 import { track } from '@/lib/track';
 
+import { usePathname, useRouter } from 'next/navigation';
+import { pathFor } from '@/lib/lang-path';
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { CODES, META_TR, type Dict, type Lang } from '@/lib/i18n';
+import { CODES, type Dict, type Lang } from '@/lib/i18n';
 import { dictFor, type Content } from '@/lib/content';
 import { clearSession, readSession, type Session } from '@/lib/auth';
 import type { World } from '@/lib/data';
@@ -47,8 +49,11 @@ export function useSite(): Ctx {
 
 export const prefersReducedMotion = () => typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-export function SiteProvider({ children, content }: { children: ReactNode; content: Content }) {
-  const [lang, setLangState] = useState<Lang>('tr');
+/** lang: adresten gelen dil. follow: adresi dile bağlı olmayan sayfa (bayi kataloğu) kayıtlı/bölgesel dili izler. */
+export function SiteProvider({ children, content, lang: urlLang = 'tr', follow = false }: { children: ReactNode; content: Content; lang?: Lang; follow?: boolean }) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const [lang, setLangState] = useState<Lang>(urlLang);
   const [world, setWorld] = useState<World>('all');
   const [langOpen, setLangOpen] = useState(false);
   const [session, setSession] = useState<Session | null>(null);
@@ -60,51 +65,46 @@ export function SiteProvider({ children, content }: { children: ReactNode; conte
   const lastAuth = useRef<HTMLElement | null>(null);
   const lastTour = useRef<HTMLElement | null>(null);
 
+  const remember = (l: Lang) => {
+    try { localStorage.setItem('aras-lang', l); } catch { /* depolama kapalı */ }
+    try { document.cookie = `aras-lang=${l}; path=/; max-age=31536000; samesite=lax`; } catch { /* çerez kapalı */ }
+  };
+
   const setLang = useCallback((l: Lang) => {
     const next = CODES.includes(l) ? l : 'tr';
-    setLangState(next);
     track('event', 'lang_change');
-    try {
-      localStorage.setItem('aras-lang', next);
-    } catch {
-      /* depolama kapalı */
-    }
-  }, []);
+    remember(next);
+    if (follow) { setLangState(next); return; }
+    // Her dilin kendi adresi var: /en, /de, /fr, /es, /it (Türkçe kökte).
+    const target = pathFor(next, pathname || '/') + (location.hash || '');
+    if (next === urlLang) return;
+    location.assign(target);
+    void router;
+  }, [follow, pathname, urlLang, router]);
 
-  // Açılışta kayıtlı dil, yoksa tarayıcı dili (desteklenmiyorsa İngilizce); oturumu geri yükle.
+  // Adresi dile bağlı olmayan sayfalarda (bayi kataloğu) kayıtlı dil, yoksa ülke/tarayıcı dili uygulanır; oturum geri yüklenir.
   useEffect(() => {
-    let saved: string | null = null;
-    try {
-      saved = localStorage.getItem('aras-lang');
-    } catch {
-      /* depolama kapalı */
-    }
-    const nav = ((navigator.languages && navigator.languages[0]) || navigator.language || 'tr').slice(0, 2).toLowerCase();
-    const pick = (saved && CODES.includes(saved as Lang) ? saved : CODES.includes(nav as Lang) ? nav : 'en') as Lang;
-    setLangState(pick);
-    // Kayıtlı dil yoksa ülkeye göre otomatik seç (ör. İngiltere → İngilizce).
-    if (!saved) {
-      fetch('/api/geo', { cache: 'no-store' })
-        .then((r) => (r.ok ? r.json() : null))
-        .then((g) => {
-          if (g?.lang && CODES.includes(g.lang)) {
-            setLangState(g.lang as Lang);
-            try { localStorage.setItem('aras-lang', g.lang); } catch { /* depolama kapalı */ }
-          }
-        })
-        .catch(() => {});
+    if (follow) {
+      let saved: string | null = null;
+      try { saved = localStorage.getItem('aras-lang'); } catch { /* depolama kapalı */ }
+      const nav = ((navigator.languages && navigator.languages[0]) || navigator.language || 'tr').slice(0, 2).toLowerCase();
+      setLangState((saved && CODES.includes(saved as Lang) ? saved : CODES.includes(nav as Lang) ? nav : 'en') as Lang);
+      if (!saved) {
+        fetch('/api/geo', { cache: 'no-store' })
+          .then((r) => (r.ok ? r.json() : null))
+          .then((g) => { if (g?.lang && CODES.includes(g.lang)) { setLangState(g.lang as Lang); remember(g.lang as Lang); } })
+          .catch(() => {});
+      }
     }
     readSession().then(setSession);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Dil değişince <html lang>, başlık ve açıklama güncellenir.
+  // Başlık ve açıklama sunucudan gelir; yalnızca dile bağlı olmayan sayfalarda <html lang> güncellenir.
   useEffect(() => {
+    if (!follow) return;
     document.documentElement.lang = lang;
-    const mt = content.texts.meta;
-    const m = { title: mt.title?.[lang] ?? mt.title?.tr ?? META_TR.title, desc: mt.desc?.[lang] ?? mt.desc?.tr ?? META_TR.desc };
-    document.title = m.title;
-    document.querySelector('meta[name=description]')?.setAttribute('content', m.desc);
-  }, [lang, content]);
+  }, [lang, follow]);
 
   useEffect(() => {
     const root = document.documentElement;

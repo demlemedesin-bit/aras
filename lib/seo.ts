@@ -1,4 +1,6 @@
 import type { Metadata } from 'next';
+import { type Lang, metaFor, tr as trans } from './i18n';
+import { altLanguages, pathFor, OG_LOCALE } from './lang-path';
 
 const SITE = process.env.NEXT_PUBLIC_SITE_URL || 'https://arasmetal.com';
 
@@ -26,17 +28,19 @@ export async function getSeo(): Promise<SeoCfg> {
 }
 
 /** Alt sayfa metadata'sı: panel değeri varsa onu, yoksa varsayılanı kullanır. */
-export async function pageMetadata(path: string, fallback: { title: string; desc?: string }): Promise<Metadata> {
+export async function pageMetadata(path: string, fallback: { title: string; desc?: string; key?: string }, lang: Lang = 'tr'): Promise<Metadata> {
   const s = await getSeo();
   const o = s.pages[path] ?? {};
-  const title = o.title?.trim() || fallback.title;
-  const description = o.desc?.trim() || fallback.desc;
+  // Panelde girilen başlık/açıklama Türkçedir; diğer dillerde sözlükteki sayfa adı ve site açıklaması kullanılır.
+  const title = (lang === 'tr' ? o.title?.trim() : '') || (lang === 'tr' || !fallback.key ? fallback.title : `${trans(lang, fallback.key)} | Aras Metal`);
+  const description = (lang === 'tr' ? o.desc?.trim() : '') || (lang === 'tr' ? fallback.desc : metaFor(lang).desc);
+  const here = pathFor(lang, path);
   const og = mediaUrl(o.og?.trim());
   return {
     title,
     ...(description ? { description } : {}),
-    alternates: { canonical: path },
-    openGraph: { title, ...(description ? { description } : {}), url: path, siteName: 'Aras Metal', type: 'website', ...(og ? { images: [{ url: og }] } : {}) },
+    alternates: { canonical: here, languages: altLanguages(path) },
+    openGraph: { title, ...(description ? { description } : {}), url: here, siteName: 'Aras Metal', locale: OG_LOCALE[lang], type: 'website', ...(og ? { images: [{ url: og }] } : {}) },
     ...(o.noindex || s.noindex ? { robots: { index: false, follow: false } } : {}),
   };
 }

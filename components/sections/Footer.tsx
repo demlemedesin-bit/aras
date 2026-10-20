@@ -3,6 +3,7 @@
 import { LANGS } from '@/lib/i18n';
 import { prefersReducedMotion, useSite } from '../SiteProvider';
 import { Icon } from '../Icon';
+import { lp } from '@/lib/lang-path';
 import { kindOf, linkText } from '@/lib/site-config';
 
 export default function Footer() {
@@ -22,7 +23,7 @@ export default function Footer() {
           };
           return (
             <li key={l.id}>
-              <a href={['catalog', 'login', 'lang', 'tour'].includes(k) ? '#' : l.href} onClick={act} {...(k === 'url' ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>{linkText(l, lang, t)}</a>
+              <a href={['catalog', 'login', 'lang', 'tour'].includes(k) ? '#' : lp(lang, l.href)} onClick={act} {...(k === 'url' ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>{linkText(l, lang, t)}</a>
             </li>
           );
         })}

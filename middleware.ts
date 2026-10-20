@@ -1,6 +1,11 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
+import { langForCountry } from '@/lib/geo-lang'
+
+const LANGS = ['tr', 'en', 'de', 'fr', 'es', 'it']
+const PUBLIC = ['/', '/sss', '/kariyer', '/gizlilik', '/cerez-politikasi', '/kullanim-kosullari']
+const BOT = /bot|crawl|spider|slurp|bing|google|yandex|baidu|duckduck|facebookexternalhit|whatsapp|telegram|linkedin|twitter|preview|lighthouse|headless/i
 
 // Panel yalnızca admin ve manager (editör) rolleri içindir.
 // Kullanıcı yönetimi yalnızca admin.
@@ -8,6 +13,29 @@ const ADMIN_ONLY = ['/dashboard/kullanicilar']
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
+
+  // Bölgesel dil: ilk girişte ziyaretçinin ülkesine göre /en, /de … adresine yönlendirilir.
+  // Kayıtlı dil tercihi (çerez) ülkeden önce gelir; arama botları yönlendirilmez.
+  if (PUBLIC.includes(pathname)) {
+    if (BOT.test(request.headers.get('user-agent') || '')) return NextResponse.next()
+    const saved = request.cookies.get('aras-lang')?.value
+    let pref: string | null = saved && LANGS.includes(saved) ? saved : null
+    if (!pref) {
+      pref = langForCountry(request.headers.get('x-vercel-ip-country'))
+      if (!pref) {
+        const al = (request.headers.get('accept-language') || '').split(',').map((x) => x.trim().slice(0, 2).toLowerCase())
+        pref = al.find((x) => LANGS.includes(x)) ?? 'en'
+      }
+    }
+    if (pref && pref !== 'tr') {
+      const url = request.nextUrl.clone()
+      url.pathname = pathname === '/' ? `/${pref}` : `/${pref}${pathname}`
+      const res = NextResponse.redirect(url, 307)
+      res.headers.set('Vary', 'Accept-Language, Cookie')
+      return res
+    }
+    return NextResponse.next()
+  }
 
   const mk = (response?: NextResponse) =>
     createServerClient(
@@ -61,5 +89,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/login', '/dashboard/:path*'],
+  matcher: ['/login', '/dashboard/:path*', '/', '/sss', '/kariyer', '/gizlilik', '/cerez-politikasi', '/kullanim-kosullari'],
 }

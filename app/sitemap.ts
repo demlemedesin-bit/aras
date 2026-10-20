@@ -1,5 +1,7 @@
 import type { MetadataRoute } from 'next';
 import { getSeo } from '@/lib/seo';
+import { CODES } from '@/lib/i18n';
+import { altLanguages, pathFor } from '@/lib/lang-path';
 
 const SITE = process.env.NEXT_PUBLIC_SITE_URL || 'https://arasmetal.com';
 
@@ -15,5 +17,17 @@ const PAGES: { path: string; freq: 'weekly' | 'monthly' | 'yearly'; priority: nu
 // Panelde "dizine ekleme" kapatılan sayfalar sitemap'ten çıkarılır.
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const seo = await getSeo();
-  return PAGES.filter((p) => !seo.pages[p.path || '/']?.noindex).map((p) => ({ url: `${SITE}${p.path}`, lastModified: new Date(), changeFrequency: p.freq, priority: p.priority, ...(p.path === '' ? { images: [`${SITE}/images/hero-home.webp`, `${SITE}/images/hero-garden.webp`, `${SITE}/images/about.webp`] } : {}) }));
+  const now = new Date();
+  return PAGES.filter((p) => !seo.pages[p.path || '/']?.noindex).flatMap((p) => {
+    const path = p.path || '/';
+    const languages = Object.fromEntries(Object.entries(altLanguages(path)).map(([k, v]) => [k, `${SITE}${v === '/' ? '' : v}`]));
+    return CODES.map((c) => ({
+      url: `${SITE}${pathFor(c, path) === '/' ? '' : pathFor(c, path)}`,
+      lastModified: now,
+      changeFrequency: p.freq,
+      priority: c === 'tr' ? p.priority : Math.max(0.1, p.priority - 0.1),
+      alternates: { languages },
+      ...(p.path === '' ? { images: [`${SITE}/images/hero-home.webp`, `${SITE}/images/hero-garden.webp`, `${SITE}/images/about.webp`] } : {}),
+    }));
+  });
 }

@@ -1,5 +1,6 @@
 'use client';
 
+import { lp } from '@/lib/lang-path';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { LANGS } from '@/lib/i18n';
 import { prefersReducedMotion, useSite } from './SiteProvider';
@@ -75,7 +76,7 @@ export default function Chrome() {
 
   const login = useCallback(() => openAuth(), [openAuth]);
   const { openTour } = useSite();
-  const hrefOf = (l: Link) => (['catalog', 'login', 'lang', 'tour'].includes(kindOf(l)) ? '#' : l.href);
+  const hrefOf = (l: Link) => (['catalog', 'login', 'lang', 'tour'].includes(kindOf(l)) ? '#' : lp(lang, l.href));
   const ext = (l: Link) => (kindOf(l) === 'url' ? { target: '_blank', rel: 'noopener noreferrer' } : {});
   const act = (l: Link, e: React.MouseEvent<HTMLElement>) => {
     const k = kindOf(l);

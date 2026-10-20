@@ -1,18 +1,8 @@
-import type { Metadata } from 'next';
-import Crumbs from '@/components/Crumbs';
-import PageShell from '@/components/PageShell';
-import { Cookies } from '@/components/SubPages';
-import { getContent } from '@/lib/content';
-import { pageMetadata } from '@/lib/seo';
+import { SubView, subMeta } from '@/components/views/Sub';
 
 export const revalidate = 300;
-export const generateMetadata = (): Promise<Metadata> => pageMetadata('/cerez-politikasi', { title: 'Çerez politikası | Aras Metal', desc: 'Aras Metal çerez politikası: kullandığımız çerezler, amaçları ve tercihleriniz.' });
+export const generateMetadata = () => subMeta('cerez-politikasi', 'tr');
 
-export default async function Page() {
-  return (
-    <PageShell content={await getContent()}>
-      <Crumbs path="/cerez-politikasi" name="Çerez politikası" />
-      <Cookies />
-    </PageShell>
-  );
+export default function Page() {
+  return <SubView slug="cerez-politikasi" lang="tr" />;
 }

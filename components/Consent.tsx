@@ -1,4 +1,5 @@
 'use client';
+import { lp } from '@/lib/lang-path';
 import { useEffect, useState } from 'react';
 import { CONSENT_KEY, getConsent } from '@/lib/track';
 
@@ -38,7 +39,7 @@ export default function Consent() {
   return (
     <div className="ck" role="dialog" aria-label={x.t}>
       <b>{x.t}</b>
-      <p>{x.p} <a href="/cerez-politikasi">{x.l}</a></p>
+      <p>{x.p} <a href={lp(lang, '/cerez-politikasi')}>{x.l}</a></p>
       <div className="ck__b">
         <button type="button" className="ck__r" onClick={() => choose('min')}>{x.r}</button>
         <button type="button" className="ck__a" onClick={() => choose('all')}>{x.a}</button>
